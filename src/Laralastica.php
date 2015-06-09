@@ -3,8 +3,9 @@
 use Closure;
 use Elastica\Client;
 use Elastica\Index;
+use Michaeljennings\Laralastica\Contracts\Wrapper;
 
-class Laralastica {
+class Laralastica implements Wrapper {
 
     /**
      * The package config.

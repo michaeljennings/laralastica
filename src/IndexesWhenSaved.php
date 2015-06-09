@@ -6,7 +6,7 @@ trait IndexesWhenSaved {
     {
         static::created(function($model)
         {
-            dd($model);
+
         });
     }
 
