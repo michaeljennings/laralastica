@@ -1,6 +1,7 @@
 <?php namespace Michaeljennings\Laralastica; 
 
 use Elastica\Client;
+use Elastica\Document;
 use Elastica\Index;
 use Elastica\Query\Common;
 use Elastica\Query\Fuzzy;
@@ -8,6 +9,7 @@ use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
+use Elastica\Type;
 
 class Builder {
 
@@ -51,9 +53,9 @@ class Builder {
      *
      * @param Client $client
      * @param Index $index
-     * @param string $type
+     * @param Type $type
      */
-    public function __construct(Client $client, Index $index, $type)
+    public function __construct(Client $client, Index $index, Type $type)
     {
         $this->client = $client;
         $this->index = $index;
@@ -252,6 +254,40 @@ class Builder {
     }
 
     /**
+     * Add a new document to the elasticsearch type.
+     *
+     * @param string|int $id
+     * @param array $data
+     * @return $this
+     */
+    public function add($id, array $data)
+    {
+        $document = new Document($id, $data);
+        $this->type->addDocument($document);
+
+        return $this;
+    }
+
+    /**
+     * Add multiple documents to the elasticsearch type.
+     *
+     * @param array $data
+     * @return $this
+     */
+    public function addMultiple(array $data)
+    {
+        $documents = [];
+
+        foreach ($data as $id => $values) {
+            $documents[] = new Document($id, $values);
+        }
+
+        $this->type->addDocuments($documents);
+
+        return $this;
+    }
+
+    /**
      * Run the queries on the elastic search type and return the results.
      *
      * @return mixed
@@ -272,6 +308,7 @@ class Builder {
 
         return $this;
     }
+
 
     /**
      * Get the results of the query.

@@ -34,6 +34,50 @@ class Laralastica {
         $this->index = $this->newIndex();
     }
 
+    /**
+     * Add a new document to the provided type.
+     *
+     * @param string $type
+     * @param string|int $id
+     * @param array $data
+     * @return $this
+     */
+    public function add($type, $id, array $data)
+    {
+        $builder = $this->newBuilder($type);
+        $builder->add($id, $data);
+
+        $this->refreshIndex();
+
+        return $this;
+    }
+
+    /**
+     * Add multiple documents to the elasticsearch type. The data array must be a
+     * multidimensional array with the key as the desired id and the value as
+     * the data to be added to the document.
+     *
+     * @param string $type
+     * @param array $data
+     * @return $this
+     */
+    public function addMultiple($type, array $data)
+    {
+        $builder = $this->newBuilder($type);
+        $builder->addMultiple($data);
+
+        $this->refreshIndex();
+
+        return $this;
+    }
+
+    /**
+     * Run the provided queries on the type and then return the results.
+     *
+     * @param string $type
+     * @param callable $query
+     * @return mixed
+     */
     public function search($type, Closure $query)
     {
         $builder = $this->newBuilder($type);
@@ -81,7 +125,18 @@ class Laralastica {
      */
     protected function newBuilder($type)
     {
-        return new Builder($this->client, $this->index, $type);
+        return new Builder($this->client, $this->index, $this->index->getType($type));
+    }
+
+    /**
+     * Refreshes the elasticsearch index, should be run after adding
+     * or deleting documents.
+     *
+     * @return \Elastica\Response
+     */
+    protected function refreshIndex()
+    {
+        return $this->index->refresh();
     }
 
 }
