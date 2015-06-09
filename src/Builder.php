@@ -10,8 +10,9 @@ use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Range;
 use Elastica\Type;
+use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
 
-class Builder {
+class Builder implements QueryBuilder {
 
     /**
      * An array of queries to be searched.
