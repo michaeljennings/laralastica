@@ -1,5 +1,6 @@
 <?php namespace Michaeljennings\Laralastica; 
 
+use Elastica\Query\Fuzzy;
 use Elastica\Query\Match;
 use Elastica\Query\MultiMatch;
 
@@ -18,6 +19,7 @@ class Builder {
      * prefix matches on the last term in the text.
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html
+     *
      * @param string        $field  The field to search in the index
      * @param string|array  $values The values to search for
      * @param string        $type   The match type
@@ -95,6 +97,33 @@ class Builder {
         }
 
         $this->query[] = $match;
+
+        return $this;
+    }
+
+    /**
+     * Find all indexes where all possible matching terms are within the specified
+     * fuzziness range. The fuzziness option can be 0, 1, 2 or AUTO, AUTO is
+     * recommended.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html
+     *
+     * @param string $field
+     * @param string $value
+     * @param string $fuzziness
+     * @param int $prefixLength
+     * @param int $maxExpansions
+     * @return $this
+     */
+    public function fuzzy($field, $value, $fuzziness = 'AUTO', $prefixLength = 0, $maxExpansions = 50)
+    {
+        $fuzzy = new Fuzzy($field, $value);
+
+        $fuzzy->setParam('fuzziness', $fuzziness);
+        $fuzzy->setParam('prefix_length', $prefixLength);
+        $fuzzy->setParam('max_expansions', $maxExpansions);
+
+        $this->query[] = $fuzzy;
 
         return $this;
     }
