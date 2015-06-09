@@ -1,7 +1,7 @@
 <?php namespace Michaeljennings\Laralastica; 
 
 use Elastica\Client;
-use Elastica\Query\Bool;
+use Elastica\Index;
 use Elastica\Query\Common;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\Match;
@@ -25,11 +25,28 @@ class Builder {
      */
     protected $client;
 
+    /**
+     * The elasticsearch index being used.
+     *
+     * @var Index
+     */
     protected $index;
 
+    /**
+     * The elasticsearch type being searched.
+     *
+     * @var string
+     */
     protected $type;
 
-    public function __construct(Client $client, $index, $type)
+    /**
+     * The results of the query.
+     *
+     * @var mixed
+     */
+    protected $results;
+
+    public function __construct(Client $client, Index $index, $type)
     {
         $this->client = $client;
         $this->index = $index;
@@ -244,7 +261,29 @@ class Builder {
         // Retrieve the result set
         $resultSet = $this->type->search($query, 1000);
 
-        return $resultSet->getResults();
+        $this->results = $resultSet->getResults();
+
+        return $this;
+    }
+
+    /**
+     * Get the results of the query.
+     *
+     * @return mixed
+     */
+    public function getResults()
+    {
+        return $this->results;
+    }
+
+    /**
+     * Check if the query has been run.
+     *
+     * @return bool
+     */
+    public function hasResults()
+    {
+        return isset($this->results);
     }
 
 }
