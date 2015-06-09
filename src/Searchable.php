@@ -10,11 +10,9 @@ trait Searchable {
      */
     public function search(Closure $query, $key = 'id')
     {
-        if ( ! isset($this->type)) {
-            $this->type = $this->table;
-        }
+        $type = isset($this->type) ? $this->type : $this->table;
 
-        $results = $this->laralastica->search($this->type, $query);
+        $results = $this->laralastica->search($type, $query);
 
         dd($results);
     }
