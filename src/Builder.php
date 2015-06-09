@@ -46,6 +46,13 @@ class Builder {
      */
     protected $results;
 
+    /**
+     * Create the query builder.
+     *
+     * @param Client $client
+     * @param Index $index
+     * @param string $type
+     */
     public function __construct(Client $client, Index $index, $type)
     {
         $this->client = $client;
