@@ -1,2 +1,2 @@
 # laralastica
-A laravel elastica pacakge
+A laravel elastica package.

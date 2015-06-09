@@ -1,0 +1,29 @@
+{
+    "name": "michaeljennings/laralastica",
+    "description": "A laravel elastica package.",
+    "keywords": ["elastica", "laravel", "elasticsearch"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michael Jennings",
+            "email": "michael.jennings91@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "ruflin/elastica": "2.1.*"
+    },
+    "require-dev": {
+        "mockery/mockery": "0.9.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Michaeljennings\\Laralastica\\": "src/"
+        }
+    },
+    "extra": {
+        "component": "package",
+        "frameworks": ["Laravel 5"]
+    },
+    "minimum-stability": "stable"
+}
