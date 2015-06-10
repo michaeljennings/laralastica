@@ -77,21 +77,17 @@ class Builder implements QueryBuilder {
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html
      *
-     * @param string        $field  The field to search in the index
-     * @param string|array  $values The values to search for
-     * @param string        $type   The match type
-     * @param bool          $fuzzy  Set whether the match should be fuzzy
+     * @param string  $field  The field to search in the index
+     * @param string  $query  The values to search for
+     * @param string  $type   The match type
+     * @param bool    $fuzzy  Set whether the match should be fuzzy
      * @return $this
      */
-    public function match($field, $values, $type = 'phrase', $fuzzy = false)
+    public function match($field, $query, $type = 'phrase', $fuzzy = false)
     {
         $match = new Match();
 
-        if (is_string($values)) {
-            $values = [$values];
-        }
-
-        $match->setFieldQuery($field, $values);
+        $match->setFieldQuery($field, $query);
         $match->setFieldType($field, $type);
 
         if ($fuzzy) {
