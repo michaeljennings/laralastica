@@ -437,7 +437,6 @@ class Builder implements QueryBuilder {
         return $this;
     }
 
-
     /**
      * Get the results of the query.
      *
@@ -456,6 +455,16 @@ class Builder implements QueryBuilder {
     public function hasResults()
     {
         return isset($this->results);
+    }
+
+    /**
+     * Get the queries to be run.
+     *
+     * @return array
+     */
+    public function getQuery()
+    {
+        return $this->query;
     }
 
 }
