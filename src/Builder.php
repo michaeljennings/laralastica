@@ -14,6 +14,7 @@ use Elastica\Query\Prefix;
 use Elastica\Query\Range;
 use Elastica\Query\Regexp;
 use Elastica\Query\Term;
+use Elastica\Query\Terms;
 use Elastica\Type;
 use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
 
@@ -316,6 +317,28 @@ class Builder implements QueryBuilder {
         $term->setTerm($key, $value, $boost);
 
         $this->query[] = $term;
+
+        return $this;
+    }
+
+    /**
+     * Find any documents matching the provided terms, optionally you can set a
+     * minimum amount of terms to match.
+     *
+     * @param string $key
+     * @param array $terms
+     * @param bool|int $minimumShouldMatch
+     * @return $this
+     */
+    public function terms($key, array $terms, $minimumShouldMatch = false)
+    {
+        $query = new Terms($key, $terms);
+
+        if ($minimumShouldMatch) {
+            $query->setMinimumMatch($minimumShouldMatch);
+        }
+
+        $this->query[] = $query;
 
         return $this;
     }

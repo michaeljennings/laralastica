@@ -3,6 +3,7 @@
 use Elastica\Query\Prefix;
 use Elastica\Query\Regexp;
 use Elastica\Query\Term;
+use Elastica\Query\Terms;
 
 interface Builder {
 
@@ -192,5 +193,16 @@ interface Builder {
      * @return \Michaeljennings\Laralastica\Builder
      */
     public function term($key, $value, $boost = 1.0);
+
+    /**
+     * Find any documents matching the provided terms, optionally you can set a
+     * minimum amount of terms to match.
+     *
+     * @param string $key
+     * @param array $terms
+     * @param bool|int $minimumShouldMatch
+     * @return \Michaeljennings\Laralastica\Builder
+     */
+    public function terms($key, array $terms, $minimumShouldMatch = false);
 
 }
