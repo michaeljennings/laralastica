@@ -94,6 +94,7 @@ public function getIndexableAttributes()
 		'foo' => $this->bar,
 	];
 }
+```
 
 ### Type Cast Attributes
 
@@ -134,4 +135,26 @@ query. This also defaults 'id'.
 Foo::search(function(Builder $query) {
 	$query->matchAll();
 }, 'foo', 'bar')->get();
+```
+
+### Match Query
+
+To run a match query call `match` on the query builder. This takes 4 parameters:
+
+- The column to search
+- The query to search for
+- The type of search, defaults to phrase
+- A flag for if the search should be fuzzy, by default this is false
+
+The two types of search you can run are `phrase` and `phrase_prefix`. The phrase match analyzes the text and creates a 
+phrase query out of the analyzed text. The phrase prefix match is the same as phrase, except that it allows for prefix 
+matches on the last term in the text.
+
+For more information about the search types [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html).
+
+```php
+Foo::search(function(Builder $query)
+{
+	$query->match('foo', 'bar', 'phrase', false);
+});
 ```
