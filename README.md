@@ -1,4 +1,4 @@
-# Laralastica [![Latest Stable Version](https://poser.pugx.org/michaeljennings/laralastica/v/stable)](https://packagist.org/packages/michaeljennings/laralastica) [![Latest Unstable Version](https://poser.pugx.org/michaeljennings/laralastica/v/unstable)](https://packagist.org/packages/michaeljennings/laralastica) [![License](https://poser.pugx.org/michaeljennings/laralastica/license)](https://packagist.org/packages/michaeljennings/laralastica)
+# Laralastica [![Build Status](https://travis-ci.org/michaeljennings/laralastica.svg?branch=master)](https://travis-ci.org/michaeljennings/laralastica) [![Latest Stable Version](https://poser.pugx.org/michaeljennings/laralastica/v/stable)](https://packagist.org/packages/michaeljennings/laralastica) [![Latest Unstable Version](https://poser.pugx.org/michaeljennings/laralastica/v/unstable)](https://packagist.org/packages/michaeljennings/laralastica) [![License](https://poser.pugx.org/michaeljennings/laralastica/license)](https://packagist.org/packages/michaeljennings/laralastica)
 
 A laravel 5 package that adds the ability to search eloquent models using elasticsearch results, it also handles 
 indexing and removing documents when you save or delete models.
@@ -12,6 +12,7 @@ indexing and removing documents when you save or delete models.
 	- [Fuzzy Query](#fuzzy-query)
 	- [Common Query](#common-query)
 	- [Range Query](#range-query)
+	- [Prefix Query](#prefix-query)
 
 ## Installation
 This package requires at least PHP 5.4 and at present only supports Laravel 5.0.
