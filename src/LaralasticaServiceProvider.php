@@ -10,7 +10,7 @@ class LaralasticaServiceProvider extends ServiceProvider {
      *
      * @var bool
      */
-    protected $defer = true;
+   protected $defer = false;
 
     /**
      * Bootstrap the application events.
@@ -27,7 +27,7 @@ class LaralasticaServiceProvider extends ServiceProvider {
 
         $dispatcher->listen(
             'Michaeljennings\Laralastica\Events\IndexesWhenSaved',
-            'Michaeljennings\Laralastica\Handlers\Events\IndexesWhenSaved'
+            'Michaeljennings\Laralastica\Handlers\Events\IndexesSavedModel'
         );
     }
 
@@ -43,7 +43,7 @@ class LaralasticaServiceProvider extends ServiceProvider {
             return new Laralastica(config('laralastica'));
         });
 
-        $this->app->alias('laralastica', 'Michaeljennings\Laralastica\Contracts\Wrapper');
+        $this->app->alias('Michaeljennings\Laralastica\Contracts\Wrapper', 'laralastica');
     }
 
     /**
@@ -51,9 +51,9 @@ class LaralasticaServiceProvider extends ServiceProvider {
      *
      * @return array
      */
-    public function provides()
-    {
-        return ['laralastica', 'Michaeljennings\Laralastica\Contracts\Wrapper'];
-    }
+   public function provides()
+   {
+       return ['laralastica', 'Michaeljennings\Laralastica\Contracts\Wrapper'];
+   }
 
 }
