@@ -155,6 +155,43 @@ For more information about the search types [click here](https://www.elastic.co/
 ```php
 Foo::search(function(Builder $query)
 {
+	$query->match('foo', 'bar');
 	$query->match('foo', 'bar', 'phrase', false);
+});
+```
+
+### Multi Match Query
+
+To run a multi match query use the `multiMatch` method on the query builder. This takes 6 parameters:
+
+- An array of columns to search in
+- The query string to search for
+- The type of search, defaults to phrase
+- A flag for if the search should be fuzzy, by default this is false
+- The tie breaker value, only used with the best_fields type, defaults to 0.0
+- An operator, only needed for the cross_fields type, defaults to 'and'
+
+There are 5 different search types for the multi match: best_fields, most_fields, cross_fields, phrase and 
+phrase_prefix.
+
+best_fields finds documents which match any field, but uses the _score from the best field.
+
+most_fields finds documents which match any field and combines the _score from each field.
+
+cross_fields treats fields with the same analyzer as though they were one big field. Looks for each word in any field.
+
+phrase runs a match_phrase query on each field and combines the _score from each field.
+
+phrase_prefix runs a match_phrase_prefix query on each field and combines the _score from each field.
+
+For more information about the search types [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html).
+
+```php
+Foo::search(function(Builder $query)
+{
+	$query->multiMatch(['foo', 'bar'], 'The Quick Brown Fox');
+	$query->multiMatch(['foo', 'bar'], 'The Quick Brown Fox', 'phrase', true);
+	$query->multiMatch(['foo', 'bar'], 'The Quick Brown Fox', 'best_fields', true, 0.5);
+	$query->multiMatch(['foo', 'bar'], 'The Quick Brown Fox', 'cross_fields', true, 0.0, 'or');
 });
 ```
