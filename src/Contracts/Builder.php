@@ -2,6 +2,7 @@
 
 use Elastica\Query\Prefix;
 use Elastica\Query\Regexp;
+use Elastica\Query\Term;
 
 interface Builder {
 
@@ -179,5 +180,17 @@ interface Builder {
      * @return \Michaeljennings\Laralastica\Builder
      */
     public function regexp($field, $regex);
+
+    /**
+     * Find a document matching an exact term.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-term-query.html
+     *
+     * @param string $key
+     * @param string $value
+     * @param float $boost
+     * @return \Michaeljennings\Laralastica\Builder
+     */
+    public function term($key, $value, $boost = 1.0);
 
 }

@@ -13,6 +13,7 @@ use Elastica\Query\MultiMatch;
 use Elastica\Query\Prefix;
 use Elastica\Query\Range;
 use Elastica\Query\Regexp;
+use Elastica\Query\Term;
 use Elastica\Type;
 use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
 
@@ -295,6 +296,26 @@ class Builder implements QueryBuilder {
         $regexp = new Regexp($field, $regex);
 
         $this->query[] = $regexp;
+
+        return $this;
+    }
+
+    /**
+     * Find a document matching an exact term.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-term-query.html
+     *
+     * @param string $key
+     * @param string $value
+     * @param float $boost
+     * @return $this
+     */
+    public function term($key, $value, $boost = 1.0)
+    {
+        $term = new Term();
+        $term->setTerm($key, $value, $boost);
+
+        $this->query[] = $term;
 
         return $this;
     }
