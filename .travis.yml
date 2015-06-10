@@ -6,4 +6,9 @@ php:
   - hhvm
 script: phpunit
 
-before_script: composer install
+services:
+  - elasticsearch
+
+before_script:
+  - composer install
+  - sleep 10
