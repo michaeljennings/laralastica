@@ -1,5 +1,8 @@
 <?php namespace Michaeljennings\Laralastica\Contracts;
 
+use Elastica\Query\Prefix;
+use Elastica\Query\Regexp;
+
 interface Builder {
 
     /**
@@ -153,5 +156,28 @@ interface Builder {
      * @return bool
      */
     public function hasResults();
+
+    /**
+     * Find all documents that have fields containing terms with a specified
+     * prefix.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-prefix-query.html
+     *
+     * @param string $field
+     * @param string|array $prefix
+     * @return \Michaeljennings\Laralastica\Builder
+     */
+    public function prefix($field, $prefix);
+
+    /**
+     * Find all documents matching the provided regular expression.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html
+     *
+     * @param string $field
+     * @param string $regex
+     * @return \Michaeljennings\Laralastica\Builder
+     */
+    public function regexp($field, $regex);
 
 }

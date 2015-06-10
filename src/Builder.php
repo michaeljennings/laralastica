@@ -12,6 +12,7 @@ use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Prefix;
 use Elastica\Query\Range;
+use Elastica\Query\Regexp;
 use Elastica\Type;
 use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
 
@@ -276,6 +277,24 @@ class Builder implements QueryBuilder {
         $query->setPrefix($field, $prefix);
 
         $this->query[] = $query;
+
+        return $this;
+    }
+
+    /**
+     * Find all documents matching the provided regular expression.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html
+     *
+     * @param string $field
+     * @param string $regex
+     * @return $this
+     */
+    public function regexp($field, $regex)
+    {
+        $regexp = new Regexp($field, $regex);
+
+        $this->query[] = $regexp;
 
         return $this;
     }
