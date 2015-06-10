@@ -320,9 +320,28 @@ To run a prefix query use the `prefix` method. This takes 2 parameters:
 - The column to search in
 - The prefix to search for
 
+For more information on the prefix query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-prefix-query.html).
+
 ```php
 Foo::search(function(Builder $query)
 {
     $query->prefix('foo', 'ba');
+});
+```
+
+### Term query
+
+To run a term query use the `term` method. This takes 3 parameters:
+
+- The column to search
+- The term to search for
+- Set the boost to search by, defaults to 1.0
+
+For me information about the term query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-term-query.html).
+
+```php
+Foo::search(function(Builder $query)
+{
+    $query->term('foo', 'bar', 2.0);
 });
 ```
