@@ -7,6 +7,8 @@ use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 
 trait Searchable {
 
+    protected $laralastica;
+
     /**
      * Add the model event listeners to fire the IndexesWhenSaved and
      * RemovesDocumentWhenDeleted events.
@@ -27,19 +29,6 @@ trait Searchable {
         {
             static::$dispatcher->fire(new IndexesWhenSaved($model));
         });
-    }
-
-    /**
-     * @param callable $query
-     * @param string $key
-     */
-    public function search(Closure $query, $key = 'id')
-    {
-        $type = isset($this->type) ? $this->type : $this->table;
-
-        $results = $this->laralastica->search($type, $query);
-
-        dd($results);
     }
 
     /**
@@ -124,6 +113,33 @@ trait Searchable {
         }
 
         return $attributes;
+    }
+
+    /**
+     * Run the provided query on the elastic search index and then run a where in
+     *
+     * @param callable $query
+     * @param callable $searchQuery
+     * @param string $key
+     * @param string $esKey
+     * @return mixed
+     */
+    public function scopeSearch($query, Closure $searchQuery, $key = 'id', $esKey = 'id')
+    {
+        if ( ! isset($this->laralastica)) {
+            $this->laralastica = app('laralastica');
+        }
+
+        $results = $this->laralastica->search($this->getSearchType(), $searchQuery);
+        $values = [];
+
+        foreach ($results as $result) {
+            if (isset($result->$esKey)) {
+                $values[] = $result->$esKey;
+            }
+        }
+
+        return $query->whereIn($key, $values);
     }
 
 }
