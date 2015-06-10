@@ -8,9 +8,10 @@ use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 trait Searchable {
 
     /**
-     * Add the model event listener to index the model when it is saved.
+     * Add the model event listeners to fire the IndexesWhenSaved and
+     * RemovesDocumentWhenDeleted events.
      */
-    protected static function bootIndexesWhenSaved()
+    protected static function bootSearchable()
     {
         static::saved(function($model)
         {
@@ -20,6 +21,11 @@ trait Searchable {
         static::deleted(function($model)
         {
             static::$dispatcher->fire(new RemovesDocumentWhenDeleted($model));
+        });
+
+        static::restored(function($model)
+        {
+            static::$dispatcher->fire(new IndexesWhenSaved($model));
         });
     }
 
