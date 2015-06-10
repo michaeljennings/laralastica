@@ -15,6 +15,7 @@ use Elastica\Query\Range;
 use Elastica\Query\Regexp;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
+use Elastica\Query\Wildcard;
 use Elastica\Type;
 use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
 
@@ -337,6 +338,26 @@ class Builder implements QueryBuilder {
         if ($minimumShouldMatch) {
             $query->setMinimumMatch($minimumShouldMatch);
         }
+
+        $this->query[] = $query;
+
+        return $this;
+    }
+
+    /**
+     * Find a document matching a value containing a wildcard. Please note wildcard
+     * queries can be very slow, to avoid this don't start a string with a wildcard.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-wildcard-query.html
+     *
+     * @param string $key
+     * @param string $value
+     * @param float $boost
+     * @return $this
+     */
+    public function wildcard($key, $value, $boost = 1.0)
+    {
+        $query = new Wildcard($key, $value, $boost);
 
         $this->query[] = $query;
 

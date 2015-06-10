@@ -4,6 +4,7 @@ use Elastica\Query\Prefix;
 use Elastica\Query\Regexp;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
+use Elastica\Query\Wildcard;
 
 interface Builder {
 
@@ -204,5 +205,18 @@ interface Builder {
      * @return \Michaeljennings\Laralastica\Builder
      */
     public function terms($key, array $terms, $minimumShouldMatch = false);
+
+    /**
+     * Find a document matching a value containing a wildcard. Please note wildcard
+     * queries can be very slow, to avoid this don't start a string with a wildcard.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-wildcard-query.html
+     *
+     * @param string $key
+     * @param string $value
+     * @param float $boost
+     * @return \Michaeljennings\Laralastica\Builder
+     */
+    public function wildcard($key, $value, $boost = 1.0);
 
 }
