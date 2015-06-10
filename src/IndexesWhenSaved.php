@@ -6,13 +6,6 @@ use Michaeljennings\Laralastica\Events\IndexesWhenSaved as IndexesWhenSavedEvent
 trait IndexesWhenSaved {
 
     /**
-     * An array of columns with the desired data type as the value.
-     *
-     * @var array
-     */
-    protected $dataTypes = ['id' => 'int'];
-
-    /**
      * Add the model event listener to index the model when it is saved.
      */
     protected static function bootIndexesWhenSaved()
@@ -24,7 +17,7 @@ trait IndexesWhenSaved {
     }
 
     /**
-     * Return the attributes to be indexed as an array.
+     * Return an array of attributes to be indexed.
      *
      * @param Model $model
      * @return array
@@ -35,6 +28,19 @@ trait IndexesWhenSaved {
     }
 
     /**
+     * Return an array of columns to be indexed with the column as the key and
+     * the desired data type as the value.
+     *
+     * @return array
+     */
+    public function getSearchDataTypes()
+    {
+        return [
+            'id' => 'int',
+        ];
+    }
+
+    /**
      * Loop through the attributes and type cast them if neccesary.
      *
      * @param array $attributes
@@ -42,10 +48,12 @@ trait IndexesWhenSaved {
      */
     public function transformAttributes(array $attributes)
     {
-        if ( ! empty($this->dataTypes)) {
+        $searchDataTypes = $this->getSearchDataTypes();
+
+        if ( ! empty($searchDataTypes)) {
             foreach ($attributes as &$attribute) {
-                if (array_key_exists($attribute, $this->dataTypes)) {
-                    switch ($this->dataTypes[$attribute]) {
+                if (array_key_exists($attribute, $searchDataTypes)) {
+                    switch ($searchDataTypes[$attribute]) {
                         case "int":
                             $attribute = (int) $attribute;
                             break;
