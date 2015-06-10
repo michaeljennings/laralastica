@@ -139,7 +139,9 @@ query. This also defaults 'id'.
 
 ```php
 Foo::search(function(Builder $query) {
+
 	$query->matchAll();
+
 }, 'foo', 'bar')->get();
 ```
 
@@ -147,7 +149,9 @@ You can also chain query methods within the closure.
 
 ```php
 Foo::search(function(Builder $query) {
+
 	$query->matchAll()->match('foo', 'bar');
+
 })->get();
 ```
 
@@ -155,7 +159,9 @@ You may also chain any Laravel query builder methods after searching.
 
 ```php
 Foo::where('foo', 'bar')->search(function(Builder $query) {
+
 	$query->matchAll()->match('foo', 'bar');
+	
 })->orderBy('baz')->get();
 ```
 
