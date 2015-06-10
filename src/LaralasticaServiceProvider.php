@@ -25,23 +25,20 @@ class LaralasticaServiceProvider extends ServiceProvider {
         $this->mergeConfigFrom(__DIR__.'/../config/laralastica.php', 'laralastica');
     }
 
-	/**
-	 * Register laralastica to the app.
-	 * 
-	 * @return void
-	 */
-	public function register()
-	{
-		$this->app->bind('Michaeljennings\Laralastica\Contracts\Wrapper', function()
+    /**
+     * Register laralastica to the app.
+     * 
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->bind('Michaeljennings\Laralastica\Contracts\Wrapper', function()
         {
             return new Laralastica(config('laralastica'));
         });
 
-        $this->app->bind('laralastica', function($app)
-        {
-            return $app['Michaeljennings\Laralastica\Contracts\Wrapper'];
-        });
-	}
+        $this->app->alias('laralastica', 'Michaeljennings\Laralastica\Contracts\Wrapper');
+    }
 
     /**
      * Get the services provided by the provider.
