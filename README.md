@@ -1,4 +1,4 @@
-# Laralastica
+# Laralastica [![Latest Stable Version](https://poser.pugx.org/michaeljennings/laralastica/v/stable)](https://packagist.org/packages/michaeljennings/laralastica) [![Latest Unstable Version](https://poser.pugx.org/michaeljennings/laralastica/v/unstable)](https://packagist.org/packages/michaeljennings/laralastica) [![License](https://poser.pugx.org/michaeljennings/laralastica/license)](https://packagist.org/packages/michaeljennings/laralastica)
 
 A laravel 5 package that adds the ability to search eloquent models using elasticsearch results, it also handles 
 indexing and removing documents when you save or delete models.
