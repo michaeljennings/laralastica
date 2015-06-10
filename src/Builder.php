@@ -3,6 +3,7 @@
 use Elastica\Client;
 use Elastica\Document;
 use Elastica\Index;
+use Elastica\Query;
 use Elastica\Query\Common;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\Match;
@@ -307,10 +308,10 @@ class Builder implements QueryBuilder {
     public function results()
     {
         if ( ! empty($this->query)) {
-            $query = new Elastica\Query($this->query);
+            $query = new Query($this->query);
             $query->addSort('_score');
         } else {
-            $query = new Elastica\Query();
+            $query = new Query();
         }
 
         // Retrieve the result set
