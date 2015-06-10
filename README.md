@@ -363,3 +363,17 @@ Foo::search(function(Builder $query)
     $query->term('foo', ['foo', 'bar', 'baz'], 2);
 });
 ```
+
+### To run a wildcard query use the `wildcard` method. This takes 2 parameters:
+
+- The column being searched
+- The value to search for
+
+For more information about the wildcard query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-wildcard-query.html).
+
+```php
+Foo::search(function(Builder $query)
+{
+    $query->wildcard('foo', 'ba*');
+});
+```
