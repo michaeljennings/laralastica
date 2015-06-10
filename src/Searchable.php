@@ -15,6 +15,8 @@ trait Searchable {
      */
     protected static function bootSearchable()
     {
+        $instance = new static;
+
         static::saved(function($model)
         {
             static::$dispatcher->fire(new IndexesWhenSaved($model));
@@ -25,10 +27,11 @@ trait Searchable {
             static::$dispatcher->fire(new RemovesDocumentWhenDeleted($model));
         });
 
-        static::restored(function($model)
-        {
-            static::$dispatcher->fire(new IndexesWhenSaved($model));
-        });
+        if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($instance))) {
+            static::restored(function ($model) {
+                static::$dispatcher->fire(new IndexesWhenSaved($model));
+            });
+        }
     }
 
     /**
