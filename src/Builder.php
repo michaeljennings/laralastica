@@ -10,6 +10,7 @@ use Elastica\Query\Fuzzy;
 use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
+use Elastica\Query\Prefix;
 use Elastica\Query\Range;
 use Elastica\Type;
 use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
@@ -250,6 +251,31 @@ class Builder implements QueryBuilder {
         }
 
         $this->query[] = $range;
+
+        return $this;
+    }
+
+    /**
+     * Find all documents that have fields containing terms with a specified
+     * prefix.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-prefix-query.html
+     *
+     * @param string $field
+     * @param string|array $prefix
+     * @return $this
+     */
+    public function prefix($field, $prefix)
+    {
+        $query = new Prefix();
+
+        if (is_string($prefix)) {
+            $prefix = [$prefix];
+        }
+
+        $query->setPrefix($field, $prefix);
+
+        $this->query[] = $query;
 
         return $this;
     }
