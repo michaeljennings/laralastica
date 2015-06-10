@@ -38,7 +38,7 @@ The package also comes with a facade, to use it add it to your aliases array in 
 ```php
 'aliases' => array(
 
-  'Carpenter' => 'Michaeljennings\Laralastica\Facades\Laralastica',
+  'Laralastica' => 'Michaeljennings\Laralastica\Facades\Laralastica',
 
 );
 ```
