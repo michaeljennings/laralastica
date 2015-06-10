@@ -13,6 +13,7 @@ indexing and removing documents when you save or delete models.
 	- [Common Query](#common-query)
 	- [Range Query](#range-query)
 	- [Prefix Query](#prefix-query)
+	- [Term Query](#term-query)
 
 ## Installation
 This package requires at least PHP 5.4 and at present only supports Laravel 5.0.
@@ -337,11 +338,28 @@ To run a term query use the `term` method. This takes 3 parameters:
 - The term to search for
 - Set the boost to search by, defaults to 1.0
 
-For me information about the term query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-term-query.html).
+For more information about the term query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-term-query.html).
 
 ```php
 Foo::search(function(Builder $query)
 {
     $query->term('foo', 'bar', 2.0);
+});
+```
+
+### Terms Query
+
+To run a terms query use the `terms` method. This takes 3 parameters:
+
+- The column to search in
+- An array of terms
+- The minimum amount of terms to match, defaults to false
+
+For more information about the terms query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-terms-query.html).
+
+```php
+Foo::search(function(Builder $query)
+{
+    $query->term('foo', ['foo', 'bar', 'baz'], 2);
 });
 ```
