@@ -229,6 +229,8 @@ class Builder implements QueryBuilder {
      * 'gt'  for greater than
      * 'gte' for greater than or equal to
      *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html
+     * 
      * @param string $field
      * @param array $range
      * @param bool $timeZone

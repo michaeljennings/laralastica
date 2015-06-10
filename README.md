@@ -247,6 +247,44 @@ For more information about the common query [click here](https://www.elastic.co/
 Foo::search(function(Builder $query)
 {
 	$query->common('foo', 'bar');
-	$query->common('foo', 'bar', 0.001, true);
+	$query->common('foo', 'bar', 0.001-, true);
 })
+```
+
+### Range Query
+
+To run a range query use the `range` method on the query builder. This takes 4 parameters:
+
+- The column to search in
+- The range to search in
+- If you are searching for a date you can specifiy a timezone
+- If you are searching for dates you can specify a date format.
+
+To specify a range you pass an array which gt, gte, lt or lte as keys. So to get any values greater than 3 and less than
+10 you would do the following.
+
+```php
+Foo::search(function(Builder $query)
+{
+	$range = [
+		'gt' => 3,
+		'lt' => 10
+	];
+
+	$query->range('foo', $range);
+});
+```
+
+To search for dates between the 1st January 1970 and 31st January 1970 you would do the following.
+
+```php
+Foo::search(function(Builder $query)
+{
+	$range => [
+		'gte' => '1970-01-01',
+		'lte' => '1970-01-31'
+	];
+
+	$query->range('foo', $range, '+1:00', 'yyyy-mm-dd');
+});
 ```
