@@ -35,9 +35,27 @@ trait IndexesWhenSaved {
      */
     public function getSearchDataTypes()
     {
-        return [
-            'id' => 'int',
-        ];
+        return ['id' => 'int'];
+    }
+
+    /**
+     * Get the elasticsearch type.
+     *
+     * @return string
+     */
+    public function getSearchType()
+    {
+        return $this->getTable();
+    }
+
+    /**
+     * Return the key to be used when indexing a document.
+     *
+     * @return mixed
+     */
+    public function getSearchKey()
+    {
+        return $this->getKey();
     }
 
     /**
@@ -51,9 +69,9 @@ trait IndexesWhenSaved {
         $searchDataTypes = $this->getSearchDataTypes();
 
         if ( ! empty($searchDataTypes)) {
-            foreach ($attributes as &$attribute) {
-                if (array_key_exists($attribute, $searchDataTypes)) {
-                    switch ($searchDataTypes[$attribute]) {
+            foreach ($attributes as $key => $attribute) {
+                if (array_key_exists($key, $searchDataTypes)) {
+                    switch ($searchDataTypes[$key]) {
                         case "int":
                             $attribute = (int) $attribute;
                             break;
@@ -73,6 +91,8 @@ trait IndexesWhenSaved {
                             $attribute = (bool) $attribute;
                             break;
                     }
+
+                    $attributes[$key] = $attribute;
                 }
             }
         }

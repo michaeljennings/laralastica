@@ -30,7 +30,7 @@ class IndexesSavedModel {
         $attributes = $model->getIndexableAttributes($model);
         $attributes = $model->transformAttributes($attributes);
 
-        $this->laralastica->add($model->searchType, $model->getKey(), $attributes);
+        $this->laralastica->add($model->getSearchType(), $model->getSearchKey(), $attributes);
     }
 
 }
