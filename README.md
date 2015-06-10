@@ -195,3 +195,14 @@ Foo::search(function(Builder $query)
 	$query->multiMatch(['foo', 'bar'], 'The Quick Brown Fox', 'cross_fields', true, 0.0, 'or');
 });
 ```
+
+### Match All Query
+
+To use a match all query use the `matchAll` method on the query builder.
+
+```php
+Foo::search(function(Builder $query)
+{
+	$query->matchAll();
+})
+```
