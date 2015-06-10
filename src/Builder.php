@@ -4,6 +4,7 @@ use Elastica\Client;
 use Elastica\Document;
 use Elastica\Index;
 use Elastica\Query;
+use Elastica\Query\Bool;
 use Elastica\Query\Common;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\Match;
@@ -90,7 +91,7 @@ class Builder implements QueryBuilder {
             $values = [$values];
         }
 
-        $match->setField($field, $values);
+        $match->setFieldQuery($field, $values);
         $match->setFieldType($field, $type);
 
         if ($fuzzy) {
@@ -308,7 +309,13 @@ class Builder implements QueryBuilder {
     public function results()
     {
         if ( ! empty($this->query)) {
-            $query = new Query($this->query);
+            $container = new Bool();
+
+            foreach ($this->query as $query) {
+                $container->addMust($query);
+            }
+
+            $query = new Query($container);
             $query->addSort('_score');
         } else {
             $query = new Query();
