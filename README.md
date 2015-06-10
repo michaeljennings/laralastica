@@ -6,6 +6,9 @@ indexing and removing documents when you save or delete models.
 - [Installation](#installation)
 - [Usage](#usage)
 - [Searching](#searching)
+	- [Match Query](#match-query)
+	- [Multi Match Query](#multi-match-query)
+	- [Match All Query](#multi-all-query)
 
 ## Installation
 This package requires at least PHP 5.4 and at present only supports Laravel 5.0.
