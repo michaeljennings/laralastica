@@ -1,6 +1,7 @@
 <?php namespace Michaeljennings\Laralastica\Contracts;
 
 use Closure;
+use Michaeljennings\Laralastica\Laralastica;
 
 interface Wrapper {
 
@@ -33,5 +34,14 @@ interface Wrapper {
      * @return mixed
      */
     public function search($type, Closure $query);
+
+    /**
+     * Delete a document from the provided type.
+     *
+     * @param string $type
+     * @param string|int $id
+     * @return $this
+     */
+    public function delete($type, $id);
 
 }

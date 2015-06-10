@@ -92,6 +92,23 @@ class Laralastica implements Wrapper {
     }
 
     /**
+     * Delete a document from the provided type.
+     *
+     * @param string $type
+     * @param string|int $id
+     * @return $this
+     */
+    public function delete($type, $id)
+    {
+        $builder = $this->newBuilder($type);
+        $builder->delete($id);
+
+        $this->refreshIndex();
+
+        return $this;
+    }
+
+    /**
      * Create a new elastica client.
      *
      * @return Client
