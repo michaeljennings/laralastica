@@ -21,6 +21,11 @@
             "Michaeljennings\\Laralastica\\": "src/"
         }
     },
+    "autoload-dev": {
+      "psr-4": {
+        "Michaeljennings\\Laralastica\\Tests\\": "tests/"
+      }
+    },
     "extra": {
         "component": "package",
         "frameworks": ["Laravel 5"]
