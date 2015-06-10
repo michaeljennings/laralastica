@@ -11,6 +11,7 @@ indexing and removing documents when you save or delete models.
 	- [Match All Query](#multi-all-query)
 	- [Fuzzy Query](#fuzzy-query)
 	- [Common Query](#common-query)
+	- [Range Query](#range-query)
 
 ## Installation
 This package requires at least PHP 5.4 and at present only supports Laravel 5.0.
