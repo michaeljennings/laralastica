@@ -172,9 +172,6 @@ class BuilderTest extends Base {
         $results = $result->getResults();
 
         $this->assertInternalType('array', $results);
-        var_dump($results);
-
-//        $this->assertInstanceOf('Elastica\Result', $results[0]);
     }
 
     /**
