@@ -16,6 +16,11 @@ trait Searchable {
         {
             static::$dispatcher->fire(new IndexesWhenSaved($model));
         });
+
+        static::deleted(function($model)
+        {
+            static::$dispatcher->fire(new RemovesDocumentWhenDeleted($model));
+        });
     }
 
     /**
