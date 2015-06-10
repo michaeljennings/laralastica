@@ -155,13 +155,13 @@ Foo::search(function(Builder $query) {
 })->get();
 ```
 
-You may also chain any Laravel query builder methods after searching.
+You may also chain any Laravel query builder methods before or after searching.
 
 ```php
 Foo::where('foo', 'bar')->search(function(Builder $query) {
 
 	$query->matchAll()->match('foo', 'bar');
-	
+
 })->orderBy('baz')->get();
 ```
 
