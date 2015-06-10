@@ -311,3 +311,4 @@ Foo::search(function(Builder $query)
 	$query->range('foo', $range, '+1:00', 'yyyy-mm-dd');
 });
 ```
+
