@@ -10,6 +10,7 @@ indexing and removing documents when you save or delete models.
 	- [Multi Match Query](#multi-match-query)
 	- [Match All Query](#multi-all-query)
 	- [Fuzzy Query](#fuzzy-query)
+	- [Common Query](#common-query)
 
 ## Installation
 This package requires at least PHP 5.4 and at present only supports Laravel 5.0.
@@ -221,7 +222,7 @@ To run a fuzzy query use the `fuzzy` method on the query builder. This takes 5 p
 - The prefix length, defaults to 0
 - The maximum expansions to allow, defaults to 50.
 
-For more information about the search types [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html).
+For more information about the fuzzy query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html).
 
 ```php
 Foo::search(function(Builder $query)
@@ -229,4 +230,23 @@ Foo::search(function(Builder $query)
 	$query->fuzzy('foo', 'bar');
 	$query->fuzzy('foo', 'bar', 1, 2, 100);
 });
+```
+
+### Common Query
+
+To run a common query use the `common` method on the query builder. This takes 4 parameters:
+
+- The column to search
+- The query string to search for
+- The cut off, defaults to 0.001
+- A flag stating if a minimum match should be allowed, defaults to false
+
+For more information about the common query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-common-terms-query.html).
+
+```php
+Foo::search(function(Builder $query)
+{
+	$query->common('foo', 'bar');
+	$query->common('foo', 'bar', 0.001, true);
+})
 ```
