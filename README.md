@@ -9,6 +9,7 @@ indexing and removing documents when you save or delete models.
 	- [Match Query](#match-query)
 	- [Multi Match Query](#multi-match-query)
 	- [Match All Query](#multi-all-query)
+	- [Fuzzy Query](#fuzzy-query)
 
 ## Installation
 This package requires at least PHP 5.4 and at present only supports Laravel 5.0.
@@ -208,4 +209,24 @@ Foo::search(function(Builder $query)
 {
 	$query->matchAll();
 })
+```
+
+### Fuzzy Query
+
+To run a fuzzy query use the `fuzzy` method on the query builder. This takes 5 parameters:
+
+- The column to search
+- The query string to search for
+- The fuzziness value, can be 0, 1, 2 or 'AUTO'. Default to 'AUTO'.
+- The prefix length, defaults to 0
+- The maximum expansions to allow, defaults to 50.
+
+For more information about the search types [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html).
+
+```php
+Foo::search(function(Builder $query)
+{
+	$query->fuzzy('foo', 'bar');
+	$query->fuzzy('foo', 'bar', 1, 2, 100);
+});
 ```
