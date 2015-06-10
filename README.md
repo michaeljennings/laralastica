@@ -312,3 +312,16 @@ Foo::search(function(Builder $query)
 });
 ```
 
+### Prefix Query
+
+To run a prefix query use the `prefix` method. This takes 2 parameters:
+
+- The column to search in
+- The prefix to search for
+
+```php
+Foo::search(function(Builder $query)
+{
+    $query->prefix('foo', 'ba');
+});
+```
