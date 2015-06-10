@@ -10,7 +10,21 @@ class LaralasticaServiceProvider extends ServiceProvider {
      *
      * @var bool
      */
-   protected $defer = false;
+    protected $defer = false;
+
+    /**
+     * The event handler mappings for the package.
+     *
+     * @var array
+     */
+    protected $listners = [
+        'Michaeljennings\Laralastica\Events\IndexesWhenSaved' => [
+            'Michaeljennings\Laralastica\Handlers\Events\IndexesSavedModel'
+        ],
+        'Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted' => [
+            'Michaeljennings\Laralastica\Handlers\Events\RemovesDocumentBelongingToDeletedModel'
+        ]
+    ];
 
     /**
      * Bootstrap the application events.
@@ -25,10 +39,11 @@ class LaralasticaServiceProvider extends ServiceProvider {
 
         $this->mergeConfigFrom(__DIR__.'/../config/laralastica.php', 'laralastica');
 
-        $dispatcher->listen(
-            'Michaeljennings\Laralastica\Events\IndexesWhenSaved',
-            'Michaeljennings\Laralastica\Handlers\Events\IndexesSavedModel'
-        );
+        foreach ($this->listners as $event => $handlers) {
+            foreach ($handlers as $listner) {
+                $dispatcher->listen($event, $listner);
+            }
+        }
     }
 
     /**
@@ -51,9 +66,9 @@ class LaralasticaServiceProvider extends ServiceProvider {
      *
      * @return array
      */
-   public function provides()
-   {
-       return ['laralastica', 'Michaeljennings\Laralastica\Contracts\Wrapper'];
-   }
+    public function provides()
+    {
+        return ['laralastica', 'Michaeljennings\Laralastica\Contracts\Wrapper'];
+    }
 
 }
