@@ -289,6 +289,17 @@ class Builder implements QueryBuilder {
     }
 
     /**
+     * Delete a document by its id.
+     *
+     * @param string|int $id
+     * @return \Elastica\Response
+     */
+    public function delete($id)
+    {
+        return $this->type->deleteById($id);
+    }
+
+    /**
      * Run the queries on the elastic search type and return the results.
      *
      * @return mixed

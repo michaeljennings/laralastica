@@ -126,6 +126,14 @@ interface Builder {
     public function addMultiple(array $data);
 
     /**
+     * Delete a document by its id.
+     *
+     * @param string|int $id
+     * @return \Elastica\Response
+     */
+    public function delete($id);
+
+    /**
      * Run the queries on the elastic search type and return the results.
      *
      * @return mixed
