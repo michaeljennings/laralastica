@@ -102,7 +102,7 @@ class Builder implements QueryBuilder {
         $match->setType($type);
 
         if ($fuzzy) {
-            $match->setFieldFuzziness($field, 'AUTO');
+            $match->setFuzziness('AUTO');
         }
 
         if ($type == 'best_fields') {
