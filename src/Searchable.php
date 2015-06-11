@@ -17,7 +17,17 @@ trait Searchable {
     {
         $instance = new static;
 
+        static::created(function($model)
+        {
+            static::$dispatcher->fire(new IndexesWhenSaved($model));
+        });
+
         static::saved(function($model)
+        {
+            static::$dispatcher->fire(new IndexesWhenSaved($model));
+        });
+
+        static::updated(function($model)
         {
             static::$dispatcher->fire(new IndexesWhenSaved($model));
         });
