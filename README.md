@@ -13,7 +13,10 @@ indexing and removing documents when you save or delete models.
 	- [Common Query](#common-query)
 	- [Range Query](#range-query)
 	- [Prefix Query](#prefix-query)
+	- [Regular Expression Query](#regular-expression-query)
 	- [Term Query](#term-query)
+	- [Terms Query](#terms-query)
+	- [Wildcard Query](#wildcard-query)
 
 ## Installation
 This package requires at least PHP 5.4 and at present only supports Laravel 5.0.
@@ -330,6 +333,23 @@ Foo::search(function(Builder $query)
 });
 ```
 
+### Regular Expression Query
+
+To run a regular expression query use the `regexp` method. This takes 2 parameters:
+
+- The column being searched
+- The regular expression to search for
+
+For more information about the term query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html).
+
+```php
+Foo::search(function(Builder $query)
+{
+    $query->regexp('foo', 'b.*r');
+});
+```
+
+
 ### Term query
 
 To run a term query use the `term` method. This takes 3 parameters:
@@ -360,7 +380,7 @@ For more information about the terms query [click here](https://www.elastic.co/g
 ```php
 Foo::search(function(Builder $query)
 {
-    $query->term('foo', ['foo', 'bar', 'baz'], 2);
+    $query->terms('foo', ['foo', 'bar', 'baz'], 2);
 });
 ```
 
