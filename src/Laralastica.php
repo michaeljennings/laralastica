@@ -6,7 +6,9 @@ use Elastica\Document;
 use Elastica\Index;
 use Elastica\Query;
 use Elastica\Query\Bool;
+use Elastica\ResultSet;
 use Elastica\Search;
+use Illuminate\Support\Collection;
 use Michaeljennings\Laralastica\Contracts\Wrapper;
 
 class Laralastica implements Wrapper {
@@ -101,19 +103,12 @@ class Laralastica implements Wrapper {
         $search = $this->newSearch($this->client, $this->index, $types);
         $query = $this->newQuery($builder->getQuery());
 
-        if (is_int($limit)) {
-            $query->setSize($limit);
-        }
-
-        if (is_int($offset)) {
-            $query->setFrom($offset);
-        }
+        if (is_int($limit)) $query->setSize($limit);
+        if (is_int($offset))  $query->setFrom($offset);
 
         $search->setQuery($query);
 
-        $results = $search->search();
-
-        return $results->getresults();
+        return $this->resultsToModels($search->search());
     }
 
     /**
@@ -131,6 +126,76 @@ class Laralastica implements Wrapper {
         $this->refreshIndex();
 
         return $this;
+    }
+
+    /**
+     * Turn the elasticsearch results into a collection of models.
+     *
+     * @param ResultSet $resultSet
+     * @return Collection
+     */
+    protected function resultsToModels(ResultSet $resultSet)
+    {
+        $results = $resultSet->getResults();
+
+        if ( ! empty($results)) {
+            $groupedResults = $this->groupResultsByType($results);
+            $modelResults = $this->getModelsFromGroupedResults($groupedResults);
+            $collection = $this->newCollection($modelResults);
+
+            return $collection->sortBy(function ($model) {
+                return $model->score;
+            });
+        }
+
+        return $this->newCollection([]);
+    }
+
+    /**
+     * Get th models from the grouped search results.
+     *
+     * @param $groupedResults
+     * @return array
+     */
+    protected function getModelsFromGroupedResults($groupedResults)
+    {
+        $modelResults = [];
+
+        foreach ($groupedResults as $key => $results) {
+            $model = new $this->config['types'][$key];
+            $query = $model->whereIn('id', array_keys($results))
+                ->orderBy(\DB::raw('FIELD(id, ' . implode(',', array_keys($results)) . ')'), 'ASC')
+                ->get();
+
+            $query->map(function($model) use ($results) {
+                $model->score = $results[$model->getKey()]->getScore();
+            });
+
+            $modelResults = array_merge_recursive($modelResults, $query->all());
+        }
+
+        return $modelResults;
+    }
+
+    /**
+     * Group the
+     *
+     * @param array $results
+     * @return array
+     */
+    protected function groupResultsByType(array $results)
+    {
+        $groupedResults = [];
+
+        foreach ($results as $result) {
+            if ( ! isset($groupedResults[$result->getType()])) {
+                $groupedResults[$result->getType()] = [];
+            }
+
+            $groupedResults[$result->getType()][$result->getId()] = $result;
+        }
+
+        return $groupedResults;
     }
 
     /**
@@ -229,6 +294,17 @@ class Laralastica implements Wrapper {
         }
 
         return $query;
+    }
+
+    /**
+     * Create a new collection.
+     *
+     * @param array $data
+     * @return Collection
+     */
+    protected function newCollection(array $data)
+    {
+        return new Collection($data);
     }
 
     /**

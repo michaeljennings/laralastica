@@ -134,23 +134,16 @@ trait Searchable {
      * @param callable $query
      * @param callable $searchQuery
      * @param string $key
-     * @param string $esKey
      * @return mixed
      */
-    public function scopeSearch($query, Closure $searchQuery, $key = 'id', $esKey = 'id')
+    public function scopeSearch($query, Closure $searchQuery, $key = 'id')
     {
         if ( ! isset($this->laralastica)) {
             $this->laralastica = app('laralastica');
         }
 
         $results = $this->laralastica->search($this->getSearchType(), $searchQuery);
-        $values = [];
-
-        foreach ($results as $result) {
-            if (isset($result->$esKey)) {
-                $values[] = $result->$esKey;
-            }
-        }
+        $values = $results->map(function($m) use($key) { return $m->$key; })->all();
 
         return $query->whereIn($key, $values);
     }
