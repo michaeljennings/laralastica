@@ -3,6 +3,7 @@
 use Elastica\Client;
 use Elastica\Connection;
 use Elastica\Index;
+use Illuminate\Http\Request;
 use Michaeljennings\Laralastica\Laralastica;
 use PHPUnit_Framework_TestCase;
 
@@ -13,7 +14,7 @@ class Base extends PHPUnit_Framework_TestCase {
      */
     protected function newLaralastica()
     {
-        return new Laralastica($this->getConfig());
+        return new Laralastica($this->getConfig(), new Request());
     }
 
     /**
