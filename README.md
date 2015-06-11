@@ -25,7 +25,7 @@ To install through composer either run `composer require michaeljennings/laralas
 composer.json
 
 ```php
-"michaeljennings/laralastica": "~0.1"
+"michaeljennings/laralastica": "1.*"
 ```
 
 Then add the laralastica service provider into your providers array in `config/app.php`.
