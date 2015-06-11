@@ -285,7 +285,7 @@ To run a range query use the `range` method on the query builder. This takes 4 p
 
 - The column to search in
 - The range to search in
-- If you are searching for a date you can specifiy a timezone
+- If you are searching for a date you can specify a timezone
 - If you are searching for dates you can specify a date format.
 
 To specify a range you pass an array which gt, gte, lt or lte as keys. So to get any values greater than 3 and less than
@@ -384,7 +384,7 @@ Foo::search(function(Builder $query)
 });
 ```
 
-### Wildcard Queryg 
+### Wildcard Query 
 
 To run a wildcard query use the `wildcard` method. This takes 2 parameters:
 
