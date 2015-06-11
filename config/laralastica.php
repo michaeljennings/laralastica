@@ -18,4 +18,14 @@ return [
      */
     'port' => 9200,
 
+    /**
+     * Register which models correspond to which elasticsearch types. The key
+     * should be the elasticsearch type and the value should be the model.
+     *
+     * i.e. 'testType' => 'App\TestType'
+     */
+    'types' => [
+        //
+    ],
+
 ];

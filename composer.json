@@ -11,7 +11,8 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "ruflin/elastica": "2.1.*"
+        "ruflin/elastica": "2.1.*",
+        "laravel/framework": ">=5.0"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*"
