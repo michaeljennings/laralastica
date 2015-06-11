@@ -147,45 +147,6 @@ class BuilderTest extends Base {
         $this->assertInstanceOf('Elastica\Query\Wildcard', $query[0]);
     }
 
-    /**
-     * @test
-     */
-    public function testAddMethodAddsDocument()
-    {
-        $builder = $this->getBuilder();
-        $result = $builder->add(1, ['foo' => 'bar', 'bar' => 'baz']);
-
-        $this->assertInstanceOf('Michaeljennings\Laralastica\Builder', $result);
-    }
-
-    /**
-     * @test
-     */
-    public function testResultsReturnsAnArrayOfResults()
-    {
-        $builder = $this->getBuilder();
-
-        $result = $builder->results();
-
-        $this->assertInstanceOf('Michaeljennings\Laralastica\Builder', $result);
-
-        $results = $result->getResults();
-
-        $this->assertInternalType('array', $results);
-    }
-
-    /**
-     * @test
-     */
-    public function testDeleteMethodDeletesDocuments()
-    {
-        $builder = $this->getBuilder();
-
-        $result = $builder->delete(1);
-
-        $this->assertEquals(200, $result->getStatus());
-    }
-
     protected function getBuilder()
     {
         $client = $this->getClient();

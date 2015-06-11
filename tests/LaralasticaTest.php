@@ -60,4 +60,30 @@ class LaralasticaTest extends Base {
         $laralastica->delete('type', 'does not exist');
     }
 
+    /**
+     * @test
+     */
+    public function testAddMethodAddsDocument()
+    {
+        $laralastica = $this->newLaralastica();
+        $result = $laralastica->add('type', 1, ['foo' => 'bar', 'bar' => 'baz']);
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Laralastica', $result);
+    }
+
+    /**
+     * @test
+     */
+    public function testSearchReturnsAnArrayOfResults()
+    {
+        $laralastica = $this->newLaralastica();
+
+        $results = $laralastica->search('type', function($q)
+        {
+            $q->matchAll();
+        });
+
+        $this->assertInternalType('array', $results);
+    }
+
 }
