@@ -89,15 +89,25 @@ class Laralastica implements Wrapper {
      *
      * @param string|array $types
      * @param callable $query
+     * @param null|int $limit
+     * @param null|int $offset
      * @return mixed
      */
-    public function search($types, Closure $query)
+    public function search($types, Closure $query, $limit = null, $offset = null)
     {
         $builder = $this->newQueryBuilder();
         $query($builder);
 
         $search = $this->newSearch($this->client, $this->index, $types);
         $query = $this->newQuery($builder->getQuery());
+
+        if (is_int($limit)) {
+            $query->setSize($limit);
+        }
+
+        if (is_int($offset)) {
+            $query->setFrom($offset);
+        }
 
         $search->setQuery($query);
 

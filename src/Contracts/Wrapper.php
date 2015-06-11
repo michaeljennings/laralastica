@@ -27,13 +27,15 @@ interface Wrapper {
     public function addMultiple($type, array $data);
 
     /**
-     * Run the provided queries on the type and then return the results.
+     * Run the provided queries on the types and then return the results.
      *
-     * @param string $type
+     * @param string|array $types
      * @param callable $query
+     * @param null|int $limit
+     * @param null|int $offset
      * @return mixed
      */
-    public function search($type, Closure $query);
+    public function search($types, Closure $query, $limit = null, $offset = null);
 
     /**
      * Delete a document from the provided type.
