@@ -384,7 +384,9 @@ Foo::search(function(Builder $query)
 });
 ```
 
-### To run a wildcard query use the `wildcard` method. This takes 2 parameters:
+### Wildcard Queryg 
+
+To run a wildcard query use the `wildcard` method. This takes 2 parameters:
 
 - The column being searched
 - The value to search for
