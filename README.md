@@ -48,8 +48,25 @@ The package also comes with a facade, to use it add it to your aliases array in 
 );
 ```
 
+### Config
+
 Finally publish the package config using `php artisan vendor:publish`. Once the config has published you can edit the
 `config/laralastica.php' file to set your elasticsearch index, host and port.
+
+```php
+'index' => 'yourindex',
+'host' => 'localhost',
+'port' => 9200,
+```
+
+There is also an empty types array. This allows you to bind an elasticsearch type to a model so that when you search 
+elasticsearch it will return results belonging to that type as the specified model.
+
+```php
+'types' => [
+	'testType' => 'App\TestType'
+]
+```
 
 ## Usage
 
