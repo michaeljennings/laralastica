@@ -8,6 +8,8 @@ use Elastica\Query;
 use Elastica\Query\Bool;
 use Elastica\ResultSet;
 use Elastica\Search;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Michaeljennings\Laralastica\Contracts\Wrapper;
 
@@ -34,11 +36,84 @@ class Laralastica implements Wrapper {
      */
     protected $index;
 
-    public function __construct(array $config)
+    /**
+     * The results from the latest search.
+     *
+     * @var ResultSet
+     */
+    protected $results;
+
+    public function __construct(array $config, Request $request)
     {
         $this->config = $config;
+        $this->request = $request;
+
         $this->client = $this->newClient();
         $this->index = $this->newIndex();
+    }
+
+    /**
+     * Run the provided queries on the types and then return the results.
+     *
+     * @param string|array $types
+     * @param callable $query
+     * @param null|int $limit
+     * @param null|int $offset
+     * @return mixed
+     */
+    public function search($types, Closure $query, $limit = null, $offset = null)
+    {
+        $results = $this->runQuery($types, $query, $limit, $offset);
+
+        return $this->resultsToModels($results);
+    }
+
+    /**
+     * Run a search and then paginate the results using the laravel length
+     * aware paginator.
+     *
+     * @param string|array $types
+     * @param callable $query
+     * @param string|int $perPage
+     * @return LengthAwarePaginator
+     */
+    public function paginate($types, Closure $query, $perPage)
+    {
+        $page = $this->request->has('page') ? $this->request->get('page') : 1;
+        $offset = $perPage * ($page - 1);
+
+        // Get the total results
+        $this->runQuery($types, $query);
+
+        $total = $this->results->getTotalHits();
+        $results = $this->search($types, $query, $perPage, $offset);
+
+        return new LengthAwarePaginator($results, $total, $perPage);
+    }
+
+    /**
+     * Run a Elastica query and then return the results.
+     *
+     * @param string|array $types
+     * @param callable $query
+     * @param null $limit
+     * @param null $offset
+     * @return ResultSet
+     */
+    protected function runQuery($types, Closure $query, $limit = null, $offset = null)
+    {
+        $builder = $this->newQueryBuilder();
+        $query($builder);
+
+        $search = $this->newSearch($this->client, $this->index, $types);
+        $query = $this->newQuery($builder->getQuery());
+
+        if (is_int($limit)) $query->setSize($limit);
+        if (is_int($offset))  $query->setFrom($offset);
+
+        $search->setQuery($query);
+
+        return $this->results = $search->search();
     }
 
     /**
@@ -87,31 +162,6 @@ class Laralastica implements Wrapper {
     }
 
     /**
-     * Run the provided queries on the types and then return the results.
-     *
-     * @param string|array $types
-     * @param callable $query
-     * @param null|int $limit
-     * @param null|int $offset
-     * @return mixed
-     */
-    public function search($types, Closure $query, $limit = null, $offset = null)
-    {
-        $builder = $this->newQueryBuilder();
-        $query($builder);
-
-        $search = $this->newSearch($this->client, $this->index, $types);
-        $query = $this->newQuery($builder->getQuery());
-
-        if (is_int($limit)) $query->setSize($limit);
-        if (is_int($offset))  $query->setFrom($offset);
-
-        $search->setQuery($query);
-
-        return $this->resultsToModels($search->search());
-    }
-
-    /**
      * Delete a document from the provided type.
      *
      * @param string $type
@@ -126,6 +176,45 @@ class Laralastica implements Wrapper {
         $this->refreshIndex();
 
         return $this;
+    }
+
+    /**
+     * Return the total results from the last search.
+     *
+     * @return int
+     */
+    public function getTotalHits()
+    {
+        if (isset($this->results)) {
+            return $this->results->getTotalHits();
+        }
+    }
+
+    /**
+     * Return the total amount of time for the last search.
+     *
+     * @return int
+     */
+    public function getTotalTime()
+    {
+        if (isset($this->results)) {
+            return $this->results->getTotalTime();
+        }
+    }
+
+    /**
+     * Get an elasticsearch type from its index.
+     *
+     * @param string $type
+     * @return \Elastica\Type
+     */
+    protected function getType($type)
+    {
+        if ( ! isset($this->index)) {
+            $this->index = $this->newIndex();
+        }
+
+        return $this->index->getType($type);
     }
 
     /**
@@ -223,21 +312,6 @@ class Laralastica implements Wrapper {
         }
 
         return $this->client->getIndex($this->config['index']);
-    }
-
-    /**
-     * Get an elasticsearch type from its index.
-     *
-     * @param string $type
-     * @return \Elastica\Type
-     */
-    protected function getType($type)
-    {
-        if ( ! isset($this->index)) {
-            $this->index = $this->newIndex();
-        }
-
-        return $this->index->getType($type);
     }
 
     /**

@@ -1,9 +1,32 @@
 <?php namespace Michaeljennings\Laralastica\Contracts;
 
 use Closure;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Laralastica;
 
 interface Wrapper {
+
+    /**
+     * Run the provided queries on the types and then return the results.
+     *
+     * @param string|array $types
+     * @param callable $query
+     * @param null|int $limit
+     * @param null|int $offset
+     * @return mixed
+     */
+    public function search($types, Closure $query, $limit = null, $offset = null);
+
+    /**
+     * Run a search and then paginate the results using the laravel length
+     * aware paginator.
+     *
+     * @param string|array $types
+     * @param callable $query
+     * @param string|int $perPage
+     * @return LengthAwarePaginator
+     */
+    public function paginate($types, Closure $query, $perPage);
 
     /**
      * Add a new document to the provided type.
@@ -27,17 +50,6 @@ interface Wrapper {
     public function addMultiple($type, array $data);
 
     /**
-     * Run the provided queries on the types and then return the results.
-     *
-     * @param string|array $types
-     * @param callable $query
-     * @param null|int $limit
-     * @param null|int $offset
-     * @return mixed
-     */
-    public function search($types, Closure $query, $limit = null, $offset = null);
-
-    /**
      * Delete a document from the provided type.
      *
      * @param string $type
@@ -45,5 +57,19 @@ interface Wrapper {
      * @return $this
      */
     public function delete($type, $id);
+
+    /**
+     * Return the total results from the last search.
+     *
+     * @return int
+     */
+    public function getTotalHits();
+
+    /**
+     * Return the total amount of time for the last search.
+     *
+     * @return int
+     */
+    public function getTotalTime();
 
 }
