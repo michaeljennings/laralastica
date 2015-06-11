@@ -2,7 +2,11 @@
 
 use Closure;
 use Elastica\Client;
+use Elastica\Document;
 use Elastica\Index;
+use Elastica\Query;
+use Elastica\Query\Bool;
+use Elastica\Search;
 use Michaeljennings\Laralastica\Contracts\Wrapper;
 
 class Laralastica implements Wrapper {
@@ -45,8 +49,10 @@ class Laralastica implements Wrapper {
      */
     public function add($type, $id, array $data)
     {
-        $builder = $this->newBuilder($type);
-        $builder->add($id, $data);
+        $type = $this->getType($type);
+
+        $document = new Document($id, $data);
+        $type->addDocument($document);
 
         $this->refreshIndex();
 
@@ -64,8 +70,14 @@ class Laralastica implements Wrapper {
      */
     public function addMultiple($type, array $data)
     {
-        $builder = $this->newBuilder($type);
-        $builder->addMultiple($data);
+        $type = $this->getType($type);
+        $documents = [];
+
+        foreach ($data as $id => $values) {
+            $documents[] = new Document($id, $values);
+        }
+
+        $type->addDocuments($documents);
 
         $this->refreshIndex();
 
@@ -73,22 +85,25 @@ class Laralastica implements Wrapper {
     }
 
     /**
-     * Run the provided queries on the type and then return the results.
+     * Run the provided queries on the types and then return the results.
      *
-     * @param string $type
+     * @param string|array $types
      * @param callable $query
      * @return mixed
      */
-    public function search($type, Closure $query)
+    public function search($types, Closure $query)
     {
-        $builder = $this->newBuilder($type);
+        $builder = $this->newQueryBuilder();
         $query($builder);
 
-        if ( ! $builder->hasResults()) {
-            $builder->results();
-        }
+        $search = $this->newSearch($this->client, $this->index, $types);
+        $query = $this->newQuery($builder->getQuery());
 
-        return $builder->getResults();
+        $search->setQuery($query);
+
+        $results = $search->search();
+
+        return $results->getresults();
     }
 
     /**
@@ -100,8 +115,8 @@ class Laralastica implements Wrapper {
      */
     public function delete($type, $id)
     {
-        $builder = $this->newBuilder($type);
-        $builder->delete($id);
+        $type = $this->getType($type);
+        $type->deleteById($id);
 
         $this->refreshIndex();
 
@@ -136,14 +151,74 @@ class Laralastica implements Wrapper {
     }
 
     /**
+     * Get an elasticsearch type from its index.
+     *
+     * @param string $type
+     * @return \Elastica\Type
+     */
+    protected function getType($type)
+    {
+        if ( ! isset($this->index)) {
+            $this->index = $this->newIndex();
+        }
+
+        return $this->index->getType($type);
+    }
+
+    /**
      * Create a new laralastica query builder.
      *
-     * @param string $type The elasticsearch type to search
      * @return Builder
      */
-    protected function newBuilder($type)
+    protected function newQueryBuilder()
     {
-        return new Builder($this->client, $this->index, $this->index->getType($type));
+        return new Builder();
+    }
+
+    /**
+     * Create a new elastica search.
+     *
+     * @param Client $client
+     * @param Index $index
+     * @param string|array $types
+     * @return Search
+     */
+    protected function newSearch(Client $client, Index $index, $types)
+    {
+        if (is_string($types)) {
+            $types = [$types];
+        }
+
+        $search = new Search($client);
+
+        $search->addIndex($index);
+        $search->addTypes($types);
+
+        return $search;
+    }
+
+    /**
+     * Create a new elastica query from an array of queries.
+     *
+     * @param array $queries
+     * @return Query
+     */
+    protected function newQuery(array $queries)
+    {
+        if ( ! empty($queries)) {
+            $container = new Bool();
+
+            foreach ($queries as $query) {
+                $container->addMust($query);
+            }
+
+            $query = new Query($container);
+            $query->addSort('_score');
+        } else {
+            $query = new Query();
+        }
+
+        return $query;
     }
 
     /**
