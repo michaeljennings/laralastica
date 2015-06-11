@@ -1,10 +1,5 @@
 <?php namespace Michaeljennings\Laralastica; 
 
-use Elastica\Client;
-use Elastica\Document;
-use Elastica\Index;
-use Elastica\Query;
-use Elastica\Query\Bool;
 use Elastica\Query\Common;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\Match;
@@ -16,7 +11,6 @@ use Elastica\Query\Regexp;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use Elastica\Query\Wildcard;
-use Elastica\Type;
 use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
 
 class Builder implements QueryBuilder {
@@ -29,46 +23,11 @@ class Builder implements QueryBuilder {
     protected $query = [];
 
     /**
-     * An instance of the elastica client.
-     *
-     * @var Client
-     */
-    protected $client;
-
-    /**
-     * The elasticsearch index being used.
-     *
-     * @var Index
-     */
-    protected $index;
-
-    /**
-     * The elasticsearch type being searched.
-     *
-     * @var string
-     */
-    protected $type;
-
-    /**
      * The results of the query.
      *
      * @var mixed
      */
     protected $results;
-
-    /**
-     * Create the query builder.
-     *
-     * @param Client $client
-     * @param Index $index
-     * @param Type $type
-     */
-    public function __construct(Client $client, Index $index, Type $type)
-    {
-        $this->client = $client;
-        $this->index = $index;
-        $this->type = $type;
-    }
 
     /**
      * Find all documents where the values are matched in the field. The type option
@@ -235,7 +194,7 @@ class Builder implements QueryBuilder {
      * 'gte' for greater than or equal to
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html
-     * 
+     *
      * @param string $field
      * @param array $range
      * @param bool $timeZone
@@ -362,99 +321,6 @@ class Builder implements QueryBuilder {
         $this->query[] = $query;
 
         return $this;
-    }
-
-    /**
-     * Add a new document to the elasticsearch type.
-     *
-     * @param string|int $id
-     * @param array $data
-     * @return $this
-     */
-    public function add($id, array $data)
-    {
-        $document = new Document($id, $data);
-        $this->type->addDocument($document);
-
-        return $this;
-    }
-
-    /**
-     * Add multiple documents to the elasticsearch type.
-     *
-     * @param array $data
-     * @return $this
-     */
-    public function addMultiple(array $data)
-    {
-        $documents = [];
-
-        foreach ($data as $id => $values) {
-            $documents[] = new Document($id, $values);
-        }
-
-        $this->type->addDocuments($documents);
-
-        return $this;
-    }
-
-    /**
-     * Delete a document by its id.
-     *
-     * @param string|int $id
-     * @return \Elastica\Response
-     */
-    public function delete($id)
-    {
-        return $this->type->deleteById($id);
-    }
-
-    /**
-     * Run the queries on the elastic search type and return the results.
-     *
-     * @return mixed
-     */
-    public function results()
-    {
-        if ( ! empty($this->query)) {
-            $container = new Bool();
-
-            foreach ($this->query as $query) {
-                $container->addMust($query);
-            }
-
-            $query = new Query($container);
-            $query->addSort('_score');
-        } else {
-            $query = new Query();
-        }
-
-        // Retrieve the result set
-        $resultSet = $this->type->search($query, 1000);
-
-        $this->results = $resultSet->getResults();
-
-        return $this;
-    }
-
-    /**
-     * Get the results of the query.
-     *
-     * @return mixed
-     */
-    public function getResults()
-    {
-        return $this->results;
-    }
-
-    /**
-     * Check if the query has been run.
-     *
-     * @return bool
-     */
-    public function hasResults()
-    {
-        return isset($this->results);
     }
 
     /**

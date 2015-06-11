@@ -115,52 +115,6 @@ interface Builder {
     public function range($field, array $range, $timeZone = false, $format = false);
 
     /**
-     * Add a new document to the elasticsearch type.
-     *
-     * @param string|int $id
-     * @param array $data
-     * @return $this
-     */
-    public function add($id, array $data);
-
-    /**
-     * Add multiple documents to the elasticsearch type.
-     *
-     * @param array $data
-     * @return $this
-     */
-    public function addMultiple(array $data);
-
-    /**
-     * Delete a document by its id.
-     *
-     * @param string|int $id
-     * @return \Elastica\Response
-     */
-    public function delete($id);
-
-    /**
-     * Run the queries on the elastic search type and return the results.
-     *
-     * @return mixed
-     */
-    public function results();
-
-    /**
-     * Get the results of the query.
-     *
-     * @return mixed
-     */
-    public function getResults();
-
-    /**
-     * Check if the query has been run.
-     *
-     * @return bool
-     */
-    public function hasResults();
-
-    /**
      * Find all documents that have fields containing terms with a specified
      * prefix.
      *
@@ -218,5 +172,12 @@ interface Builder {
      * @return \Michaeljennings\Laralastica\Builder
      */
     public function wildcard($key, $value, $boost = 1.0);
+
+    /**
+     * Get the queries to be run.
+     *
+     * @return array
+     */
+    public function getQuery();
 
 }
