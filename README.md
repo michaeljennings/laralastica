@@ -170,6 +170,48 @@ Foo::where('foo', 'bar')->search(function(Builder $query) {
 })->orderBy('baz')->get();
 ```
 
+### Searching Without the Searchable Trait
+
+It is also possible to use Laralastica without using the searchable trait. To do so you can either dependency inject 
+the class via its contract or use the provided Facade.
+
+```php
+class Foo {
+	public function __construct(Michaeljennings\Laralastica\Contracts\Wrapper $laralastica)
+	{
+		$this->laralastica = $laralastica;
+	}
+
+	public function foo()
+	{
+		$laralastica = Laralastica::search();
+		$laralastica = app('laralastica');
+	}
+}
+}
+```
+
+To run a new query use the `search` method. This takes two parameters:
+
+- The type/types you are searching in
+- The query to be run
+
+```php
+$laralastica->search('foo', function($q)
+{
+	$q->matchAll();
+});
+```
+
+To search across multiple elasticsearch types simply pass an array of types as the first parameter.
+
+```php
+$laralastica->search(['foo', 'bar], function($q)
+{
+	$q->matchAll();
+});
+```
+
 ### Match Query
 
 To run a match query call `match` on the query builder. This takes 4 parameters:
