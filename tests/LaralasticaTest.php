@@ -71,19 +71,4 @@ class LaralasticaTest extends Base {
         $this->assertInstanceOf('Michaeljennings\Laralastica\Laralastica', $result);
     }
 
-    /**
-     * @test
-     */
-    public function testSearchReturnsAnArrayOfResults()
-    {
-        $laralastica = $this->newLaralastica();
-
-        $results = $laralastica->search('type', function($q)
-        {
-            $q->matchAll();
-        });
-
-        $this->assertInstanceOf('Illuminate\Support\Collection', $results);
-    }
-
 }
