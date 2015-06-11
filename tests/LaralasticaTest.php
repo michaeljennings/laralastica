@@ -83,7 +83,7 @@ class LaralasticaTest extends Base {
             $q->matchAll();
         });
 
-        $this->assertInternalType('array', $results);
+        $this->assertInstanceOf('Illuminate\Support\Collection', $results);
     }
 
 }
