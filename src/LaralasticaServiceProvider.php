@@ -53,9 +53,9 @@ class LaralasticaServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        $this->app->bind('Michaeljennings\Laralastica\Contracts\Wrapper', function()
+        $this->app->bind('Michaeljennings\Laralastica\Contracts\Wrapper', function($app)
         {
-            return new Laralastica(config('laralastica'));
+            return new Laralastica(config('laralastica'), $app['request']);
         });
 
         $this->app->alias('Michaeljennings\Laralastica\Contracts\Wrapper', 'laralastica');
