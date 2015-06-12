@@ -88,7 +88,9 @@ class Laralastica implements Wrapper {
         $total = $this->results->getTotalHits();
         $results = $this->search($types, $query, $perPage, $offset);
 
-        return new LengthAwarePaginator($results, $total, $perPage);
+        return new LengthAwarePaginator($results, $total, $perPage, $page, [
+            'path' => $this->request->url(),
+        ]);
     }
 
     /**
