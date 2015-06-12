@@ -25,7 +25,7 @@ To install through composer either run `composer require michaeljennings/laralas
 composer.json
 
 ```php
-"michaeljennings/laralastica": "1.*"
+"michaeljennings/laralastica": "1.2.*"
 ```
 
 Then add the laralastica service provider into your providers array in `config/app.php`.
@@ -167,12 +167,14 @@ Foo::search(function(Builder $query) {
 }, 'foo', 'bar')->get();
 ```
 
-You can also chain query methods within the closure.
+You can also set whether the query must, should or must not match the value you are searching for.
 
 ```php
 Foo::search(function(Builder $query) {
 
-	$query->matchAll()->match('foo', 'bar');
+	$query->match('foo', 'bar')->must();
+	$query->term('bar', 'baz')->should();
+	$query->wildcard('baz', 'qux*')->mustNot();
 
 })->get();
 ```
@@ -182,7 +184,7 @@ You may also chain any Laravel query builder methods before or after searching.
 ```php
 Foo::where('foo', 'bar')->search(function(Builder $query) {
 
-	$query->matchAll()->match('foo', 'bar');
+	$query->match('foo', 'bar');
 
 })->orderBy('baz')->get();
 ```
