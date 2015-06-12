@@ -1,4 +1,4 @@
-<?php namespace Michaeljennings\Laralastica; 
+<?php namespace Michaeljennings\Laralastica;
 
 use Closure;
 use Elastica\Client;
@@ -11,6 +11,7 @@ use Elastica\Search;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Michaeljennings\Laralastica\Contracts\Query as QueryContract;
 use Michaeljennings\Laralastica\Contracts\Wrapper;
 
 class Laralastica implements Wrapper {
@@ -360,7 +361,7 @@ class Laralastica implements Wrapper {
             $container = new Bool();
 
             foreach ($queries as $query) {
-                $container->addMust($query);
+                $container = $this->addQueryToContainer($query, $container);
             }
 
             $query = new Query($container);
@@ -370,6 +371,32 @@ class Laralastica implements Wrapper {
         }
 
         return $query;
+    }
+
+    /**
+     * Set the type of match for the query and then add it to the bool container.
+     *
+     * @param QueryContract $query
+     * @param Bool $container
+     * @return Bool
+     */
+    protected function addQueryToContainer(QueryContract $query, Bool $container)
+    {
+        switch ($query->getType()) {
+            case "must":
+                $container->addMust($query->getQuery());
+                break;
+
+            case "should":
+                $container->addShould($query->getQuery());
+                break;
+
+            case "must_not":
+                $container->addMustNot($query->getQuery());
+                break;
+        }
+
+        return $container;
     }
 
     /**
