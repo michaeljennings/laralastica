@@ -1,10 +1,6 @@
 <?php namespace Michaeljennings\Laralastica\Contracts;
 
-use Elastica\Query\Prefix;
-use Elastica\Query\Regexp;
-use Elastica\Query\Term;
-use Elastica\Query\Terms;
-use Elastica\Query\Wildcard;
+use Michaeljennings\Laralastica\Query;
 
 interface Builder {
 
@@ -24,7 +20,7 @@ interface Builder {
      * @param string|array  $values The values to search for
      * @param string        $type   The match type
      * @param bool          $fuzzy  Set whether the match should be fuzzy
-     * @return $this
+     * @return Query
      */
     public function match($field, $values, $type = 'phrase', $fuzzy = false);
 
@@ -56,7 +52,7 @@ interface Builder {
      * @param bool $fuzzy        Set whether the match should be fuzzy
      * @param float $tieBreaker  Can be between 0.0 and 1.0
      * @param string $operator   Can be 'and' or 'or'
-     * @return $this
+     * @return Query
      */
     public function multiMatch(array $fields, $query, $type = 'phrase', $fuzzy = false, $tieBreaker = 0.0, $operator = 'and');
 
@@ -72,7 +68,7 @@ interface Builder {
      * @param string $fuzziness
      * @param int $prefixLength
      * @param int $maxExpansions
-     * @return $this
+     * @return Query
      */
     public function fuzzy($field, $value, $fuzziness = 'AUTO', $prefixLength = 0, $maxExpansions = 50);
 
@@ -86,14 +82,14 @@ interface Builder {
      * @param string $query
      * @param float $cutOff
      * @param int|bool $minimumMatch
-     * @return $this
+     * @return Query
      */
     public function common($field, $query, $cutOff = 0.001, $minimumMatch = false);
 
     /**
      * A query which matches all documents.
      *
-     * @return $this
+     * @return Query
      */
     public function matchAll();
 
@@ -110,7 +106,7 @@ interface Builder {
      * @param array $range
      * @param bool $timeZone
      * @param bool $format
-     * @return $this
+     * @return Query
      */
     public function range($field, array $range, $timeZone = false, $format = false);
 
@@ -122,7 +118,7 @@ interface Builder {
      *
      * @param string $field
      * @param string|array $prefix
-     * @return \Michaeljennings\Laralastica\Builder
+     * @return Query
      */
     public function prefix($field, $prefix);
 
@@ -133,7 +129,7 @@ interface Builder {
      *
      * @param string $field
      * @param string $regex
-     * @return \Michaeljennings\Laralastica\Builder
+     * @return Query
      */
     public function regexp($field, $regex);
 
@@ -145,7 +141,7 @@ interface Builder {
      * @param string $key
      * @param string $value
      * @param float $boost
-     * @return \Michaeljennings\Laralastica\Builder
+     * @return Query
      */
     public function term($key, $value, $boost = 1.0);
 
@@ -156,7 +152,7 @@ interface Builder {
      * @param string $key
      * @param array $terms
      * @param bool|int $minimumShouldMatch
-     * @return \Michaeljennings\Laralastica\Builder
+     * @return Query
      */
     public function terms($key, array $terms, $minimumShouldMatch = false);
 
@@ -169,7 +165,7 @@ interface Builder {
      * @param string $key
      * @param string $value
      * @param float $boost
-     * @return \Michaeljennings\Laralastica\Builder
+     * @return Query
      */
     public function wildcard($key, $value, $boost = 1.0);
 

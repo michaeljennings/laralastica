@@ -45,7 +45,7 @@ class Builder implements QueryBuilder {
      * @param string  $query  The values to search for
      * @param string  $type   The match type
      * @param bool    $fuzzy  Set whether the match should be fuzzy
-     * @return $this
+     * @return Query
      */
     public function match($field, $query, $type = 'phrase', $fuzzy = false)
     {
@@ -58,9 +58,10 @@ class Builder implements QueryBuilder {
             $match->setFieldFuzziness($field, 'AUTO');
         }
 
-        $this->query[] = $match;
+        $query = $this->newQuery($match);
+        $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
@@ -91,7 +92,7 @@ class Builder implements QueryBuilder {
      * @param bool $fuzzy        Set whether the match should be fuzzy
      * @param float $tieBreaker  Can be between 0.0 and 1.0
      * @param string $operator   Can be 'and' or 'or'
-     * @return $this
+     * @return Query
      */
     public function multiMatch(array $fields, $query, $type = 'phrase', $fuzzy = false, $tieBreaker = 0.0, $operator = 'and')
     {
@@ -102,7 +103,7 @@ class Builder implements QueryBuilder {
         $match->setType($type);
 
         if ($fuzzy) {
-            $match->setFieldFuzziness($field, 'AUTO');
+            $match->setFuzziness('AUTO');
         }
 
         if ($type == 'best_fields') {
@@ -113,9 +114,10 @@ class Builder implements QueryBuilder {
             $match->setOperator($operator);
         }
 
-        $this->query[] = $match;
+        $query = $this->newQuery($match);
+        $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
@@ -130,7 +132,7 @@ class Builder implements QueryBuilder {
      * @param string $fuzziness
      * @param int $prefixLength
      * @param int $maxExpansions
-     * @return $this
+     * @return Query
      */
     public function fuzzy($field, $value, $fuzziness = 'AUTO', $prefixLength = 0, $maxExpansions = 50)
     {
@@ -140,9 +142,10 @@ class Builder implements QueryBuilder {
         $fuzzy->setParam('prefix_length', $prefixLength);
         $fuzzy->setParam('max_expansions', $maxExpansions);
 
-        $this->query[] = $fuzzy;
+        $query = $this->newQuery($fuzzy);
+        $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
@@ -155,7 +158,7 @@ class Builder implements QueryBuilder {
      * @param string $query
      * @param float $cutOff
      * @param int|bool $minimumMatch
-     * @return $this
+     * @return Query
      */
     public function common($field, $query, $cutOff = 0.001, $minimumMatch = false)
     {
@@ -165,23 +168,25 @@ class Builder implements QueryBuilder {
             $common->setMinimumShouldMatch($minimumMatch);
         }
 
-        $this->query[] = $common;
+        $query = $this->newQuery($common);
+        $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
      * A query which matches all documents.
      *
-     * @return $this
+     * @return Query
      */
     public function matchAll()
     {
         $match = new MatchAll();
 
-        $this->query[] = $match;
+        $query = $this->newQuery($match);
+        $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
@@ -199,7 +204,7 @@ class Builder implements QueryBuilder {
      * @param array $range
      * @param bool $timeZone
      * @param bool $format
-     * @return $this
+     * @return Query
      */
     public function range($field, array $range, $timeZone = false, $format = false)
     {
@@ -213,9 +218,10 @@ class Builder implements QueryBuilder {
             $range->setParam('format', $format);
         }
 
-        $this->query[] = $range;
+        $query = $this->newQuery($range);
+        $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
@@ -226,7 +232,7 @@ class Builder implements QueryBuilder {
      *
      * @param string $field
      * @param string|array $prefix
-     * @return $this
+     * @return Query
      */
     public function prefix($field, $prefix)
     {
@@ -238,9 +244,10 @@ class Builder implements QueryBuilder {
 
         $query->setPrefix($field, $prefix);
 
+        $query = $this->newQuery($prefix);
         $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
@@ -250,15 +257,16 @@ class Builder implements QueryBuilder {
      *
      * @param string $field
      * @param string $regex
-     * @return $this
+     * @return Query
      */
     public function regexp($field, $regex)
     {
         $regexp = new Regexp($field, $regex);
 
-        $this->query[] = $regexp;
+        $query = $this->newQuery($regexp);
+        $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
@@ -269,16 +277,17 @@ class Builder implements QueryBuilder {
      * @param string $key
      * @param string $value
      * @param float $boost
-     * @return $this
+     * @return Query
      */
     public function term($key, $value, $boost = 1.0)
     {
         $term = new Term();
         $term->setTerm($key, $value, $boost);
 
-        $this->query[] = $term;
+        $query = $this->newQuery($term);
+        $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
@@ -288,7 +297,7 @@ class Builder implements QueryBuilder {
      * @param string $key
      * @param array $terms
      * @param bool|int $minimumShouldMatch
-     * @return $this
+     * @return Query
      */
     public function terms($key, array $terms, $minimumShouldMatch = false)
     {
@@ -298,9 +307,10 @@ class Builder implements QueryBuilder {
             $query->setMinimumMatch($minimumShouldMatch);
         }
 
+        $query = $this->newQuery($query);
         $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
@@ -312,15 +322,16 @@ class Builder implements QueryBuilder {
      * @param string $key
      * @param string $value
      * @param float $boost
-     * @return $this
+     * @return Query
      */
     public function wildcard($key, $value, $boost = 1.0)
     {
         $query = new Wildcard($key, $value, $boost);
 
+        $query = $this->newQuery($query);
         $this->query[] = $query;
 
-        return $this;
+        return $query;
     }
 
     /**
@@ -331,6 +342,17 @@ class Builder implements QueryBuilder {
     public function getQuery()
     {
         return $this->query;
+    }
+
+    /**
+     * Create a new query wrapper.
+     *
+     * @param mixed $query
+     * @return Query
+     */
+    protected function newQuery($query)
+    {
+        return new Query($query);
     }
 
 }
