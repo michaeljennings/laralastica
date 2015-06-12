@@ -57,22 +57,6 @@ interface Builder {
     public function multiMatch(array $fields, $query, $type = 'phrase', $fuzzy = false, $tieBreaker = 0.0, $operator = 'and');
 
     /**
-     * Find all documents where all possible matching terms are within the specified
-     * fuzziness range. The fuzziness option can be 0, 1, 2 or AUTO, AUTO is
-     * recommended.
-     *
-     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html
-     *
-     * @param string $field
-     * @param string $value
-     * @param string $fuzziness
-     * @param int $prefixLength
-     * @param int $maxExpansions
-     * @return Query
-     */
-    public function fuzzy($field, $value, $fuzziness = 'AUTO', $prefixLength = 0, $maxExpansions = 50);
-
-    /**
      * Finds all documents matching the query but groups common words,
      * i.e. the, and runs them after the initial query for more efficiency.
      *
@@ -109,18 +93,6 @@ interface Builder {
      * @return Query
      */
     public function range($field, array $range, $timeZone = false, $format = false);
-
-    /**
-     * Find all documents that have fields containing terms with a specified
-     * prefix.
-     *
-     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-prefix-query.html
-     *
-     * @param string $field
-     * @param string|array $prefix
-     * @return Query
-     */
-    public function prefix($field, $prefix);
 
     /**
      * Find all documents matching the provided regular expression.

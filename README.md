@@ -9,10 +9,8 @@ indexing and removing documents when you save or delete models.
 	- [Match Query](#match-query)
 	- [Multi Match Query](#multi-match-query)
 	- [Match All Query](#multi-all-query)
-	- [Fuzzy Query](#fuzzy-query)
 	- [Common Query](#common-query)
 	- [Range Query](#range-query)
-	- [Prefix Query](#prefix-query)
 	- [Regular Expression Query](#regular-expression-query)
 	- [Term Query](#term-query)
 	- [Terms Query](#terms-query)
@@ -301,26 +299,6 @@ Foo::search(function(Builder $query)
 })
 ```
 
-### Fuzzy Query
-
-To run a fuzzy query use the `fuzzy` method on the query builder. This takes 5 parameters:
-
-- The column to search
-- The query string to search for
-- The fuzziness value, can be 0, 1, 2 or 'AUTO'. Default to 'AUTO'.
-- The prefix length, defaults to 0
-- The maximum expansions to allow, defaults to 50.
-
-For more information about the fuzzy query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html).
-
-```php
-Foo::search(function(Builder $query)
-{
-	$query->fuzzy('foo', 'bar');
-	$query->fuzzy('foo', 'bar', 1, 2, 100);
-});
-```
-
 ### Common Query
 
 To run a common query use the `common` method on the query builder. This takes 4 parameters:
@@ -375,22 +353,6 @@ Foo::search(function(Builder $query)
 	];
 
 	$query->range('foo', $range, '+1:00', 'yyyy-mm-dd');
-});
-```
-
-### Prefix Query
-
-To run a prefix query use the `prefix` method. This takes 2 parameters:
-
-- The column to search in
-- The prefix to search for
-
-For more information on the prefix query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-prefix-query.html).
-
-```php
-Foo::search(function(Builder $query)
-{
-    $query->prefix('foo', 'ba');
 });
 ```
 

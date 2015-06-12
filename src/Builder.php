@@ -122,34 +122,6 @@ class Builder implements QueryBuilder {
     }
 
     /**
-     * Find all documents where all possible matching terms are within the specified
-     * fuzziness range. The fuzziness option can be 0, 1, 2 or AUTO, AUTO is
-     * recommended.
-     *
-     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html
-     *
-     * @param string $field
-     * @param string $value
-     * @param string $fuzziness
-     * @param int $prefixLength
-     * @param int $maxExpansions
-     * @return Query
-     */
-    public function fuzzy($field, $value, $fuzziness = 'AUTO', $prefixLength = 0, $maxExpansions = 50)
-    {
-        $fuzzy = new Fuzzy($field, $value);
-
-        $fuzzy->setParam('fuzziness', $fuzziness);
-        $fuzzy->setParam('prefix_length', $prefixLength);
-        $fuzzy->setParam('max_expansions', $maxExpansions);
-
-        $query = $this->newQuery($fuzzy);
-        $this->query[] = $query;
-
-        return $query;
-    }
-
-    /**
      * Finds all documents matching the query but groups common words,
      * i.e. the, and runs them after the initial query for more efficiency.
      *
@@ -220,32 +192,6 @@ class Builder implements QueryBuilder {
         }
 
         $query = $this->newQuery($range);
-        $this->query[] = $query;
-
-        return $query;
-    }
-
-    /**
-     * Find all documents that have fields containing terms with a specified
-     * prefix.
-     *
-     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-prefix-query.html
-     *
-     * @param string $field
-     * @param string|array $prefix
-     * @return Query
-     */
-    public function prefix($field, $prefix)
-    {
-        $query = new Prefix();
-
-        if (is_string($prefix)) {
-            $prefix = [$prefix];
-        }
-
-        $query->setPrefix($field, $prefix);
-
-        $query = $this->newQuery($prefix);
         $this->query[] = $query;
 
         return $query;

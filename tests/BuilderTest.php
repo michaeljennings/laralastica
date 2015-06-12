@@ -37,21 +37,6 @@ class BuilderTest extends Base {
     /**
      * @test
      */
-    public function testFuzzyQuery()
-    {
-        $builder = $this->getBuilder();
-        $query = $builder->fuzzy('foo', 'bar');
-
-        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
-
-        $query = $builder->getQuery();
-
-        $this->assertInstanceOf('Elastica\Query\Fuzzy', $query[0]->getQuery());
-    }
-
-    /**
-     * @test
-     */
     public function testCommonQuery()
     {
         $builder = $this->getBuilder();
@@ -92,17 +77,6 @@ class BuilderTest extends Base {
         $query = $builder->getQuery();
 
         $this->assertInstanceOf('Elastica\Query\Range', $query[0]->getQuery());
-    }
-
-    /**
-     * @test
-     */
-    public function testPrefixQuery()
-    {
-        $builder = $this->getBuilder();
-        $query = $builder->prefix('foo', 'b');
-
-        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
     }
 
     /**
