@@ -12,6 +12,7 @@ use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use Elastica\Query\Wildcard;
 use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
+use Michaeljennings\Laralastica\Query;
 
 class Builder implements QueryBuilder {
 
