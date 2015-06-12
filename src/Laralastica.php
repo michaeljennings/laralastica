@@ -235,7 +235,7 @@ class Laralastica implements Wrapper {
             $modelResults = $this->getModelsFromGroupedResults($groupedResults);
             $collection = $this->newCollection($modelResults);
 
-            return $collection->sortBy(function ($model) {
+            return $collection->sortByDesc(function ($model) {
                 return $model->score;
             });
         }
