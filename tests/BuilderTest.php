@@ -103,10 +103,6 @@ class BuilderTest extends Base {
         $query = $builder->prefix('foo', 'b');
 
         $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
-
-        $query = $builder->getQuery();
-
-        $this->assertInstanceOf('Elastica\Query\Prefix', $query[0]->getQuery());
     }
 
     /**
