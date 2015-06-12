@@ -10,11 +10,13 @@ class BuilderTest extends Base {
     public function testMatchQuery()
     {
         $builder = $this->getBuilder();
-        $builder->match('foo', 'bar');
+        $query = $builder->match('foo', 'bar');
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\Match', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\Match', $query[0]->getQuery());
     }
 
     /**
@@ -23,11 +25,13 @@ class BuilderTest extends Base {
     public function testMultiMatchQuery()
     {
         $builder = $this->getBuilder();
-        $builder->multiMatch(['foo', 'bar'], 'bar');
+        $query = $builder->multiMatch(['foo', 'bar'], 'bar');
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\MultiMatch', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\MultiMatch', $query[0]->getQuery());
     }
 
     /**
@@ -36,11 +40,13 @@ class BuilderTest extends Base {
     public function testFuzzyQuery()
     {
         $builder = $this->getBuilder();
-        $builder->fuzzy('foo', 'bar');
+        $query = $builder->fuzzy('foo', 'bar');
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\Fuzzy', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\Fuzzy', $query[0]->getQuery());
     }
 
     /**
@@ -49,11 +55,13 @@ class BuilderTest extends Base {
     public function testCommonQuery()
     {
         $builder = $this->getBuilder();
-        $builder->common('foo', 'bar');
+        $query = $builder->common('foo', 'bar');
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\Common', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\Common', $query[0]->getQuery());
     }
 
     /**
@@ -62,11 +70,13 @@ class BuilderTest extends Base {
     public function testMatchAllQuery()
     {
         $builder = $this->getBuilder();
-        $builder->matchAll();
+        $query = $builder->matchAll();
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\MatchAll', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\MatchAll', $query[0]->getQuery());
     }
 
     /**
@@ -75,11 +85,13 @@ class BuilderTest extends Base {
     public function testRangeQuery()
     {
         $builder = $this->getBuilder();
-        $builder->range('id', ['gt' => 1, 'lt' => 5]);
+        $query = $builder->range('id', ['gt' => 1, 'lt' => 5]);
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\Range', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\Range', $query[0]->getQuery());
     }
 
     /**
@@ -88,11 +100,13 @@ class BuilderTest extends Base {
     public function testPrefixQuery()
     {
         $builder = $this->getBuilder();
-        $builder->prefix('foo', 'b');
+        $query = $builder->prefix('foo', 'b');
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\Prefix', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\Prefix', $query[0]->getQuery());
     }
 
     /**
@@ -101,11 +115,13 @@ class BuilderTest extends Base {
     public function testRegexpQuery()
     {
         $builder = $this->getBuilder();
-        $builder->regexp('foo', 'b.*a');
+        $query = $builder->regexp('foo', 'b.*a');
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\Regexp', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\Regexp', $query[0]->getQuery());
     }
 
     /**
@@ -114,11 +130,13 @@ class BuilderTest extends Base {
     public function testTermQuery()
     {
         $builder = $this->getBuilder();
-        $builder->term('foo', 'baa');
+        $query = $builder->term('foo', 'baa');
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\Term', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\Term', $query[0]->getQuery());
     }
 
     /**
@@ -127,11 +145,13 @@ class BuilderTest extends Base {
     public function testTermsQuery()
     {
         $builder = $this->getBuilder();
-        $builder->terms('foo', ['baa']);
+        $query = $builder->terms('foo', ['baa']);
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\Terms', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\Terms', $query[0]->getQuery());
     }
 
     /**
@@ -140,11 +160,13 @@ class BuilderTest extends Base {
     public function testWildcardQuery()
     {
         $builder = $this->getBuilder();
-        $builder->wildcard('foo', ['ba*']);
+        $query = $builder->wildcard('foo', ['ba*']);
+
+        $this->assertInstanceOf('Michaeljennings\Laralastica\Query', $query);
 
         $query = $builder->getQuery();
 
-        $this->assertInstanceOf('Elastica\Query\Wildcard', $query[0]);
+        $this->assertInstanceOf('Elastica\Query\Wildcard', $query[0]->getQuery());
     }
 
     protected function getBuilder()
