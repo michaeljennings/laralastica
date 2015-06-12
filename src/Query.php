@@ -1,4 +1,3 @@
-
 <?php namespace Michaeljennings\Laralastica;
 
 use Michaeljennings\Laralastica\Contracts\Query as QueryContract;
