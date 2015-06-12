@@ -1,6 +1,7 @@
 <?php namespace Michaeljennings\Laralastica\Contracts;
 
 use Closure;
+use Elastica\Multi\ResultSet;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Laralastica;
 
@@ -27,6 +28,17 @@ interface Wrapper {
      * @return LengthAwarePaginator
      */
     public function paginate($types, Closure $query, $perPage);
+
+    /**
+     * Run a Elastica query and then return the results.
+     *
+     * @param string|array $types
+     * @param callable $query
+     * @param null $limit
+     * @param null $offset
+     * @return ResultSet
+     */
+    public function query($types, Closure $query, $limit = null, $offset = null);
 
     /**
      * Add a new document to the provided type.

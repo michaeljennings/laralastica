@@ -132,18 +132,22 @@ trait Searchable {
      * Run the provided query on the elastic search index and then run a where in
      *
      * @param callable $query
-     * @param callable $searchQuery
+     * @param callable $query
      * @param string $key
      * @return mixed
      */
-    public function scopeSearch($query, Closure $searchQuery, $key = 'id')
+    public function scopeSearch($query, Closure $query, $key = 'id')
     {
         if ( ! isset($this->laralastica)) {
             $this->laralastica = app('laralastica');
         }
 
-        $results = $this->laralastica->search($this->getSearchType(), $searchQuery);
-        $values = $results->map(function($m) use($key) { return $m->$key; })->all();
+        $results = $this->laralastica->query($this->getSearchType(), $query);
+        $values = [];
+
+        foreach ($results as $result) {
+            $values[] = $result->$key;
+        }
 
         return $query->whereIn($key, $values);
     }

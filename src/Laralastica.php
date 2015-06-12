@@ -54,7 +54,8 @@ class Laralastica implements Wrapper {
     }
 
     /**
-     * Run the provided queries on the types and then return the results.
+     * Run the elasticsearch query and then get the corresponding models for
+     * the results.
      *
      * @param string|array $types
      * @param callable $query
@@ -64,7 +65,7 @@ class Laralastica implements Wrapper {
      */
     public function search($types, Closure $query, $limit = null, $offset = null)
     {
-        $results = $this->runQuery($types, $query, $limit, $offset);
+        $results = $this->query($types, $query, $limit, $offset);
 
         return $this->resultsToModels($results);
     }
@@ -84,7 +85,7 @@ class Laralastica implements Wrapper {
         $offset = $perPage * ($page - 1);
 
         // Get the total results
-        $this->runQuery($types, $query);
+        $this->query($types, $query);
 
         $total = $this->results->getTotalHits();
         $results = $this->search($types, $query, $perPage, $offset);
@@ -103,7 +104,7 @@ class Laralastica implements Wrapper {
      * @param null $offset
      * @return ResultSet
      */
-    protected function runQuery($types, Closure $query, $limit = null, $offset = null)
+    public function query($types, Closure $query, $limit = null, $offset = null)
     {
         $builder = $this->newQueryBuilder();
         $query($builder);
