@@ -112,7 +112,12 @@ class Laralastica implements Wrapper {
         $search = $this->newSearch($this->client, $this->index, $types);
         $query = $this->newQuery($builder->getQuery());
 
-        if (is_int($limit)) $query->setSize($limit);
+        if (is_int($limit)) {
+            $query->setSize($limit);
+        } else {
+            $query->setSize($this->config['size']);
+        }
+
         if (is_int($offset))  $query->setFrom($offset);
 
         $search->setQuery($query);
@@ -325,7 +330,7 @@ class Laralastica implements Wrapper {
      */
     protected function newQueryBuilder()
     {
-        return new Builder();
+        return new Builder($this->config);
     }
 
     /**
