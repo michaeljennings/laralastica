@@ -1,7 +1,7 @@
 <?php namespace Michaeljennings\Laralastica;
 
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider;
 
 class LaralasticaServiceProvider extends ServiceProvider {
 
