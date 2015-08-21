@@ -3,7 +3,7 @@
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider;
 
-class LaralasticaServiceProvider extends ServiceProvider {
+class LaralasticaServiceProvider extends EventServiceProvider {
 
     /**
      * Indicates if loading of the provider is deferred.
@@ -17,7 +17,7 @@ class LaralasticaServiceProvider extends ServiceProvider {
      *
      * @var array
      */
-    protected $listners = [
+    protected $listeners = [
         'Michaeljennings\Laralastica\Events\IndexesWhenSaved' => [
             'Michaeljennings\Laralastica\Handlers\Events\IndexesSavedModel'
         ],
@@ -39,9 +39,9 @@ class LaralasticaServiceProvider extends ServiceProvider {
 
         $this->mergeConfigFrom(__DIR__.'/../config/laralastica.php', 'laralastica');
 
-        foreach ($this->listners as $event => $handlers) {
-            foreach ($handlers as $listner) {
-                $dispatcher->listen($event, $listner);
+        foreach ($this->listeners as $event => $handlers) {
+            foreach ($handlers as $listener) {
+                $dispatcher->listen($event, $listener);
             }
         }
     }
