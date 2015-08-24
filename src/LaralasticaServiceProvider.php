@@ -10,7 +10,7 @@ class LaralasticaServiceProvider extends EventServiceProvider {
      *
      * @var bool
      */
-    protected $defer = false;
+    protected $defer = true;
 
     /**
      * The event handler mappings for the package.
