@@ -11,6 +11,7 @@ use Elastica\Query\Regexp;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use Elastica\Query\Wildcard;
+use Elastica\Query\AbstractQuery;
 use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
 use Michaeljennings\Laralastica\Query;
 
@@ -275,6 +276,20 @@ class Builder implements QueryBuilder {
     {
         $query = new Wildcard($key, $value, $boost);
 
+        $query = $this->newQuery($query);
+        $this->query[] = $query;
+
+        return $query;
+    }
+    
+    /**
+     * Add an abstract elastica query to array
+     * 
+     * @param AbstractQuery $query
+     * @return Query
+     */
+    public function addQuery(AbstractQuery $query)
+    {
         $query = $this->newQuery($query);
         $this->query[] = $query;
 
