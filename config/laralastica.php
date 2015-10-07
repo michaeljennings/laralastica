@@ -19,6 +19,11 @@ return [
     'port' => 9200,
 
     /**
+     * Alternatively use a url to connect, must contain a trailing slash
+     */
+    //'url' => 'https://user:pass@your-search.com/',
+
+    /**
      * The maximum amount of results to return for a query.
      */
     'size' => 10,
