@@ -305,7 +305,8 @@ class Laralastica implements Wrapper {
     {
         return new Client([
             'host' => $this->config['host'],
-            'port' => $this->config['port']
+            'port' => $this->config['port'],
+            'url'  => $this->config['url']
         ]);
     }
 
