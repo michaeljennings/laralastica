@@ -6,13 +6,6 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider;
 class LaralasticaServiceProvider extends EventServiceProvider {
 
     /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = true;
-
-    /**
      * The event handler mappings for the package.
      *
      * @var array
@@ -60,15 +53,4 @@ class LaralasticaServiceProvider extends EventServiceProvider {
 
         $this->app->alias('Michaeljennings\Laralastica\Contracts\Wrapper', 'laralastica');
     }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['laralastica', 'Michaeljennings\Laralastica\Contracts\Wrapper'];
-    }
-
 }
