@@ -44,6 +44,26 @@ class Laralastica implements Wrapper {
      */
     protected $results;
 
+    /**
+     * The default connection settings.
+     *
+     * @var array
+     */
+    protected $connection = [
+        'host' => null,
+        'port' => null,
+        'path' => null,
+        'url' => null,
+        'proxy' => null,
+        'transport' => null,
+        'persistent' => true,
+        'timeout' => null,
+        'connections' => array(),
+        'roundRobin' => false,
+        'log' => false,
+        'retryOnConflict' => 0,
+    ];
+
     public function __construct(array $config, Request $request)
     {
         $this->config = $config;
@@ -260,10 +280,11 @@ class Laralastica implements Wrapper {
         $modelResults = [];
 
         foreach ($groupedResults as $key => $results) {
-            $model = new $this->config['types'][$key];
+            $modelName = $this->config['types'][$key];
+            $model = new $modelName;
             $query = $model->whereIn('id', array_keys($results))
-                ->orderBy(\DB::raw('FIELD(id, ' . implode(',', array_keys($results)) . ')'), 'ASC')
-                ->get();
+                           ->orderBy(\DB::raw('FIELD(id, ' . implode(',', array_keys($results)) . ')'), 'ASC')
+                           ->get();
 
             $query->map(function($model) use ($results) {
                 $model->score = $results[$model->getKey()]->getScore();
@@ -303,11 +324,17 @@ class Laralastica implements Wrapper {
      */
     protected function newClient()
     {
-        return new Client([
-            'host' => $this->config['host'],
-            'port' => $this->config['port'],
-            'url'  => $this->config['url']
-        ]);
+        return new Client($this->connection());
+    }
+
+    /**
+     * Get the elastica connection config.
+     *
+     * @return array
+     */
+    protected function connection()
+    {
+        return array_merge($this->connection, $this->config['connection']);
     }
 
     /**
