@@ -9,21 +9,19 @@ return [
     'index' => 'yourindex',
 
     /**
-     * Set the elasticsearch connection.
+     * The host of your elasticsearch cluster.
      */
-    'connection' => [
+    'host' => 'localhost',
 
-        /**
-         * The host of your elasticsearch cluster.
-         */
-        'host' => 'localhost',
+    /**
+     * The port your elasticsearch cluster is running on.
+     */
+    'port' => 9200,
 
-        /**
-         * The port your elasticsearch cluster is running on.
-         */
-        'port' => 9200,
-
-    ],
+    /**
+     * Alternatively use a url to connect, must contain a trailing slash
+     */
+    //'url' => 'https://user:pass@your-search.com/',
 
     /**
      * The maximum amount of results to return for a query.
