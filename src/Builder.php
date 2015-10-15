@@ -1,7 +1,8 @@
-<?php namespace Michaeljennings\Laralastica; 
+<?php namespace Michaeljennings\Laralastica;
 
 use Elastica\Query\Common;
 use Elastica\Query\Fuzzy;
+use Elastica\Query\FuzzyLikeThis;
 use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
@@ -15,7 +16,8 @@ use Elastica\Query\AbstractQuery;
 use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
 use Michaeljennings\Laralastica\Query;
 
-class Builder implements QueryBuilder {
+class Builder implements QueryBuilder
+{
 
     /**
      * An array of queries to be searched.
@@ -43,10 +45,10 @@ class Builder implements QueryBuilder {
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html
      *
-     * @param string  $field  The field to search in the index
-     * @param string  $query  The values to search for
-     * @param string  $type   The match type
-     * @param bool    $fuzzy  Set whether the match should be fuzzy
+     * @param string $field The field to search in the index
+     * @param string $query The values to search for
+     * @param string $type  The match type
+     * @param bool   $fuzzy Set whether the match should be fuzzy
      * @return Query
      */
     public function match($field, $query, $type = 'phrase', $fuzzy = false)
@@ -88,16 +90,22 @@ class Builder implements QueryBuilder {
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html
      *
-     * @param array $fields      The fields to search in
+     * @param array  $fields     The fields to search in
      * @param string $query      The string to search for
      * @param string $type       The match type
-     * @param bool $fuzzy        Set whether the match should be fuzzy
-     * @param float $tieBreaker  Can be between 0.0 and 1.0
+     * @param bool   $fuzzy      Set whether the match should be fuzzy
+     * @param float  $tieBreaker Can be between 0.0 and 1.0
      * @param string $operator   Can be 'and' or 'or'
      * @return Query
      */
-    public function multiMatch(array $fields, $query, $type = 'phrase', $fuzzy = false, $tieBreaker = 0.0, $operator = 'and')
-    {
+    public function multiMatch(
+        array $fields,
+        $query,
+        $type = 'phrase',
+        $fuzzy = false,
+        $tieBreaker = 0.0,
+        $operator = 'and'
+    ) {
         $match = new MultiMatch();
 
         $match->setFields($fields);
@@ -128,9 +136,9 @@ class Builder implements QueryBuilder {
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-common-terms-query.html
      *
-     * @param string $field
-     * @param string $query
-     * @param float $cutOff
+     * @param string   $field
+     * @param string   $query
+     * @param float    $cutOff
      * @param int|bool $minimumMatch
      * @return Query
      */
@@ -175,9 +183,9 @@ class Builder implements QueryBuilder {
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html
      *
      * @param string $field
-     * @param array $range
-     * @param bool $timeZone
-     * @param bool $format
+     * @param array  $range
+     * @param bool   $timeZone
+     * @param bool   $format
      * @return Query
      */
     public function range($field, array $range, $timeZone = false, $format = false)
@@ -224,7 +232,7 @@ class Builder implements QueryBuilder {
      *
      * @param string $key
      * @param string $value
-     * @param float $boost
+     * @param float  $boost
      * @return Query
      */
     public function term($key, $value, $boost = 1.0)
@@ -242,8 +250,8 @@ class Builder implements QueryBuilder {
      * Find any documents matching the provided terms, optionally you can set a
      * minimum amount of terms to match.
      *
-     * @param string $key
-     * @param array $terms
+     * @param string   $key
+     * @param array    $terms
      * @param bool|int $minimumShouldMatch
      * @return Query
      */
@@ -269,7 +277,7 @@ class Builder implements QueryBuilder {
      *
      * @param string $key
      * @param string $value
-     * @param float $boost
+     * @param float  $boost
      * @return Query
      */
     public function wildcard($key, $value, $boost = 1.0)
@@ -281,10 +289,64 @@ class Builder implements QueryBuilder {
 
         return $query;
     }
-    
+
+    /**
+     * The fuzzy query generates all possible matching terms that are within
+     * the maximum edit distance specified in fuzziness and then checks the
+     * term dictionary to find out which of those generated terms actually
+     * exist in the index.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/1.4/query-dsl-fuzzy-query.html
+     *
+     * @param string $key
+     * @param string $value
+     * @param array  $options
+     * @return Fuzzy
+     */
+    public function fuzzy($key, $value, $options = [])
+    {
+        $query = new Fuzzy($key, $value);
+
+        foreach ($options as $option => $value) {
+            $query->setFieldOption($option, $value);
+        }
+
+        $this->query[] = $this->newQuery($query);
+
+        return $query;
+    }
+
+    /**
+     * Find documents that are "like" provided text by running it against one or more
+     * fields.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-flt-query.html
+     *
+     * @param string $value
+     * @param array  $fields
+     * @param float  $fuzziness
+     * @return FuzzyLikeThis
+     */
+    public function fuzzyLikeThis($value, array $fields = [], $fuzziness = 0.5)
+    {
+        $query = new FuzzyLikeThis();
+
+        $query->setLikeText($value);
+
+        if ( ! empty($fields)) {
+            $query->addFields($fields);
+        }
+
+        $query->setMinSimilarity($fuzziness);
+
+        $this->query[] = $this->newQuery($query);
+
+        return $query;
+    }
+
     /**
      * Add an abstract elastica query to array
-     * 
+     *
      * @param AbstractQuery $query
      * @return Query
      */
