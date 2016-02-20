@@ -132,7 +132,7 @@ trait Searchable {
      * Run the provided query on the elastic search index and then run a where in
      *
      * @param callable $query
-     * @param callable $searchQuery
+     * @param callable|Closure $searchQuery
      * @param string $key
      * @return mixed
      */
