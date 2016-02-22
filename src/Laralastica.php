@@ -5,7 +5,7 @@ use Elastica\Client;
 use Elastica\Document;
 use Elastica\Index;
 use Elastica\Query as ElasticaQuery;
-use Elastica\Query\Bool;
+use Elastica\Query\BoolQuery;
 use Elastica\ResultSet;
 use Elastica\Search;
 use Illuminate\Http\Request;
@@ -376,7 +376,7 @@ class Laralastica implements Wrapper {
     protected function newQuery(array $queries)
     {
         if ( ! empty($queries)) {
-            $container = new Bool();
+            $container = new BoolQuery();
 
             foreach ($queries as $query) {
                 $container = $this->addQueryToContainer($query, $container);
@@ -398,7 +398,7 @@ class Laralastica implements Wrapper {
      * @param Bool $container
      * @return Bool
      */
-    protected function addQueryToContainer(QueryContract $query, Bool $container)
+    protected function addQueryToContainer(QueryContract $query, BoolQuery $container)
     {
         switch ($query->getType()) {
             case "must":
