@@ -277,7 +277,7 @@ class Laralastica implements Wrapper
             $modelName = $this->config['types'][$key];
             $model = new $modelName;
             $query = $model->whereIn('id', array_keys($results))
-
+                ->with($model::getEagerLoaded())
                 ->orderBy(\DB::raw('FIELD(id, ' . implode(',', array_keys($results)) . ')'), 'ASC')
                 ->get();
 

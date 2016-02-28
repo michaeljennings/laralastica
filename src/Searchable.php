@@ -5,7 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
 use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 
-trait Searchable {
+trait Searchable
+{
 
     protected $laralastica;
 
@@ -17,23 +18,19 @@ trait Searchable {
     {
         $instance = new static;
 
-        static::created(function($model)
-        {
+        static::created(function ($model) {
             static::$dispatcher->fire(new IndexesWhenSaved($model));
         });
 
-        static::saved(function($model)
-        {
+        static::saved(function ($model) {
             static::$dispatcher->fire(new IndexesWhenSaved($model));
         });
 
-        static::updated(function($model)
-        {
+        static::updated(function ($model) {
             static::$dispatcher->fire(new IndexesWhenSaved($model));
         });
 
-        static::deleted(function($model)
-        {
+        static::deleted(function ($model) {
             static::$dispatcher->fire(new RemovesDocumentWhenDeleted($model));
         });
 
@@ -96,27 +93,27 @@ trait Searchable {
     {
         $searchDataTypes = $this->getSearchDataTypes();
 
-        if ( ! empty($searchDataTypes)) {
+        if (!empty($searchDataTypes)) {
             foreach ($attributes as $key => $attribute) {
                 if (array_key_exists($key, $searchDataTypes)) {
                     switch ($searchDataTypes[$key]) {
                         case "int":
-                            $attribute = (int) $attribute;
+                            $attribute = (int)$attribute;
                             break;
                         case "integer":
-                            $attribute = (int) $attribute;
+                            $attribute = (int)$attribute;
                             break;
                         case "string":
-                            $attribute = (string) $attribute;
+                            $attribute = (string)$attribute;
                             break;
                         case "float":
-                            $attribute = (float) $attribute;
+                            $attribute = (float)$attribute;
                             break;
                         case "bool":
-                            $attribute = (bool) $attribute;
+                            $attribute = (bool)$attribute;
                             break;
                         case "boolean":
-                            $attribute = (bool) $attribute;
+                            $attribute = (bool)$attribute;
                             break;
                     }
 
@@ -129,6 +126,14 @@ trait Searchable {
     }
 
     /**
+     * @return array
+     */
+    public static function getEagerLoaded()
+    {
+        return [];
+    }
+
+    /**
      * Run the provided query on the elastic search index and then run a where in
      *
      * @param callable $query
@@ -138,7 +143,7 @@ trait Searchable {
      */
     public function scopeSearch($query, Closure $searchQuery, $key = 'id')
     {
-        if ( ! isset($this->laralastica)) {
+        if (!isset($this->laralastica)) {
             $this->laralastica = app('laralastica');
         }
 
