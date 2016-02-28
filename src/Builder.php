@@ -6,7 +6,6 @@ use Elastica\Query\FuzzyLikeThis;
 use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
-use Elastica\Query\Prefix;
 use Elastica\Query\Range;
 use Elastica\Query\Regexp;
 use Elastica\Query\Term;
@@ -14,7 +13,6 @@ use Elastica\Query\Terms;
 use Elastica\Query\Wildcard;
 use Elastica\Query\AbstractQuery;
 use Michaeljennings\Laralastica\Contracts\Builder as QueryBuilder;
-use Michaeljennings\Laralastica\Query;
 
 class Builder implements QueryBuilder
 {
@@ -47,8 +45,8 @@ class Builder implements QueryBuilder
      *
      * @param string $field The field to search in the index
      * @param string $query The values to search for
-     * @param string $type  The match type
-     * @param bool   $fuzzy Set whether the match should be fuzzy
+     * @param string $type The match type
+     * @param bool $fuzzy Set whether the match should be fuzzy
      * @return Query
      */
     public function match($field, $query, $type = 'phrase', $fuzzy = false)
@@ -90,12 +88,12 @@ class Builder implements QueryBuilder
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html
      *
-     * @param array  $fields     The fields to search in
-     * @param string $query      The string to search for
-     * @param string $type       The match type
-     * @param bool   $fuzzy      Set whether the match should be fuzzy
-     * @param float  $tieBreaker Can be between 0.0 and 1.0
-     * @param string $operator   Can be 'and' or 'or'
+     * @param array $fields The fields to search in
+     * @param string $query The string to search for
+     * @param string $type The match type
+     * @param bool $fuzzy Set whether the match should be fuzzy
+     * @param float $tieBreaker Can be between 0.0 and 1.0
+     * @param string $operator Can be 'and' or 'or'
      * @return Query
      */
     public function multiMatch(
@@ -136,9 +134,9 @@ class Builder implements QueryBuilder
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-common-terms-query.html
      *
-     * @param string   $field
-     * @param string   $query
-     * @param float    $cutOff
+     * @param string $field
+     * @param string $query
+     * @param float $cutOff
      * @param int|bool $minimumMatch
      * @return Query
      */
@@ -183,9 +181,9 @@ class Builder implements QueryBuilder
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html
      *
      * @param string $field
-     * @param array  $range
-     * @param bool   $timeZone
-     * @param bool   $format
+     * @param array $range
+     * @param bool $timeZone
+     * @param bool $format
      * @return Query
      */
     public function range($field, array $range, $timeZone = false, $format = false)
@@ -232,7 +230,7 @@ class Builder implements QueryBuilder
      *
      * @param string $key
      * @param string $value
-     * @param float  $boost
+     * @param float $boost
      * @return Query
      */
     public function term($key, $value, $boost = 1.0)
@@ -250,8 +248,8 @@ class Builder implements QueryBuilder
      * Find any documents matching the provided terms, optionally you can set a
      * minimum amount of terms to match.
      *
-     * @param string   $key
-     * @param array    $terms
+     * @param string $key
+     * @param array $terms
      * @param bool|int $minimumShouldMatch
      * @return Query
      */
@@ -277,7 +275,7 @@ class Builder implements QueryBuilder
      *
      * @param string $key
      * @param string $value
-     * @param float  $boost
+     * @param float $boost
      * @return Query
      */
     public function wildcard($key, $value, $boost = 1.0)
@@ -300,7 +298,7 @@ class Builder implements QueryBuilder
      *
      * @param string $key
      * @param string $value
-     * @param array  $options
+     * @param array $options
      * @return Fuzzy
      */
     public function fuzzy($key, $value, $options = [])
@@ -323,8 +321,8 @@ class Builder implements QueryBuilder
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-flt-query.html
      *
      * @param string $value
-     * @param array  $fields
-     * @param float  $fuzziness
+     * @param array $fields
+     * @param float $fuzziness
      * @return FuzzyLikeThis
      */
     public function fuzzyLikeThis($value, array $fields = [], $fuzziness = 0.5)
@@ -333,7 +331,7 @@ class Builder implements QueryBuilder
 
         $query->setLikeText($value);
 
-        if ( ! empty($fields)) {
+        if (!empty($fields)) {
             $query->addFields($fields);
         }
 
@@ -377,6 +375,16 @@ class Builder implements QueryBuilder
     protected function newQuery($query)
     {
         return new Query($query);
+    }
+
+
+    public function sortBy($sort)
+    {
+        $query = new \Elastica\Query('agg_name');
+        $query->setSort($sort);
+        $this->query[] = $query;
+
+        return $query;
     }
 
 }
