@@ -14,7 +14,8 @@ use Illuminate\Support\Collection;
 use Michaeljennings\Laralastica\Contracts\Query as QueryContract;
 use Michaeljennings\Laralastica\Contracts\Wrapper;
 
-class Laralastica implements Wrapper {
+class Laralastica implements Wrapper
+{
 
     /**
      * The package config.
@@ -43,6 +44,13 @@ class Laralastica implements Wrapper {
      * @var ResultSet
      */
     protected $results;
+
+    /**
+     * The package config.
+     *
+     * @var array
+     */
+    protected $sortFields = [];
 
     public function __construct(array $config, Request $request)
     {
@@ -118,9 +126,15 @@ class Laralastica implements Wrapper {
             $query->setSize($this->config['size']);
         }
 
-        if (is_int($offset))  $query->setFrom($offset);
+        if (is_array($this->sortFields) && count($this->sortFields)) {
+            $query->setSort($this->sortFields);
+        }
+        if (is_int($offset)) {
+            $query->setFrom($offset);
+        }
 
         $search->setQuery($query);
+
 
         return $this->results = $search->search();
     }
@@ -219,7 +233,7 @@ class Laralastica implements Wrapper {
      */
     protected function getType($type)
     {
-        if ( ! isset($this->index)) {
+        if (!isset($this->index)) {
             $this->index = $this->newIndex();
         }
 
@@ -236,7 +250,7 @@ class Laralastica implements Wrapper {
     {
         $results = $resultSet->getResults();
 
-        if ( ! empty($results)) {
+        if (!empty($results)) {
             $groupedResults = $this->groupResultsByType($results);
             $modelResults = $this->getModelsFromGroupedResults($groupedResults);
             $collection = $this->newCollection($modelResults);
@@ -263,10 +277,11 @@ class Laralastica implements Wrapper {
             $modelName = $this->config['types'][$key];
             $model = new $modelName;
             $query = $model->whereIn('id', array_keys($results))
-                           ->orderBy(\DB::raw('FIELD(id, ' . implode(',', array_keys($results)) . ')'), 'ASC')
-                           ->get();
+                ->with($model::getEagerLoaded())
+                ->orderBy(\DB::raw('FIELD(id, ' . implode(',', array_keys($results)) . ')'), 'ASC')
+                ->get();
 
-            $query->map(function($model) use ($results) {
+            $query->map(function ($model) use ($results) {
                 $model->score = $results[$model->getKey()]->getScore();
             });
 
@@ -287,7 +302,7 @@ class Laralastica implements Wrapper {
         $groupedResults = [];
 
         foreach ($results as $result) {
-            if ( ! isset($groupedResults[$result->getType()])) {
+            if (!isset($groupedResults[$result->getType()])) {
                 $groupedResults[$result->getType()] = [];
             }
 
@@ -315,9 +330,9 @@ class Laralastica implements Wrapper {
     protected function connection()
     {
         return [
-            'host' => ! empty($this->config['host']) ? $this->config['host'] : null,
-            'port' => ! empty($this->config['port']) ? $this->config['port'] : null,
-            'url' => ! empty($this->config['url']) ? $this->config['url'] : null,
+            'host' => !empty($this->config['host']) ? $this->config['host'] : null,
+            'port' => !empty($this->config['port']) ? $this->config['port'] : null,
+            'url'  => !empty($this->config['url']) ? $this->config['url'] : null,
         ];
     }
 
@@ -328,7 +343,7 @@ class Laralastica implements Wrapper {
      */
     protected function newIndex()
     {
-        if ( ! isset($this->client)) {
+        if (!isset($this->client)) {
             $this->client = $this->newClient();
         }
 
@@ -375,7 +390,7 @@ class Laralastica implements Wrapper {
      */
     protected function newQuery(array $queries)
     {
-        if ( ! empty($queries)) {
+        if (!empty($queries)) {
             $container = new BoolQuery();
 
             foreach ($queries as $query) {
@@ -437,6 +452,20 @@ class Laralastica implements Wrapper {
     protected function refreshIndex()
     {
         return $this->index->refresh();
+    }
+
+    /**
+     * Sort on multiple fields.
+     *
+     * @param array $fields Associative array where the keys are field names to sort on, and the
+     *                      values are the sort order: "asc" or "desc"
+     *
+     * @return array
+     */
+
+    public function setSortFields(array $fields)
+    {
+        return $this->sortFields = $fields;
     }
 
 }

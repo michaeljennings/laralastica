@@ -204,6 +204,10 @@ class Foo {
 	public function foo()
 	{
 		$laralastica = Laralastica::search();
+		// sort search  from elasticsearch fields
+		  $sort = array('created__at' => array('order' => 'asc'));
+		  $laralastica->setSortFields($sort);
+
 		$laralastica = app('laralastica');
 	}
 }
