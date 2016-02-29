@@ -149,9 +149,10 @@ trait Searchable
 
         $results = $this->laralastica->query($this->getSearchType(), $searchQuery);
         $values = [];
+        $relativeKey = last(explode('.', $key));
 
         foreach ($results as $result) {
-            $values[] = $result->$key;
+            $values[] = $result->$relativeKey;
         }
 
         return $query->whereIn($key, $values);
