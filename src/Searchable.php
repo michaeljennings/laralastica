@@ -134,16 +134,18 @@ trait Searchable
     }
 
     /**
-     * Run the provided query on the elastic search index and then run a where in
+     * Run the provided query on the elastic search index and then run a where 
+     * in.
      *
      * @param callable $query
      * @param callable|Closure $searchQuery
      * @param string $key
+     * @param bool $sortByResults
      * @return mixed
      */
-    public function scopeSearch($query, Closure $searchQuery, $key = 'id')
+    public function scopeSearch($query, Closure $searchQuery, $key = 'id', $sortByResults = true)
     {
-        if (!isset($this->laralastica)) {
+        if ( ! isset($this->laralastica)) {
             $this->laralastica = app('laralastica');
         }
 
@@ -153,6 +155,10 @@ trait Searchable
 
         foreach ($results as $result) {
             $values[] = $result->$relativeKey;
+        }
+
+        if ($sortByResults && ! empty($values)) {
+            $query->orderBy(\DB::raw('FIELD(' . $key . ', ' . implode(',', $values) . ')'), 'ASC');
         }
 
         return $query->whereIn($key, $values);
