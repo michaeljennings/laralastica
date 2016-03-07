@@ -156,15 +156,14 @@ The first parameter for the `search` method is a Closure which gets passed an in
 
 The second paramater is the column for the where in query, this defaults to 'id'.
 
-The third parameter is a key to group the elasticsearch results, the grouped results are then passed to the where in 
-query. This also defaults 'id'.
+The third parameter is a boolean indicating if the query should be ordered by the order of the elasticsearch results.
 
 ```php
 Foo::search(function(Builder $query) {
 
 	$query->matchAll();
 
-}, 'foo', 'bar')->get();
+}, 'foo', true)->get();
 ```
 
 You can also set whether the query must, should or must not match the value you are searching for.
