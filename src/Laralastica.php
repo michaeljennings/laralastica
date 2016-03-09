@@ -329,11 +329,8 @@ class Laralastica implements Wrapper
      */
     protected function connection()
     {
-        return [
-            'host' => !empty($this->config['host']) ? $this->config['host'] : null,
-            'port' => !empty($this->config['port']) ? $this->config['port'] : null,
-            'url'  => !empty($this->config['url']) ? $this->config['url'] : null,
-        ];
+        return $this->config['hosts'];
+
     }
 
     /**
