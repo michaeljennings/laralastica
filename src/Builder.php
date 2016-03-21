@@ -1,11 +1,15 @@
 <?php namespace Michaeljennings\Laralastica;
 
+use Elastica\Filter\Type;
 use Elastica\Query\Common;
+use Elastica\Query\FunctionScore;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\FuzzyLikeThis;
+use Elastica\Query\Ids;
 use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MultiMatch;
+use Elastica\Query\Nested;
 use Elastica\Query\Range;
 use Elastica\Query\Regexp;
 use Elastica\Query\Term;
@@ -30,6 +34,25 @@ class Builder implements QueryBuilder
      * @var mixed
      */
     protected $results;
+
+
+    /**
+     * Ids Query.
+     * Filters documents that only have the provided ids. Note, this query uses the _uid field.
+     *
+     * @param null $type
+     * @param array $ids
+     * @return Query
+     * @link http://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-ids-query.html
+     */
+    public function ids($type = null, array $ids = array())
+    {
+        $ids = new Ids($type, $ids);
+        $query = $this->newQuery($ids);
+        $this->query[] = $query;
+
+        return $query;
+    }
 
     /**
      * Find all documents where the values are matched in the field. The type option
@@ -267,6 +290,20 @@ class Builder implements QueryBuilder
         return $query;
     }
 
+    public function nested($fullPath, $value, $scoreMode = 'none')
+    {
+        $path = explode($fullPath, '.')[0];
+        $nestedQuery = $this->match([$fullPath => $value]);
+        $nested = new Nested();
+        $nested->setPath($path);
+        $nested->setQuery($nestedQuery);
+        $nested->setScoreMode($scoreMode);
+        $query = $this->newQuery($nested);
+        $this->query[] = $query;
+
+        return $query;
+    }
+
     /**
      * Find a document matching a value containing a wildcard. Please note wildcard
      * queries can be very slow, to avoid this don't start a string with a wildcard.
@@ -377,7 +414,12 @@ class Builder implements QueryBuilder
         return new Query($query);
     }
 
-
+    /**
+     * Sorting by Field Values
+     * @param array $sort
+     * @return \Elastica\Query
+     *
+     */
     public function sortBy($sort)
     {
         $query = new \Elastica\Query('agg_name');
@@ -385,6 +427,26 @@ class Builder implements QueryBuilder
         $this->query[] = $query;
 
         return $query;
+    }
+
+    /**
+     * Sorting random  by Field Values
+     * @param string $direction
+     * @return \Elastica\Query
+     */
+    public function randomSort($direction = "asc")
+    {
+        $sort = array(
+            '_script' => array(
+                'script' => "Math.random()",
+                'type'   => "number",
+                'params' => [],
+                'order'  => $direction,
+            )
+        );
+
+        return $this->sortBy($sort);
+
     }
 
 }

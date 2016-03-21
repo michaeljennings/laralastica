@@ -2,7 +2,19 @@
 
 use Michaeljennings\Laralastica\Query;
 
-interface Builder {
+interface Builder
+{
+
+    /**
+     * Ids Query.
+     * Filters documents that only have the provided ids. Note, this query uses the _uid field.
+     *
+     * @link http://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-ids-query.html
+     * @param null $type optional and can be omitted, and can also accept an array of values. If no type is specified, all types defined in the index mapping are tried.
+     * @param array $ids
+     * @return
+     */
+    public function ids($type = null, array $ids = array());
 
     /**
      * Find all documents where the values are matched in the field. The type option
@@ -16,10 +28,10 @@ interface Builder {
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html
      *
-     * @param string        $field  The field to search in the index
-     * @param string|array  $values The values to search for
-     * @param string        $type   The match type
-     * @param bool          $fuzzy  Set whether the match should be fuzzy
+     * @param string $field The field to search in the index
+     * @param string|array $values The values to search for
+     * @param string $type The match type
+     * @param bool $fuzzy Set whether the match should be fuzzy
      * @return Query
      */
     public function match($field, $values, $type = 'phrase', $fuzzy = false);
@@ -46,15 +58,22 @@ interface Builder {
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html
      *
-     * @param array $fields      The fields to search in
-     * @param string $query      The string to search for
-     * @param string $type       The match type
-     * @param bool $fuzzy        Set whether the match should be fuzzy
-     * @param float $tieBreaker  Can be between 0.0 and 1.0
-     * @param string $operator   Can be 'and' or 'or'
+     * @param array $fields The fields to search in
+     * @param string $query The string to search for
+     * @param string $type The match type
+     * @param bool $fuzzy Set whether the match should be fuzzy
+     * @param float $tieBreaker Can be between 0.0 and 1.0
+     * @param string $operator Can be 'and' or 'or'
      * @return Query
      */
-    public function multiMatch(array $fields, $query, $type = 'phrase', $fuzzy = false, $tieBreaker = 0.0, $operator = 'and');
+    public function multiMatch(
+        array $fields,
+        $query,
+        $type = 'phrase',
+        $fuzzy = false,
+        $tieBreaker = 0.0,
+        $operator = 'and'
+    );
 
     /**
      * Finds all documents matching the query but groups common words,
@@ -140,6 +159,22 @@ interface Builder {
      * @return Query
      */
     public function wildcard($key, $value, $boost = 1.0);
+
+    /**
+     * Sorting by Field Values
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-sort.html
+     * @param array $sort
+     * @return \Elastica\Query
+     *
+     */
+    public function sortBy($sort);
+
+    /**
+     * Sorting random  by Field Values
+     * @param string $direction
+     * @return \Elastica\Query
+     */
+    public function randomSort($direction = "asc");
 
     /**
      * Get the queries to be run.

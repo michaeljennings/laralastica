@@ -2,7 +2,8 @@
 
 use Michaeljennings\Laralastica\Contracts\Query as QueryContract;
 
-class Query implements QueryContract {
+class Query implements QueryContract
+{
 
     /**
      * The query to be run.
@@ -22,6 +23,13 @@ class Query implements QueryContract {
     public function __construct($query)
     {
         $this->query = $query;
+    }
+
+    public function MinimumShouldMatch($minimumShouldMatch)
+    {
+        $this->setMinimumNumberShouldMatch($minimumShouldMatch);
+
+        return $this;
     }
 
     /**
