@@ -2,9 +2,13 @@
 
 use Michaeljennings\Laralastica\Contracts\Wrapper;
 use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+
 
 class RemovesDocumentBelongingToDeletedModel {
 
+	use InteractsWithQueue;
     /**
      * An instance of the laralastica search wrapper.
      *
