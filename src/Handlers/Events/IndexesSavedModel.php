@@ -2,9 +2,12 @@
 
 use Michaeljennings\Laralastica\Contracts\Wrapper;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
 
-class IndexesSavedModel {
+class IndexesSavedModel implements ShouldQueue {
 
+ 	use InteractsWithQueue;
     /**
      * An instance of the laralastica search wrapper.
      *

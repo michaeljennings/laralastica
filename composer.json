@@ -1,5 +1,5 @@
 {
-    "name": "michaeljennings/laralastica",
+    "name": "amrsoliman/laralastica",
     "description": "A laravel elastica package.",
     "keywords": ["elastica", "laravel", "elasticsearch"],
     "license": "MIT",
@@ -7,6 +7,10 @@
         {
             "name": "Michael Jennings",
             "email": "michael.jennings91@gmail.com"
+        },
+        {
+            "name": "Amr Soliman",
+            "email": "asoliman@engineer.com"
         }
     ],
     "require": {
