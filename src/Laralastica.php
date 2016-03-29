@@ -254,10 +254,10 @@ class Laralastica implements Wrapper
             $groupedResults = $this->groupResultsByType($results);
             $modelResults = $this->getModelsFromGroupedResults($groupedResults);
             $collection = $this->newCollection($modelResults);
-
-            return $collection->sortByDesc(function ($model) {
-                return $model->score;
-            });
+            return $collection;
+            // return $collection->sortByDesc(function ($model) {
+            //     return $model->score;
+            // });
         }
 
         return $this->newCollection([]);
@@ -278,7 +278,7 @@ class Laralastica implements Wrapper
             $model = new $modelName;
             $query = $model->whereIn('id', array_keys($results))
                 ->with($model::getEagerLoaded())
-                ->orderByRaw(\DB::raw('FIND_IN_SET(`id`, "' . implode(',', array_keys($results)) . '")'))
+                >orderByRaw(\DB::raw('FIND_IN_SET(`id`, "' . implode(',', array_keys($results)) . '")'))
                 ->get();
 
             $query->map(function ($model) use ($results) {
