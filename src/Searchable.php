@@ -139,22 +139,24 @@ trait Searchable
      * @param callable $query
      * @param callable|Closure $searchQuery
      * @param string $key
+     * @param bool $sortByResults
      * @return mixed
      */
-    public function scopeSearch($query, Closure $searchQuery, $key = 'id')
+    public function scopeSearch($query, Closure $searchQuery, $key = 'id', $sortByResults = true)
     {
         if (!isset($this->laralastica)) {
             $this->laralastica = app('laralastica');
         }
-
         $results = $this->laralastica->query($this->getSearchType(), $searchQuery);
         $values = [];
-
+        $relativeKey = last(explode('.', $key));
         foreach ($results as $result) {
-            $values[] = $result->$key;
+            $values[] = $result->$relativeKey;
+        }
+        if ($sortByResults && !empty($values)) {
+            $query->orderBy(\DB::raw('FIELD(' . $key . ', ' . implode(',', $values) . ')'), 'desc');
         }
 
         return $query->whereIn($key, $values);
     }
-
 }
