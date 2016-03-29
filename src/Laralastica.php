@@ -270,17 +270,15 @@ class Laralastica implements Wrapper
      * @return array
      */
     protected function getModelsFromGroupedResults($groupedResults)
-    {        
+    {
         $modelResults = [];
-        $sortKey = (count($this->sortFields)) ? key($this->sortFields) : 'id';
-
 
         foreach ($groupedResults as $key => $results) {
             $modelName = $this->config['types'][$key];
             $model = new $modelName;
             $query = $model->whereIn('id', array_keys($results))
                 ->with($model::getEagerLoaded())
-                 ->orderBy($sortKey, 'desc')
+                ->orderByRaw(\DB::raw('FIND_IN_SET(`id`, "' . implode(',', array_keys($results)) . '")'))
                 ->get();
 
             $query->map(function ($model) use ($results) {
