@@ -183,6 +183,26 @@ class Laralastica implements Wrapper
 
         return $this;
     }
+    /**
+     * update a document from the provided type.
+     *
+     * @param string $type
+     * @param string|int $id
+     * @param array $data
+     * @return $this
+     */
+    public function updateDocument($type, $id, array $data=[])
+    {
+        $type = $this->getType($type);
+
+        $document = new Document($id, $data);
+
+          $type->updateDocument($document);
+
+        $this->refreshIndex();
+
+        return $this;
+    }
 
     /**
      * Delete a document from the provided type.
