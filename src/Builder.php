@@ -2,6 +2,7 @@
 
 use Elastica\Filter\Type;
 use Elastica\Query\Common;
+use Elastica\Query\Exists;
 use Elastica\Query\FunctionScore;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\FuzzyLikeThis;
@@ -49,6 +50,24 @@ class Builder implements QueryBuilder
     {
         $ids = new Ids($type, $ids);
         $query = $this->newQuery($ids);
+        $this->query[] = $query;
+
+        return $query;
+    }
+
+    /**
+     * exists Query.
+     * Returns documents that have at least one non-null value in the original field
+     *
+     * @param $field
+     * @return Query
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/2.1/query-dsl-exists-query.html
+     */
+
+    public function exists($field)
+    {
+        $exists = new Exists($field);
+        $query = $this->newQuery($exists);
         $this->query[] = $query;
 
         return $query;

@@ -1,4 +1,4 @@
-# Laralastica [![Build Status](https://travis-ci.org/michaeljennings/laralastica.svg?branch=master)](https://travis-ci.org/michaeljennings/laralastica) [![Latest Stable Version](https://poser.pugx.org/michaeljennings/laralastica/v/stable)](https://packagist.org/packages/michaeljennings/laralastica) [![Latest Unstable Version](https://poser.pugx.org/michaeljennings/laralastica/v/unstable)](https://packagist.org/packages/michaeljennings/laralastica) [![License](https://poser.pugx.org/michaeljennings/laralastica/license)](https://packagist.org/packages/michaeljennings/laralastica)
+# Laralastica [![Build Status](https://travis-ci.org/amrsoliman/laralastica.svg?branch=master)](https://travis-ci.org/michaeljennings/laralastica) [![Latest Stable Version](https://poser.pugx.org/michaeljennings/laralastica/v/stable)](https://packagist.org/packages/michaeljennings/laralastica) [![Latest Unstable Version](https://poser.pugx.org/michaeljennings/laralastica/v/unstable)](https://packagist.org/packages/michaeljennings/laralastica) [![License](https://poser.pugx.org/michaeljennings/laralastica/license)](https://packagist.org/packages/michaeljennings/laralastica)
 
 A laravel 5 package that adds the ability to search eloquent models using elasticsearch results, it also handles 
 indexing and removing documents when you save or delete models.
@@ -6,6 +6,8 @@ indexing and removing documents when you save or delete models.
 - [Installation](#installation)
 - [Usage](#usage)
 - [Searching](#searching)
+	- [Ids Query](#ids-query)
+	- [Exists Query](#exists-query)
 	- [Match Query](#match-query)
 	- [Multi Match Query](#multi-match-query)
 	- [Match All Query](#multi-all-query)
@@ -303,6 +305,22 @@ Foo::search(function(Builder $query)
 {
 	$query->matchAll();
 })
+```
+
+
+### Exists query
+
+To run a exists query use the `exists` method. This takes 1 parameter:
+
+- Field name
+
+For more information about the term query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html).
+
+```php
+Foo::search(function(Builder $query)
+{
+    $query->exists('FieldName');
+});
 ```
 
 ### Common Query
