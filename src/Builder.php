@@ -1,14 +1,13 @@
 <?php namespace Michaeljennings\Laralastica;
 
-use Elastica\Filter\Type;
 use Elastica\Query\Common;
 use Elastica\Query\Exists;
-use Elastica\Query\FunctionScore;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\FuzzyLikeThis;
 use Elastica\Query\Ids;
 use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
+use Elastica\Query\Missing;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\Nested;
 use Elastica\Query\Range;
@@ -67,6 +66,24 @@ class Builder implements QueryBuilder
     public function exists($field)
     {
         $exists = new Exists($field);
+        $query = $this->newQuery($exists);
+        $this->query[] = $query;
+
+        return $query;
+    }
+
+    /**
+     * missing Query.
+     * returns documents where there is no value for a particular field
+     *
+     * @param $field
+     * @return Query
+     * @link https://www.elastic.co/guide/en/elasticsearch/guide/current/_dealing_with_null_values.html#_missing_query
+     */
+
+    public function missing($field)
+    {
+        $exists = new Missing($field);
         $query = $this->newQuery($exists);
         $this->query[] = $query;
 
