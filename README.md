@@ -20,10 +20,10 @@ indexing and removing documents when you save or delete models.
 This package requires at least PHP 5.4 and at present only supports Laravel 5.0.
 
 To install through composer either run `composer require michaeljennings/laralastica` or add the package to you 
-composer.json
+composer.json. For laravel >= 5.2 use `1.3.*`, for laravel 5.3 and above use `1.4.&*`.
 
 ```php
-"michaeljennings/laralastica": "1.3.*"
+"michaeljennings/laralastica": "1.4.*"
 ```
 
 Then add the laralastica service provider into your providers array in `config/app.php`.
