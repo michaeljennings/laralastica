@@ -24,7 +24,7 @@ class LaralasticaServiceProvider extends EventServiceProvider {
      *
      * @param Dispatcher $dispatcher
      */
-    public function boot(Dispatcher $dispatcher)
+    public function boot()
     {
         $this->publishes([
             __DIR__.'/../config/laralastica.php' => config_path('laralastica.php'),
@@ -34,7 +34,7 @@ class LaralasticaServiceProvider extends EventServiceProvider {
 
         foreach ($this->listeners as $event => $handlers) {
             foreach ($handlers as $listener) {
-                $dispatcher->listen($event, $listener);
+                $this->app['events']->listen($event, $listener);
             }
         }
     }
