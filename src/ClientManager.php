@@ -6,6 +6,7 @@ use Elastica\Client;
 use Illuminate\Support\Manager;
 use Michaeljennings\Laralastica\Drivers\ArrayDriver;
 use Michaeljennings\Laralastica\Drivers\ElasticaDriver;
+use Michaeljennings\Laralastica\Drivers\NullDriver;
 use Michaeljennings\Laralastica\Exceptions\DriverNotSetException;
 
 class ClientManager extends Manager
@@ -36,13 +37,13 @@ class ClientManager extends Manager
     }
 
     /**
-     * Create the array driver.
+     * Create the null driver.
      *
      * @return ArrayDriver
      */
-    protected function createArrayDriver()
+    protected function createNullDriver()
     {
-        return new ArrayDriver();
+        return new NullDriver();
     }
 
     /**

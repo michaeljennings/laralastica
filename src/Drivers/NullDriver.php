@@ -1,11 +1,11 @@
 <?php
 
-namespace Michaeljennings\Laralastica\Contracts;
+namespace Michaeljennings\Laralastica\Drivers;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\ResultCollection;
 
-interface Driver
+class NullDriver implements Driver
 {
     /**
      * Execute the provided queries.
@@ -14,7 +14,10 @@ interface Driver
      * @param array        $queries
      * @return ResultCollection
      */
-    public function get($types, array $queries);
+    public function get($types, array $queries)
+    {
+        return new ResultCollection([], 0, 0, 0);
+    }
 
     /**
      * Execute the query and return a paginated list of results.
@@ -24,9 +27,12 @@ interface Driver
      * @param int          $page
      * @param int          $perPage
      * @param int          $offset
-     * @return LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate($types, array $queries, $page, $perPage, $offset);
+    public function paginate($types, array $queries, $page, $perPage, $offset)
+    {
+        return [];
+    }
 
     /**
      * Create a common query.
@@ -39,7 +45,10 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function common($field, $query, $cutoffFrequency, callable $callback = null);
+    public function common($field, $query, $cutoffFrequency, callable $callback = null)
+    {
+        //
+    }
 
     /**
      * Create a new fuzzy query.
@@ -51,7 +60,10 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function fuzzy($field, $value, callable $callback = null);
+    public function fuzzy($field, $value, callable $callback = null)
+    {
+        //
+    }
 
     /**
      * Create a new match query.
@@ -63,7 +75,10 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function match($field = null, $value = null, callable $callback = null);
+    public function match($field = null, $value = null, callable $callback = null)
+    {
+        //
+    }
 
     /**
      * Create a match all query.
@@ -72,7 +87,10 @@ interface Driver
      *
      * @return mixed
      */
-    public function matchAll();
+    public function matchAll()
+    {
+        //
+    }
 
     /**
      * Create a query string query.
@@ -83,7 +101,10 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function queryString($query = '', callable $callback = null);
+    public function queryString($query = '', callable $callback = null)
+    {
+        //
+    }
 
     /**
      * Create a range query.
@@ -95,7 +116,10 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function range($fieldName = null, $args = [], callable $callback = null);
+    public function range($fieldName = null, $args = [], callable $callback = null)
+    {
+        //
+    }
 
     /**
      * Create a new regular expression query.
@@ -108,7 +132,10 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function regexp($key = '', $value = null, $boost = 1.0, callable $callback = null);
+    public function regexp($key = '', $value = null, $boost = 1.0, callable $callback = null)
+    {
+        //
+    }
 
     /**
      * Create a new term query.
@@ -119,7 +146,10 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function term(array $terms = [], callable $callback = null);
+    public function term(array $terms = [], callable $callback = null)
+    {
+        //
+    }
 
     /**
      * Create a new terms query.
@@ -131,7 +161,10 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function terms($key = '', array $terms = [], callable $callback = null);
+    public function terms($key = '', array $terms = [], callable $callback = null)
+    {
+        //
+    }
 
     /**
      * Create a new wildcard query.
@@ -144,7 +177,10 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function wildcard($key = '', $value = null, $boost = 1.0, callable $callback = null);
+    public function wildcard($key = '', $value = null, $boost = 1.0, callable $callback = null)
+    {
+        //
+    }
 
     /**
      * Add a new document to the provided type.
@@ -154,7 +190,10 @@ interface Driver
      * @param array      $data
      * @return mixed
      */
-    public function add($type, $id, array $data);
+    public function add($type, $id, array $data)
+    {
+        return $this;
+    }
 
     /**
      * Add multiple documents to the elasticsearch type. The data array must be a
@@ -165,7 +204,10 @@ interface Driver
      * @param array  $data
      * @return Driver
      */
-    public function addMultiple($type, array $data);
+    public function addMultiple($type, array $data)
+    {
+        return $this;
+    }
 
     /**
      * Delete a document from the provided type.
@@ -174,5 +216,8 @@ interface Driver
      * @param string|int $id
      * @return Driver
      */
-    public function delete($type, $id);
+    public function delete($type, $id)
+    {
+        return $this;
+    }
 }
