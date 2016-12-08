@@ -2,6 +2,7 @@
 
 namespace Michaeljennings\Laralastica;
 
+use Elastica\Query\AbstractQuery;
 use Michaeljennings\Laralastica\Contracts\Driver;
 
 class Builder
@@ -43,6 +44,19 @@ class Builder
     }
 
     /**
+     * Add a new query.
+     *
+     * @param mixed $query
+     * @return $this
+     */
+    public function query($query)
+    {
+        $this->queries[] = $this->newQuery($query);
+
+        return $this;
+    }
+
+    /**
      * Create a new query object.
      *
      * @param mixed $query
@@ -63,7 +77,9 @@ class Builder
      */
     public function __call($method, array $args)
     {
-        call_user_func_array([$this->driver, $method], $args);
+        $query = call_user_func_array([$this->driver, $method], $args);
+
+        $this->query($query);
 
         return $this;
     }
