@@ -28,7 +28,10 @@
     "autoload-dev": {
       "psr-4": {
         "Michaeljennings\\Laralastica\\Tests\\": "tests/"
-      }
+      },
+      "files": [
+          "src/helpers.php"
+      ]
     },
     "extra": {
         "component": "package",

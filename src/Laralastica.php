@@ -3,8 +3,9 @@
 namespace Michaeljennings\Laralastica;
 
 use Illuminate\Http\Request;
+use Michaeljennings\Laralastica\Contracts\Laralastica as LaralasticaContract;
 
-class Laralastica
+class Laralastica implements LaralasticaContract
 {
     /**
      * The client manager.
