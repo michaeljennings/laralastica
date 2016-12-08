@@ -3,6 +3,7 @@
 namespace Michaeljennings\Laralastica\Drivers;
 
 use Elastica\Client;
+use Elastica\Document;
 use Elastica\Index;
 use Elastica\Query as ElasticaQuery;
 use Elastica\Query\AbstractQuery;
@@ -254,6 +255,68 @@ class ElasticaDriver implements Driver
     }
 
     /**
+     * Add a new document to the provided type.
+     *
+     * @param string     $type
+     * @param string|int $id
+     * @param array      $data
+     * @return Document
+     */
+    public function add($type, $id, array $data)
+    {
+        $type = $this->getType($type);
+
+        $document = new Document($id, $data);
+        $type->addDocument($document);
+
+        $this->refreshIndex();
+
+        return $document;
+    }
+
+    /**
+     * Add multiple documents to the elasticsearch type. The data array must be a
+     * multidimensional array with the key as the desired id and the value as
+     * the data to be added to the document.
+     *
+     * @param string $type
+     * @param array  $data
+     * @return $this
+     */
+    public function addMultiple($type, array $data)
+    {
+        $type = $this->getType($type);
+        $documents = [];
+
+        foreach ($data as $id => $values) {
+            $documents[] = new Document($id, $values);
+        }
+
+        $type->addDocuments($documents);
+
+        $this->refreshIndex();
+
+        return $this;
+    }
+
+    /**
+     * Delete a document from the provided type.
+     *
+     * @param string     $type
+     * @param string|int $id
+     * @return $this
+     */
+    public function delete($type, $id)
+    {
+        $type = $this->getType($type);
+        $type->deleteById($id);
+
+        $this->refreshIndex();
+
+        return $this;
+    }
+
+    /**
      * Create a new search.
      *
      * @param string|array $types
@@ -363,6 +426,28 @@ class ElasticaDriver implements Driver
     protected function newResult(Result $result)
     {
         return new \Michaeljennings\Laralastica\Result($result->getHit());
+    }
+
+    /**
+     * Get an elasticsearch type from its index.
+     *
+     * @param string $type
+     * @return \Elastica\Type
+     */
+    protected function getType($type)
+    {
+        return $this->index->getType($type);
+    }
+
+    /**
+     * Refreshes the elasticsearch index, this should be run after adding
+     * or deleting documents.
+     *
+     * @return \Elastica\Response
+     */
+    protected function refreshIndex()
+    {
+        return $this->index->refresh();
     }
 
     /**

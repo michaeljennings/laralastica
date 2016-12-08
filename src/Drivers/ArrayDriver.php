@@ -2,6 +2,7 @@
 
 namespace Michaeljennings\Laralastica\Drivers;
 
+use Elastica\Document;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\Common;
 use Elastica\Query\Fuzzy;
@@ -64,5 +65,20 @@ class ArrayDriver implements Driver
     public function wildcard($key = '', $value = null, $boost = 1.0, callable $callback = null)
     {
         // TODO: Implement wildcard() method.
+    }
+
+    public function add($type, $id, array $data)
+    {
+        // TODO: Implement add() method.
+    }
+
+    public function addMultiple($type, array $data)
+    {
+        // TODO: Implement addMultiple() method.
+    }
+
+    public function delete($type, $id)
+    {
+        // TODO: Implement delete() method.
     }
 }
