@@ -1,6 +1,6 @@
 {
     "name": "michaeljennings/laralastica",
-    "description": "A laravel elastica package.",
+    "description": "A laravel package that allows you to search eloquent results using elasticsearch.",
     "keywords": ["elastica", "laravel", "elasticsearch"],
     "license": "MIT",
     "authors": [
