@@ -42,10 +42,18 @@ class ElasticaDriver implements Driver
      */
     protected $index;
 
-    public function __construct(Client $client, Index $index)
+    /**
+     * The laralastica config.
+     *
+     * @var array
+     */
+    protected $config;
+
+    public function __construct(Client $client, Index $index, array $config)
     {
         $this->client = $client;
         $this->index = $index;
+        $this->config = $config;
     }
 
     /**
@@ -224,7 +232,10 @@ class ElasticaDriver implements Driver
     public function get($types, array $queries)
     {
         $search = $this->newSearch($types);
-        $search->setQuery($this->newQuery($queries));
+        $query = $this->newQuery($queries);
+
+        $query->setSize($this->config['size']);
+        $search->setQuery($query);
 
         return $this->newResultCollection($search->search());
     }
