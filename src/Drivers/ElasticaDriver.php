@@ -17,9 +17,12 @@ use Elastica\Query\Regexp;
 use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use Elastica\Query\Wildcard;
+use Elastica\Result;
+use Elastica\ResultSet;
 use Elastica\Search;
 use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\Contracts\Query;
+use Michaeljennings\Laralastica\ResultCollection;
 
 class ElasticaDriver implements Driver
 {
@@ -214,7 +217,7 @@ class ElasticaDriver implements Driver
      *
      * @param string|array $types
      * @param array        $queries
-     * @return \Elastica\ResultSet
+     * @return ResultCollection
      */
     public function get($types, array $queries)
     {
@@ -228,7 +231,7 @@ class ElasticaDriver implements Driver
         $search->addTypes($types);
         $search->setQuery($this->newQuery($queries));
 
-        return $search->search();
+        return $this->newResultCollection($search->search());
     }
 
     /**
@@ -277,6 +280,34 @@ class ElasticaDriver implements Driver
         }
 
         return $container;
+    }
+
+    /**
+     * Create a new result collection.
+     *
+     * @param ResultSet $results
+     * @return ResultCollection
+     */
+    protected function newResultCollection(ResultSet $results)
+    {
+        $items = [];
+
+        foreach ($results as $result) {
+            $items[] = $this->newResult($result);
+        }
+
+        return new ResultCollection($items, $results->getTotalHits(), $results->getMaxScore(), $results->getTotalTime());
+    }
+
+    /**
+     * Create a new result.
+     *
+     * @param Result $result
+     * @return \Michaeljennings\Laralastica\Result
+     */
+    protected function newResult(Result $result)
+    {
+        return new \Michaeljennings\Laralastica\Result($result->getHit());
     }
 
     /**
