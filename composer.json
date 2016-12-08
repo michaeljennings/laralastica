@@ -10,8 +10,8 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0",
-        "ruflin/elastica": "2.3.*",
+        "php": ">=5.5.9",
+        "ruflin/elastica": "~3.0",
         "illuminate/database": ">=5.3",
         "illuminate/events": ">=5.3"
     },
