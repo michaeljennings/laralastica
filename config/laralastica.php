@@ -2,49 +2,64 @@
 
 return [
 
-    /**
-     * The name of the elasticsearch index, must be lower case, alphanumeric, and
-     * must not contain any spaces, hyphens or underscores.
-     */
+    /*
+     |--------------------------------------------------------------------------
+     | Driver
+     |--------------------------------------------------------------------------
+     |
+     | The driver controls which search connection gets used. This connection
+     | will be used for all model syncing and searching.
+     |
+     | Supported: "elastica", "null"
+     |
+    */
+
+    'driver' => 'elastica',
+
+    /*
+     |--------------------------------------------------------------------------
+     | Index
+     |--------------------------------------------------------------------------
+     |
+     | Set the name of the elasticsearch index you want to connect to. This must
+     | be lower-case, alphanumeric, and must not contain any spaces, hyphens
+     | or underscores.
+     |
+    */
+
     'index' => 'yourindex',
 
-    /**
-     * The host of your elasticsearch cluster.
-     */
-    'host'  => 'localhost',
-    'hosts' => [
-        'connectionStrategy' => 'RoundRobin',
-        "connections"        => [
-            [
-                'host' => 'localhost',
-                'port' => 9200
-            ],
-            [
-                'host' => 'localhost',
-                'port' => 9200
-            ]
-        ]
-    ],
+    /*
+     |--------------------------------------------------------------------------
+     | Size
+     |--------------------------------------------------------------------------
+     |
+     | Set the default maximum size for the query.
+     |
+    */
 
-
-    /**
-     * Alternatively use a url to connect, must contain a trailing slash
-     */
-    //'url' => 'https://user:pass@your-search.com/',
-
-    /**
-     * The maximum amount of results to return for a query.
-     */
     'size'  => 10,
 
-    /**
-     * Register which models correspond to which elasticsearch types. The key
-     * should be the elasticsearch type and the value should be the model.
-     *
-     * i.e. 'testType' => 'App\TestType'
-     */
-    'types' => [
-        //
-    ],
+    /*
+     |--------------------------------------------------------------------------
+     | Drivers
+     |--------------------------------------------------------------------------
+     |
+     | Set any driver specific configuration here.
+     |
+    */
 
+    'drivers' => [
+        'elastica' => [
+            'hosts' => [
+                'connectionStrategy' => 'RoundRobin',
+                "connections" => [
+                    [
+                        'host' => 'localhost',
+                        'port' => 9200
+                    ]
+                ]
+            ],
+        ]
+    ]
 ];
