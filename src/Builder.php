@@ -2,7 +2,6 @@
 
 namespace Michaeljennings\Laralastica;
 
-use Elastica\Query\AbstractQuery;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Contracts\Driver;
 
