@@ -2,6 +2,7 @@
 
 namespace Michaeljennings\Laralastica;
 
+use Elastica\ResultSet;
 use Michaeljennings\Laralastica\Contracts\Driver;
 
 class Builder
@@ -32,26 +33,16 @@ class Builder
     }
 
     /**
-     * Get all of the queries to be run.
+     * Execute the query.
      *
-     * @return array
+     * @param string|array $types
+     * @return ResultContainer
      */
-    public function getQueries()
+    public function get($types)
     {
-        return $this->queries;
-    }
+        $query = $this->driver->get($types, $this->queries);
 
-    /**
-     * Change the driver.
-     *
-     * @param string $driver
-     * @return $this
-     */
-    public function driver($driver)
-    {
-        $this->driver = $this->manager->driver($driver);
-
-        return $this;
+        return $this->newResultContainer($query);
     }
 
     /**
@@ -63,6 +54,17 @@ class Builder
     protected function newQuery($query)
     {
         return new Query($query);
+    }
+
+    /**
+     * Create a new result container.
+     *
+     * @param ResultSet $results
+     * @return ResultContainer
+     */
+    protected function newResultContainer(ResultSet $results)
+    {
+        return new ResultContainer($results);
     }
 
     /**

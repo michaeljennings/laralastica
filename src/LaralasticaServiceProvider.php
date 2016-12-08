@@ -2,7 +2,15 @@
 
 namespace Michaeljennings\Laralastica;
 
-class LaralasticaServiceProvider extends Ser
-{
+use Illuminate\Support\ServiceProvider;
 
+class LaralasticaServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application bindings.
+     */
+    public function register()
+    {
+
+    }
 }
