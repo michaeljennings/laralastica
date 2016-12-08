@@ -20,6 +20,7 @@ use Elastica\Query\Wildcard;
 use Elastica\Result;
 use Elastica\ResultSet;
 use Elastica\Search;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\Contracts\Query;
 use Michaeljennings\Laralastica\ResultCollection;
@@ -221,6 +222,45 @@ class ElasticaDriver implements Driver
      */
     public function get($types, array $queries)
     {
+        $search = $this->newSearch($types);
+        $search->setQuery($this->newQuery($queries));
+
+        return $this->newResultCollection($search->search());
+    }
+
+    /**
+     * Execute the query and return a paginated list of results.
+     *
+     * @param string|array $types
+     * @param array        $queries
+     * @param int          $page
+     * @param int          $perPage
+     * @param int          $offset
+     * @return LengthAwarePaginator
+     */
+    public function paginate($types, array $queries, $page, $perPage, $offset)
+    {
+        $search = $this->newSearch($types);
+        $query = $this->newQuery($queries);
+
+        $query->setSize($perPage);
+        $query->setFrom($offset);
+
+        $search->setQuery($query);
+
+        $results = $search->search();
+
+        return new LengthAwarePaginator($this->hydrateResults($results), $results->getTotalHits(), $perPage, $page);
+    }
+
+    /**
+     * Create a new search.
+     *
+     * @param string|array $types
+     * @return Search
+     */
+    protected function newSearch($types)
+    {
         if ( ! is_array($types)) {
             $types = func_get_args();
         }
@@ -229,9 +269,8 @@ class ElasticaDriver implements Driver
 
         $search->addIndex($this->index);
         $search->addTypes($types);
-        $search->setQuery($this->newQuery($queries));
 
-        return $this->newResultCollection($search->search());
+        return $search;
     }
 
     /**
@@ -290,13 +329,29 @@ class ElasticaDriver implements Driver
      */
     protected function newResultCollection(ResultSet $results)
     {
+        return new ResultCollection(
+            $this->hydrateResults($results),
+            $results->getTotalHits(),
+            $results->getMaxScore(),
+            $results->getTotalTime()
+        );
+    }
+
+    /**
+     * Parse the result set to our result entity.
+     *
+     * @param ResultSet $results
+     * @return \Michaeljennings\Laralastica\Result[]
+     */
+    protected function hydrateResults(ResultSet $results)
+    {
         $items = [];
 
         foreach ($results as $result) {
             $items[] = $this->newResult($result);
         }
 
-        return new ResultCollection($items, $results->getTotalHits(), $results->getMaxScore(), $results->getTotalTime());
+        return $items;
     }
 
     /**

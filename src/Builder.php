@@ -3,6 +3,7 @@
 namespace Michaeljennings\Laralastica;
 
 use Elastica\Query\AbstractQuery;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Contracts\Driver;
 
 class Builder
@@ -41,6 +42,20 @@ class Builder
     public function get($types)
     {
         return $this->driver->get($types, $this->queries);
+    }
+
+    /**
+     * Execute the query and then paginate the results.
+     *
+     * @param string|array $types
+     * @param int          $page
+     * @param int          $perPage
+     * @param int          $offset
+     * @return LengthAwarePaginator
+     */
+    public function paginate($types, $page, $perPage, $offset)
+    {
+        return $this->driver->paginate($types, $this->queries, $page, $perPage, $offset);
     }
 
     /**

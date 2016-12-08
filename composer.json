@@ -14,7 +14,8 @@
         "ruflin/elastica": "~3.0",
         "illuminate/database": ">=5.3",
         "illuminate/events": ">=5.3",
-        "illuminate/http": ">=5.3"
+        "illuminate/http": ">=5.3",
+        "illuminate/pagination": ">=5.3"
     },
     "require-dev": {
         "mockery/mockery": "0.9.*"

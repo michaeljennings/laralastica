@@ -35,9 +35,11 @@ class Laralastica
     }
 
     /**
+     * Search for the results using the provided callback.
+     *
      * @param string|array $types
      * @param callable     $query
-     * @return mixed
+     * @return ResultCollection
      */
     public function search($types, callable $query)
     {
@@ -49,10 +51,12 @@ class Laralastica
     }
 
     /**
+     * Search and paginate the results.
+     *
      * @param string|array $types
      * @param callable     $query
      * @param int          $perPage
-     * @return mixed
+     * @return ResultCollection
      */
     public function paginate($types, callable $query, $perPage)
     {
@@ -62,7 +66,7 @@ class Laralastica
 
         $query($builder);
 
-        return $this->results = $builder->paginate($types, $page, $offset);
+        return $this->results = $builder->paginate($types, $page, $perPage, $offset);
     }
 
     /**
