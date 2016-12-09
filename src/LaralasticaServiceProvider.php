@@ -44,10 +44,9 @@ class LaralasticaServiceProvider extends EventServiceProvider
     public function register()
     {
         $this->app->bind('Michaeljennings\Laralastica\Contracts\Laralastica', function($app) {
-            $config = config('laralastica');
-            $manager = new ClientManager($config);
+            $manager = new ClientManager(config('laralastica'));
 
-            return new Laralastica($manager, config('laralastica'), $app['request']);
+            return new Laralastica($manager, $app['request']);
         });
 
         $this->app->alias('Michaeljennings\Laralastica\Contracts\Wrapper', 'laralastica');
