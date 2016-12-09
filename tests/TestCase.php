@@ -28,8 +28,13 @@ class TestCase extends PHPUnit_Framework_TestCase
     {
         return [
             'index' => 'testindex',
-            'host' => $this->getHost(),
-            'port' => $this->getPort(),
+            'drivers' => [
+                'elastica' => [
+                    'host' => $this->getHost(),
+                    'port' => $this->getPort(),
+                    'size' => 10,
+                ]
+            ]
         ];
     }
 

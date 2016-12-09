@@ -271,7 +271,7 @@ class ElasticaDriver implements Driver
      * @param string     $type
      * @param string|int $id
      * @param array      $data
-     * @return Document
+     * @return $this
      */
     public function add($type, $id, array $data)
     {
@@ -282,7 +282,7 @@ class ElasticaDriver implements Driver
 
         $this->refreshIndex();
 
-        return $document;
+        return $this;
     }
 
     /**
