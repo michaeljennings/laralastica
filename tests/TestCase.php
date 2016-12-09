@@ -27,6 +27,7 @@ class TestCase extends PHPUnit_Framework_TestCase
     protected function getConfig()
     {
         return [
+            'driver' => 'elastica',
             'index' => 'testindex',
             'drivers' => [
                 'elastica' => [

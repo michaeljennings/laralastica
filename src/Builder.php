@@ -3,9 +3,10 @@
 namespace Michaeljennings\Laralastica;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Michaeljennings\Laralastica\Contracts\Builder as BuilderContract;
 use Michaeljennings\Laralastica\Contracts\Driver;
 
-class Builder
+class Builder implements BuilderContract
 {
     /**
      * The driver manager.
@@ -80,7 +81,9 @@ class Builder
      */
     public function add($type, $id, array $data)
     {
-        return $this->driver->add($type, $id, $data);
+        $this->driver->add($type, $id, $data);
+
+        return $this;
     }
 
     /**
@@ -94,7 +97,9 @@ class Builder
      */
     public function addMultiple($type, array $data)
     {
-        return $this->driver->addMultiple($type, $data);
+        $this->driver->addMultiple($type, $data);
+
+        return $this;
     }
 
     /**
@@ -106,7 +111,9 @@ class Builder
      */
     public function delete($type, $id)
     {
-        return $this->driver->delete($type, $id);
+        $this->driver->delete($type, $id);
+
+        return $this;
     }
 
     /**
