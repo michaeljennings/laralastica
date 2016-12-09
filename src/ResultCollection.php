@@ -29,17 +29,20 @@ class ResultCollection extends Collection implements ResultCollectionContract
     protected $totalTime;
 
     /**
-     * @param \Michaeljennings\Laralastica\Contracts\Result[] $results
-     * @param int                                             $totalHits
-     * @param float                                           $maxScore
-     * @param float                                           $totalTime
+     * Set the stats for the elasticsearch query.
+     *
+     * @param int   $totalHits
+     * @param int   $maxScore
+     * @param float $totalTime
+     * @return $this
      */
-    public function __construct(array $results, $totalHits, $maxScore, $totalTime)
+    public function setQueryStats($totalHits, $maxScore, $totalTime)
     {
-        $this->items = $results;
         $this->totalHits = $totalHits;
         $this->maxScore = $maxScore;
         $this->totalTime = $totalTime;
+
+        return $this;
     }
 
     /**

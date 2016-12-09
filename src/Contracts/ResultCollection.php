@@ -5,6 +5,16 @@ namespace Michaeljennings\Laralastica\Contracts;
 interface ResultCollection
 {
     /**
+     * Set the stats for the elasticsearch query.
+     *
+     * @param int   $totalHits
+     * @param int   $maxScore
+     * @param float $totalTime
+     * @return \Michaeljennings\Laralastica\ResultCollection
+     */
+    public function setQueryStats($totalHits, $maxScore, $totalTime);
+
+    /**
      * Get the total hits.
      *
      * @return int

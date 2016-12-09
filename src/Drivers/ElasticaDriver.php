@@ -405,12 +405,11 @@ class ElasticaDriver implements Driver
      */
     protected function newResultCollection(ResultSet $results)
     {
-        return new ResultCollection(
-            $this->hydrateResults($results),
-            $results->getTotalHits(),
-            $results->getMaxScore(),
-            $results->getTotalTime()
-        );
+        $collection = new ResultCollection($this->hydrateResults($results));
+
+        $collection->setQueryStats($results->getTotalHits(), $results->getMaxScore(), $results->getTotalTime());
+
+        return $collection;
     }
 
     /**
