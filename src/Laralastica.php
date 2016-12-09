@@ -2,7 +2,7 @@
 
 namespace Michaeljennings\Laralastica;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator as LengthAwarePaginatorContract;
 use Illuminate\Http\Request;
 use Michaeljennings\Laralastica\Contracts\Laralastica as LaralasticaContract;
 
@@ -50,7 +50,7 @@ class Laralastica implements LaralasticaContract
      * @param string|array $types
      * @param callable     $query
      * @param int          $perPage
-     * @return LengthAwarePaginator
+     * @return LengthAwarePaginatorContract
      */
     public function paginate($types, callable $query, $perPage)
     {

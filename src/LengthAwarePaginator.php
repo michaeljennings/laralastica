@@ -3,9 +3,9 @@
 namespace Michaeljennings\Laralastica;
 
 use Illuminate\Pagination\LengthAwarePaginator as BaseLengthAwarePaginator;
-use Michaeljennings\Laralastica\Contracts\ResultCollection;
+use Michaeljennings\Laralastica\Contracts\ResultCollection as ResultCollectionContract;
 
-class LengthAwarePaginator extends BaseLengthAwarePaginator implements ResultCollection
+class LengthAwarePaginator extends BaseLengthAwarePaginator implements ResultCollectionContract
 {
     /**
      * The total hits matched by the elasticsearch query.
@@ -26,21 +26,21 @@ class LengthAwarePaginator extends BaseLengthAwarePaginator implements ResultCol
      *
      * @var float|null
      */
-    protected $timeTaken = null;
+    protected $totalTime = null;
 
     /**
      * Set the stats for the elasticsearch query.
      *
      * @param int   $totalHits
      * @param int   $maxScore
-     * @param float $timeTaken
+     * @param float $totalTime
      * @return $this
      */
-    public function setQueryStats($totalHits, $maxScore, $timeTaken)
+    public function setQueryStats($totalHits, $maxScore, $totalTime)
     {
         $this->totalHits = $totalHits;
         $this->maxScore = $maxScore;
-        $this->timeTaken = $timeTaken;
+        $this->totalTime = $totalTime;
 
         return $this;
     }
