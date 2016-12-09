@@ -49,6 +49,6 @@ class LaralasticaServiceProvider extends EventServiceProvider
             return new Laralastica($manager, $app['request']);
         });
 
-        $this->app->alias('Michaeljennings\Laralastica\Contracts\Wrapper', 'laralastica');
+        $this->app->alias('Michaeljennings\Laralastica\Contracts\Laralastica', 'laralastica');
     }
 }
