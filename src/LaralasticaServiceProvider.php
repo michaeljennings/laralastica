@@ -28,7 +28,9 @@ class LaralasticaServiceProvider extends EventServiceProvider
         $this->publishes([
             __DIR__.'/../config/laralastica.php' => config_path('laralastica.php'),
         ]);
+
         $this->mergeConfigFrom(__DIR__.'/../config/laralastica.php', 'laralastica');
+
         foreach ($this->listeners as $event => $handlers) {
             foreach ($handlers as $listener) {
                 $this->app['events']->listen($event, $listener);
