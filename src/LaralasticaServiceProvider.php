@@ -13,10 +13,10 @@ class LaralasticaServiceProvider extends EventServiceProvider
      */
     protected $listeners = [
         'Michaeljennings\Laralastica\Events\IndexesWhenSaved' => [
-            'Michaeljennings\Laralastica\Listeners\Events\IndexesSavedModel'
+            'Michaeljennings\Laralastica\Listeners\IndexesSavedModel'
         ],
         'Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted' => [
-            'Michaeljennings\Laralastica\Listeners\Events\RemovesDocumentBelongingToDeletedModel'
+            'Michaeljennings\Laralastica\Listeners\RemovesDocumentBelongingToDeletedModel'
         ]
     ];
 
