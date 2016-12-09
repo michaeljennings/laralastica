@@ -4,26 +4,22 @@ A laravel 5 package that adds the ability to search eloquent models using elasti
 indexing and removing documents when you save or delete models.
 
 - [Installation](#installation)
+    - [Configuration](#configuration)
 - [Usage](#usage)
 - [Searching](#searching)
-	- [Match Query](#match-query)
-	- [Multi Match Query](#multi-match-query)
-	- [Match All Query](#multi-all-query)
-	- [Common Query](#common-query)
-	- [Range Query](#range-query)
-	- [Regular Expression Query](#regular-expression-query)
-	- [Term Query](#term-query)
-	- [Terms Query](#terms-query)
-	- [Wildcard Query](#wildcard-query)
+    - [Searching Without the Searchable Trait](#searching-without-the-searchable-trait)
+- [Queries](#queries)
+- [Paginate Results](#paginate-results)
+- [The Result Collection](#the-result-collection)
 
 ## Installation
-This package requires at least PHP 5.4 and at present only supports Laravel 5.0.
+This package requires at least PHP 5.4 and Laravel >=5.0.
 
 To install through composer either run `composer require michaeljennings/laralastica` or add the package to you 
-composer.json. For laravel >= 5.2 use `1.3.*`, for laravel 5.3 and above use `1.4.&*`.
+composer.json.
 
 ```php
-"michaeljennings/laralastica": "1.4.*"
+"michaeljennings/laralastica": "~2.0"
 ```
 
 Then add the laralastica service provider into your providers array in `config/app.php`.
@@ -46,32 +42,25 @@ The package also comes with a facade, to use it add it to your aliases array in 
 );
 ```
 
-### Config
+### Configuration
 
 Finally publish the package config using `php artisan vendor:publish`. Once the config has published you can edit the
 `config/laralastica.php' file to set your elasticsearch connection. To set the connections you can either pass the 
 host and port to connect to, or alternatively you can pass a url to connect with.
 
 ```php
-'hosts' => [
-  "connections" => [
-    [
-      'host' => 'localhost',
-      'port' => 9200
+'drivers' => [
+  'elastica' => [
+    'hosts' => [
+      'connectionStrategy' => 'RoundRobin',
+      'connections' => [
+        [
+          'host' => 'localhost',
+          'port' => 9200
+        ]
+      ]
     ],
-    [
-      'url' => 'https://user:pass@your-search.com/'
-    ]
   ]
-]
-```
-
-There is also an empty types array. This allows you to bind an elasticsearch type to a model so that when you search 
-elasticsearch it will return results belonging to that type as the specified model.
-
-```php
-'types' => [
-	'testType' => 'App\TestType'
 ]
 ```
 
@@ -83,10 +72,9 @@ To get started using the package simply add the `Searchable` trait to the models
 use Illuminate\Database\Eloquent\Model;
 use Michaeljennings\Laralastica\Searchable;
 
-class Foo extends Model {
-	
+class Foo extends Model 
+{
 	use Searchable;
-
 }
 ```
 
@@ -161,7 +149,7 @@ and adds a where in query from the results.
 
 The first parameter for the `search` method is a Closure which gets passed an instance of the laralastica query builder.
 
-The second paramater is the column for the where in query, this defaults to 'id'.
+The second parameter is the column for the where in query, this defaults to 'id'.
 
 The third parameter is a boolean indicating if the query should be ordered by the order of the elasticsearch results.
 
@@ -179,8 +167,8 @@ You can also set whether the query must, should or must not match the value you 
 Foo::search(function(Builder $query) {
 
 	$query->match('foo', 'bar')->must();
-	$query->term('bar', 'baz')->should();
-	$query->wildcard('baz', 'qux*')->mustNot();
+	$query->terms('bar', ['baz'])->should();
+	$query->wildcard('baz', 'qux*', 1.0)->mustNot();
 
 })->get();
 ```
@@ -198,11 +186,12 @@ Foo::where('foo', 'bar')->search(function(Builder $query) {
 ### Searching Without the Searchable Trait
 
 It is also possible to use Laralastica without using the searchable trait. To do so you can either dependency inject 
-the class via its contract or use the provided Facade.
+the class via its contract, use the provided Facade, or use the `laralastica` helper method.
 
 ```php
-class Foo {
-	public function __construct(Michaeljennings\Laralastica\Contracts\Wrapper $laralastica)
+class Foo 
+{
+	public function __construct(Michaeljennings\Laralastica\Contracts\Laralastica $laralastica)
 	{
 		$this->laralastica = $laralastica;
 	}
@@ -210,13 +199,8 @@ class Foo {
 	public function foo()
 	{
 		$laralastica = Laralastica::search();
-		// sort search  from elasticsearch fields
-		  $sort = array('created__at' => array('order' => 'asc'));
-		  $laralastica->setSortFields($sort);
-
-		$laralastica = app('laralastica');
+		$laralastica = laralastica();
 	}
-}
 }
 ```
 
@@ -226,8 +210,7 @@ To run a new query use the `search` method. This takes two parameters:
 - The query to be run
 
 ```php
-$laralastica->search('foo', function($q)
-{
+$laralastica->search('foo', function($q) {
 	$q->matchAll();
 });
 ```
@@ -235,202 +218,208 @@ $laralastica->search('foo', function($q)
 To search across multiple elasticsearch types simply pass an array of types as the first parameter.
 
 ```php
-$laralastica->search(['foo', 'bar], function($q)
-{
+$laralastica->search(['foo', 'bar], function($q) {
 	$q->matchAll();
+});
+```
+
+To get a paginated list of results hit the `paginate` method and the amount to paginate by.
+
+```php
+$laralastica->paginate('foo', function($q) {
+	$q->matchAll();
+}, 15);
+```
+
+## Queries
+
+The elasticsearch queries are powered by the great [elastica package](https://github.com/ruflin/Elastica).
+
+There are some preset queries on the query builder, but it is also possible to create an instance of an elastica query and pass that through.
+ 
+### Available Queries
+
+A list of the available queries can be found below. 
+
+Each of the queries can optionally be passed a callback as the final parameter which will allow you to access the raw elastica query.
+
+### Common Query
+
+```php
+$laralastica->search('foo', function($query) {
+
+    $query->common('baz', 'qux', 1.0);
+    $query->common('baz', 'qux', 1.0, function($commonQuery) {
+        $commonQuery->setMinimumShouldMatch(5);
+    });
+    
+});
+```
+
+### Fuzzy Query
+
+```php
+$laralastica->search('foo', function($query) {
+
+    $query->fuzzy('baz', 'qux');
+    $query->fuzzy('baz', 'qux', function($fuzzyQuery) {
+        $fuzzyQuery->setFieldOption('fuzziness', 2);
+    });
+    
 });
 ```
 
 ### Match Query
 
-To run a match query call `match` on the query builder. This takes 4 parameters:
-
-- The column to search
-- The query to search for
-- The type of search, defaults to phrase
-- A flag for if the search should be fuzzy, by default this is false
-
-The two types of search you can run are `phrase` and `phrase_prefix`. The phrase match analyzes the text and creates a 
-phrase query out of the analyzed text. The phrase prefix match is the same as phrase, except that it allows for prefix 
-matches on the last term in the text.
-
-For more information about the search types [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query.html).
-
 ```php
-Foo::search(function(Builder $query)
-{
-	$query->match('foo', 'bar');
-	$query->match('foo', 'bar', 'phrase', false);
-});
-```
+$laralastica->search('foo', function($query) {
 
-### Multi Match Query
-
-To run a multi match query use the `multiMatch` method on the query builder. This takes 6 parameters:
-
-- An array of columns to search in
-- The query string to search for
-- The type of search, defaults to phrase
-- A flag for if the search should be fuzzy, by default this is false
-- The tie breaker value, only used with the best_fields type, defaults to 0.0
-- An operator, only needed for the cross_fields type, defaults to 'and'
-
-There are 5 different search types for the multi match: best_fields, most_fields, cross_fields, phrase and 
-phrase_prefix.
-
-best_fields finds documents which match any field, but uses the _score from the best field.
-
-most_fields finds documents which match any field and combines the _score from each field.
-
-cross_fields treats fields with the same analyzer as though they were one big field. Looks for each word in any field.
-
-phrase runs a match_phrase query on each field and combines the _score from each field.
-
-phrase_prefix runs a match_phrase_prefix query on each field and combines the _score from each field.
-
-For more information about the search types [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-multi-match-query.html).
-
-```php
-Foo::search(function(Builder $query)
-{
-	$query->multiMatch(['foo', 'bar'], 'The Quick Brown Fox');
-	$query->multiMatch(['foo', 'bar'], 'The Quick Brown Fox', 'phrase', true);
-	$query->multiMatch(['foo', 'bar'], 'The Quick Brown Fox', 'best_fields', true, 0.5);
-	$query->multiMatch(['foo', 'bar'], 'The Quick Brown Fox', 'cross_fields', true, 0.0, 'or');
+    $query->match('baz', 'qux');
+    $query->match('baz', 'qux', function($matchQuery) {
+        $matchQuery->setFieldBoost('foo');
+    });
+    
 });
 ```
 
 ### Match All Query
 
-To use a match all query use the `matchAll` method on the query builder.
-
 ```php
-Foo::search(function(Builder $query)
-{
-	$query->matchAll();
-})
+$laralastica->search('foo', function($query) {
+
+    $query->matchAll();
+    
+});
 ```
 
-### Common Query
-
-To run a common query use the `common` method on the query builder. This takes 4 parameters:
-
-- The column to search
-- The query string to search for
-- The cut off, defaults to 0.001
-- A flag stating if a minimum match should be allowed, defaults to false
-
-For more information about the common query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-common-terms-query.html).
+### Query String Query
 
 ```php
-Foo::search(function(Builder $query)
-{
-	$query->common('foo', 'bar');
-	$query->common('foo', 'bar', 0.001-, true);
-})
+$laralastica->search('foo', function($query) {
+
+    $query->queryString('testing');
+    $query->queryString('testing', function($queryStringQuery) {
+        $queryStringQuery->setDefaultField('foo');
+    });
+    
+});
 ```
 
 ### Range Query
 
-To run a range query use the `range` method on the query builder. This takes 4 parameters:
-
-- The column to search in
-- The range to search in
-- If you are searching for a date you can specify a timezone
-- If you are searching for dates you can specify a date format.
-
-To specify a range you pass an array which gt, gte, lt or lte as keys. So to get any values greater than 3 and less than
-10 you would do the following.
-
 ```php
-Foo::search(function(Builder $query)
-{
-	$range = [
-		'gt' => 3,
-		'lt' => 10
-	];
+$laralastica->search('foo', function($query) {
 
-	$query->range('foo', $range);
-});
-```
-
-To search for dates between the 1st January 1970 and 31st January 1970 you would do the following.
-
-```php
-Foo::search(function(Builder $query)
-{
-	$range => [
-		'gte' => '1970-01-01',
-		'lte' => '1970-01-31'
-	];
-
-	$query->range('foo', $range, '+1:00', 'yyyy-mm-dd');
+    $query->queryString('foo', ['gte' => 1, 'lte' => 20]);
+    $query->queryString('foo', ['gte' => 1, 'lte' => 20], function($rangeQuery) {
+        $rangeQuery->setParam('foo', ['gte' => 1, 'lte' => 20, 'boost' => 1]);
+    });
+    
 });
 ```
 
 ### Regular Expression Query
 
-To run a regular expression query use the `regexp` method. This takes 2 parameters:
-
-- The column being searched
-- The regular expression to search for
-
-For more information about the term query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html).
-
 ```php
-Foo::search(function(Builder $query)
-{
-    $query->regexp('foo', 'b.*r');
+$laralastica->search('foo', function($query) {
+
+    $query->regexp('foo', 'testing');
+    
 });
 ```
 
-
-### Term query
-
-To run a term query use the `term` method. This takes 3 parameters:
-
-- The column to search
-- The term to search for
-- Set the boost to search by, defaults to 1.0
-
-For more information about the term query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-term-query.html).
+### Term Query
 
 ```php
-Foo::search(function(Builder $query)
-{
-    $query->term('foo', 'bar', 2.0);
+$laralastica->search('foo', function($query) {
+
+    $query->term(['foo' => 'bar']);
+    $query->term(['foo' => 'bar'], function($termQuery) {
+        $termQuery->setTerm('baz', 'qux', 2.0);
+    });
+    
 });
 ```
 
 ### Terms Query
 
-To run a terms query use the `terms` method. This takes 3 parameters:
-
-- The column to search in
-- An array of terms
-- The minimum amount of terms to match, defaults to false
-
-For more information about the terms query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-terms-query.html).
-
 ```php
-Foo::search(function(Builder $query)
-{
-    $query->terms('foo', ['foo', 'bar', 'baz'], 2);
+$laralastica->search('foo', function($query) {
+
+    $query->terms('foo', ['bar', 'baz']);
+    $query->terms('foo', ['bar', 'baz'], function($query) {
+        $query->setMinimumMatch(5);
+    });
+    
 });
 ```
 
-### Wildcard Query 
-
-To run a wildcard query use the `wildcard` method. This takes 2 parameters:
-
-- The column being searched
-- The value to search for
-
-For more information about the wildcard query [click here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-wildcard-query.html).
+### Wildcard Query
 
 ```php
-Foo::search(function(Builder $query)
-{
-    $query->wildcard('foo', 'ba*');
+$laralastica->search('foo', function($query) {
+
+    $query->wildcard('foo', 'bar');
+    
 });
+```
+
+## Paginate Results
+
+To get a paginated list of results use the `paginate` method and pass the amount to paginate the results by.
+
+```php
+$laralastica->paginate('foo', function($query) {
+
+    $query->matchAll();
+    
+}, 15);
+```
+
+## Raw Elastica Queries
+
+To run a raw elastica query create the query instance and then pass it to the `query` method.
+
+```php
+$laralastica->search('foo', function($query) {
+
+    $match = new \Elastica\Query\Match();
+
+    $query->query($match);
+    
+});
+```
+
+## The Result Collection
+
+The search method will return an instance of the result collection. This extends the default laravel collection but also adds a couple of laralastica specific methods.
+
+### Total Hits
+
+Gets the total amount of hits matched by the query.
+
+```php
+$results = $laralastica->search('foo', function($query) { $query->matchAll() });
+
+$results->totalHits();
+```
+
+### Maximum Score
+
+Gets the maximum score matched by the search.
+
+```php
+$results = $laralastica->search('foo', function($query) { $query->matchAll() });
+
+$results->maxScore();
+```
+
+### Time Taken
+
+Gets the time taken to execute the elasticsearch query.
+
+```php
+$results = $laralastica->search('foo', function($query) { $query->matchAll() });
+
+$results->totalTime();
 ```

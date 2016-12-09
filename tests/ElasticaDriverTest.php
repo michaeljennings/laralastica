@@ -147,7 +147,7 @@ class ElasticaDriverTest extends TestCase
     public function it_returns_a_term_query()
     {
         $driver = $this->makeDriver();
-        $query = $driver->term(['foo', 'bar']);
+        $query = $driver->term(['foo' => 'bar']);
 
         $this->assertInstanceOf(Term::class, $query);
     }
