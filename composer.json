@@ -1,41 +1,47 @@
 {
-    "name": "michaeljennings/laralastica",
-    "description": "A laravel package that allows you to search eloquent results using elasticsearch.",
-    "keywords": ["elastica", "laravel", "elasticsearch"],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Michael Jennings",
-            "email": "michael.jennings91@gmail.com"
-        }
-    ],
-    "require": {
-        "php": ">=5.5.9",
-        "ruflin/elastica": "~3.0",
-        "illuminate/database": ">=5.0",
-        "illuminate/events": ">=5.0",
-        "illuminate/http": ">=5.0",
-        "illuminate/pagination": ">=5.0"
+  "name": "michaeljennings/laralastica",
+  "description": "A laravel package that allows you to search eloquent results using elasticsearch.",
+  "keywords": [
+    "elastica",
+    "laravel",
+    "elasticsearch"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Michael Jennings",
+      "email": "michael.jennings91@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.9",
+    "ruflin/elastica": "~3.0",
+    "illuminate/database": ">=5.0",
+    "illuminate/events": ">=5.0",
+    "illuminate/http": ">=5.0",
+    "illuminate/pagination": ">=5.0"
+  },
+  "require-dev": {
+    "mockery/mockery": "0.9.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Michaeljennings\\Laralastica\\": "src/"
     },
-    "require-dev": {
-        "mockery/mockery": "0.9.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Michaeljennings\\Laralastica\\": "src/"
-        }
-    },
-    "autoload-dev": {
-      "psr-4": {
-        "Michaeljennings\\Laralastica\\Tests\\": "tests/"
-      },
-      "files": [
-          "src/helpers.php"
-      ]
-    },
-    "extra": {
-        "component": "package",
-        "frameworks": ["Laravel 5"]
-    },
-    "minimum-stability": "stable"
+    "files": [
+      "src/helpers.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Michaeljennings\\Laralastica\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "component": "package",
+    "frameworks": [
+      "Laravel 5"
+    ]
+  },
+  "minimum-stability": "stable"
 }
