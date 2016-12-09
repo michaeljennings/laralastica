@@ -2,6 +2,7 @@
 
 namespace Michaeljennings\Laralastica\Drivers;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\ResultCollection;
 
@@ -31,7 +32,7 @@ class NullDriver implements Driver
      */
     public function paginate($types, array $queries, $page, $perPage, $offset)
     {
-        return [];
+        return new LengthAwarePaginator([], 0, 1, 1);
     }
 
     /**

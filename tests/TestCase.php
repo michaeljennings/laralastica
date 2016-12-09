@@ -1,4 +1,6 @@
-<?php namespace Michaeljennings\Laralastica\Tests; 
+<?php
+
+namespace Michaeljennings\Laralastica\Tests;
 
 use Elastica\Client;
 use Elastica\Connection;
@@ -7,8 +9,8 @@ use Illuminate\Http\Request;
 use Michaeljennings\Laralastica\Laralastica;
 use PHPUnit_Framework_TestCase;
 
-class Base extends PHPUnit_Framework_TestCase {
-
+class TestCase extends PHPUnit_Framework_TestCase
+{
     /**
      * @return Laralastica
      */
@@ -59,5 +61,4 @@ class Base extends PHPUnit_Framework_TestCase {
     {
         return getenv('ES_PORT') ?: Connection::DEFAULT_PORT;
     }
-
 }
