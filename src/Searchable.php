@@ -15,8 +15,6 @@ trait Searchable
      */
     protected static function bootSearchable()
     {
-        $instance = new static;
-
         static::created(function ($model) {
             static::$dispatcher->fire(new IndexesWhenSaved($model));
         });
