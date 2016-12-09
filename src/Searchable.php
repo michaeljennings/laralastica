@@ -1,6 +1,7 @@
 <?php namespace Michaeljennings\Laralastica;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
 use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 
@@ -79,7 +80,7 @@ trait Searchable
      */
     public function getSearchKey()
     {
-        return $this->getKey();
+        return $this->getKeyName();
     }
 
     /**
@@ -160,7 +161,13 @@ trait Searchable
 
         $results = $this->laralastica->search($this->getSearchType(), $searchQuery);
         $searchKey = $key ?: $this->getSearchKey();
-        $values = $results->pluck($searchKey);
+        $values = $results->map(function($result) {
+            return $result->{$this->getSearchKey()};
+        });
+
+        if ($values instanceof Collection) {
+            $values = $values->all();
+        }
 
         if ($sortByResults && ! $results->isEmpty()) {
             $relativeKey = $key ?: $this->getRelativeSearchKey();
@@ -168,7 +175,7 @@ trait Searchable
             $query->orderBy(\DB::raw('FIELD(' . $relativeKey . ', ' . implode(',', $values) . ')'), 'ASC');
         }
 
-        return $query->whereIn($key, $values);
+        return $query->whereIn($searchKey, $values);
     }
 
 }
