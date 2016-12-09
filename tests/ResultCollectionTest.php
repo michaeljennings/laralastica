@@ -51,6 +51,8 @@ class ResultCollectionTest extends TestCase
             ])
         ];
 
-        return new ResultCollection($results, 1, 1, 0.5);
+        $collection = new ResultCollection($results);
+
+        return $collection->setQueryStats(1, 1, 0.5);
     }
 }
