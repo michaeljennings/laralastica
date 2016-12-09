@@ -55,8 +55,12 @@ class ClientManager extends Manager
      */
     public function getDefaultDriver()
     {
-        if ( ! isset($this->config['driver'])) {
+        if ( ! isset($this->config['driver']) && ! is_null($this->config['driver'])) {
             throw new DriverNotSetException("You must set the default driver to connect to in the laralastica config.");
+        }
+
+        if (is_null($this->config['driver'])) {
+            $this->config['driver'] = 'null';
         }
 
         return $this->config['driver'];
