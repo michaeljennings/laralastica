@@ -2,7 +2,7 @@
 
 namespace Michaeljennings\Laralastica\Events;
 
-class RemovesDocumentWhenSaved
+class RemovesDocumentWhenDeleted
 {
     /**
      * The deleted model.
