@@ -21,9 +21,9 @@ use Elastica\Query\Wildcard;
 use Elastica\Result;
 use Elastica\ResultSet;
 use Elastica\Search;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\Contracts\Query;
+use Michaeljennings\Laralastica\LengthAwarePaginator;
 use Michaeljennings\Laralastica\ResultCollection;
 
 class ElasticaDriver implements Driver
@@ -54,6 +54,113 @@ class ElasticaDriver implements Driver
         $this->client = $client;
         $this->index = $index;
         $this->config = $config;
+    }
+
+    /**
+     * Execute the provided queries.
+     *
+     * @param string|array $types
+     * @param array        $queries
+     * @return ResultCollection
+     */
+    public function get($types, array $queries)
+    {
+        $search = $this->newSearch($types);
+        $query = $this->newQuery($queries);
+
+        $query->setSize($this->config['size']);
+        $search->setQuery($query);
+
+        return $this->newResultCollection($search->search());
+    }
+
+    /**
+     * Execute the query and return a paginated list of results.
+     *
+     * @param string|array $types
+     * @param array        $queries
+     * @param int          $page
+     * @param int          $perPage
+     * @param int          $offset
+     * @return LengthAwarePaginator
+     */
+    public function paginate($types, array $queries, $page, $perPage, $offset)
+    {
+        $search = $this->newSearch($types);
+        $query = $this->newQuery($queries);
+
+        $query->setSize($perPage);
+        $query->setFrom($offset);
+
+        $search->setQuery($query);
+
+        $results = $search->search();
+
+        $paginator = new LengthAwarePaginator($this->hydrateResults($results), $results->getTotalHits(), $perPage, $page);
+
+        return $paginator->setQueryStats($results->getTotalHits(), $results->getMaxScore(), $results->getTotalTime());
+    }
+
+    /**
+     * Add a new document to the provided type.
+     *
+     * @param string     $type
+     * @param string|int $id
+     * @param array      $data
+     * @return $this
+     */
+    public function add($type, $id, array $data)
+    {
+        $type = $this->getType($type);
+
+        $document = new Document($id, $data);
+        $type->addDocument($document);
+
+        $this->refreshIndex();
+
+        return $this;
+    }
+
+    /**
+     * Add multiple documents to the elasticsearch type. The data array must be a
+     * multidimensional array with the key as the desired id and the value as
+     * the data to be added to the document.
+     *
+     * @param string $type
+     * @param array  $data
+     * @return $this
+     */
+    public function addMultiple($type, array $data)
+    {
+        $type = $this->getType($type);
+        $documents = [];
+
+        foreach ($data as $id => $values) {
+            $documents[] = new Document($id, $values);
+        }
+
+        $type->addDocuments($documents);
+
+        $this->refreshIndex();
+
+        return $this;
+    }
+
+    /**
+     * Delete a document from the provided type.
+     *
+     * @param string     $type
+     * @param string|int $id
+     * @return $this
+     */
+    public function delete($type, $id)
+    {
+        $type = $this->getType($type);
+        $type->deleteById($id);
+
+        $this->refreshIndex();
+
+        return $this;
     }
 
     /**
@@ -220,111 +327,6 @@ class ElasticaDriver implements Driver
         $query = new Wildcard($key, $value, $boost);
 
         return $this->returnQuery($query, $callback);
-    }
-
-    /**
-     * Execute the provided queries.
-     *
-     * @param string|array $types
-     * @param array        $queries
-     * @return ResultCollection
-     */
-    public function get($types, array $queries)
-    {
-        $search = $this->newSearch($types);
-        $query = $this->newQuery($queries);
-
-        $query->setSize($this->config['size']);
-        $search->setQuery($query);
-
-        return $this->newResultCollection($search->search());
-    }
-
-    /**
-     * Execute the query and return a paginated list of results.
-     *
-     * @param string|array $types
-     * @param array        $queries
-     * @param int          $page
-     * @param int          $perPage
-     * @param int          $offset
-     * @return LengthAwarePaginator
-     */
-    public function paginate($types, array $queries, $page, $perPage, $offset)
-    {
-        $search = $this->newSearch($types);
-        $query = $this->newQuery($queries);
-
-        $query->setSize($perPage);
-        $query->setFrom($offset);
-
-        $search->setQuery($query);
-
-        $results = $search->search();
-
-        return new LengthAwarePaginator($this->hydrateResults($results), $results->getTotalHits(), $perPage, $page);
-    }
-
-    /**
-     * Add a new document to the provided type.
-     *
-     * @param string     $type
-     * @param string|int $id
-     * @param array      $data
-     * @return $this
-     */
-    public function add($type, $id, array $data)
-    {
-        $type = $this->getType($type);
-
-        $document = new Document($id, $data);
-        $type->addDocument($document);
-
-        $this->refreshIndex();
-
-        return $this;
-    }
-
-    /**
-     * Add multiple documents to the elasticsearch type. The data array must be a
-     * multidimensional array with the key as the desired id and the value as
-     * the data to be added to the document.
-     *
-     * @param string $type
-     * @param array  $data
-     * @return $this
-     */
-    public function addMultiple($type, array $data)
-    {
-        $type = $this->getType($type);
-        $documents = [];
-
-        foreach ($data as $id => $values) {
-            $documents[] = new Document($id, $values);
-        }
-
-        $type->addDocuments($documents);
-
-        $this->refreshIndex();
-
-        return $this;
-    }
-
-    /**
-     * Delete a document from the provided type.
-     *
-     * @param string     $type
-     * @param string|int $id
-     * @return $this
-     */
-    public function delete($type, $id)
-    {
-        $type = $this->getType($type);
-        $type->deleteById($id);
-
-        $this->refreshIndex();
-
-        return $this;
     }
 
     /**
