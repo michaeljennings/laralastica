@@ -2,6 +2,7 @@
 
 namespace Michaeljennings\Laralastica;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Michaeljennings\Laralastica\Contracts\Laralastica as LaralasticaContract;
 
@@ -12,14 +13,7 @@ class Laralastica implements LaralasticaContract
      *
      * @var ClientManager
      */
-    private $manager;
-
-    /**
-     * The laralastica config.
-     *
-     * @var array
-     */
-    protected $config;
+    protected $manager;
 
     /**
      * The current request.
@@ -28,10 +22,9 @@ class Laralastica implements LaralasticaContract
      */
     protected $request;
 
-    public function __construct(ClientManager $manager, array $config, Request $request)
+    public function __construct(ClientManager $manager, Request $request)
     {
         $this->manager = $manager;
-        $this->config = $config;
         $this->request = $request;
     }
 
@@ -57,7 +50,7 @@ class Laralastica implements LaralasticaContract
      * @param string|array $types
      * @param callable     $query
      * @param int          $perPage
-     * @return ResultCollection
+     * @return LengthAwarePaginator
      */
     public function paginate($types, callable $query, $perPage)
     {
@@ -67,7 +60,7 @@ class Laralastica implements LaralasticaContract
 
         $query($builder);
 
-        return $this->results = $builder->paginate($types, $page, $perPage, $offset);
+        return $builder->paginate($types, $page, $perPage, $offset);
     }
 
     /**

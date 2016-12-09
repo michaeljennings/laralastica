@@ -4,21 +4,10 @@ namespace Michaeljennings\Laralastica\Tests;
 
 use Elastica\Client;
 use Elastica\Connection;
-use Elastica\Index;
-use Illuminate\Http\Request;
-use Michaeljennings\Laralastica\Laralastica;
 use PHPUnit_Framework_TestCase;
 
 class TestCase extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @return Laralastica
-     */
-    protected function newLaralastica()
-    {
-        return new Laralastica($this->getConfig(), new Request());
-    }
-
     /**
      * Return a mock config array.
      *
@@ -44,12 +33,7 @@ class TestCase extends PHPUnit_Framework_TestCase
      */
     public function getClient()
     {
-        $config = [
-            'host' => $this->getHost(),
-            'port' => $this->getPort(),
-        ];
-
-        return new Client($config);
+        return new Client($this->getConfig()['drivers']['elastica']);
     }
 
     /**
