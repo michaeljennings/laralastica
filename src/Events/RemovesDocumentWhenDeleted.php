@@ -2,6 +2,8 @@
 
 namespace Michaeljennings\Laralastica\Events;
 
+use Illuminate\Database\Eloquent\Model;
+
 class RemovesDocumentWhenDeleted
 {
     /**
