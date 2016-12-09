@@ -3,6 +3,7 @@
 namespace Michaeljennings\Laralastica\Listeners;
 
 use Michaeljennings\Laralastica\Contracts\Laralastica;
+use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 
 class RemovesDocumentBelongingToDeletedModel
 {
