@@ -1,6 +1,5 @@
 <?php namespace Michaeljennings\Laralastica;
 
-use Closure;
 use Illuminate\Database\Eloquent\Model;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
 use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
