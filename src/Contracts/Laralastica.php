@@ -2,8 +2,6 @@
 
 namespace Michaeljennings\Laralastica\Contracts;
 
-use Michaeljennings\Laralastica\ResultCollection;
-
 interface Laralastica
 {
     /**
@@ -11,7 +9,7 @@ interface Laralastica
      *
      * @param string|array $types
      * @param callable     $query
-     * @return ResultCollection
+     * @return \Michaeljennings\Laralastica\ResultCollection
      */
     public function search($types, callable $query);
 
@@ -21,7 +19,7 @@ interface Laralastica
      * @param string|array $types
      * @param callable     $query
      * @param int          $perPage
-     * @return ResultCollection
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function paginate($types, callable $query, $perPage);
 
