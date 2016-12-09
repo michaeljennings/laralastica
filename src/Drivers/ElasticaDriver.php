@@ -210,7 +210,9 @@ class ElasticaDriver implements Driver
      */
     public function match($field = null, $value = null, callable $callback = null)
     {
-        $query = new Match($field, $value);
+        $query = new Match();
+
+        $query->setFieldQuery($field, $value);
 
         return $this->returnQuery($query, $callback);
     }
