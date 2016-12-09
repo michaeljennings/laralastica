@@ -4,8 +4,9 @@ namespace Michaeljennings\Laralastica;
 
 use Illuminate\Support\Collection;
 use Michaeljennings\Laralastica\Contracts\Result;
+use Michaeljennings\Laralastica\Contracts\ResultCollection as ResultCollectionContract;
 
-class ResultCollection extends Collection
+class ResultCollection extends Collection implements ResultCollectionContract
 {
     /**
      * The total results found.
