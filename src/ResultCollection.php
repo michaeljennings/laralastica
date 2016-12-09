@@ -3,7 +3,6 @@
 namespace Michaeljennings\Laralastica;
 
 use Illuminate\Support\Collection;
-use Michaeljennings\Laralastica\Contracts\Result;
 use Michaeljennings\Laralastica\Contracts\ResultCollection as ResultCollectionContract;
 
 class ResultCollection extends Collection implements ResultCollectionContract
@@ -30,10 +29,10 @@ class ResultCollection extends Collection implements ResultCollectionContract
     protected $totalTime;
 
     /**
-     * @param Result[] $results
-     * @param int      $totalHits
-     * @param float    $maxScore
-     * @param float    $totalTime
+     * @param \Michaeljennings\Laralastica\Contracts\Result[] $results
+     * @param int                                             $totalHits
+     * @param float                                           $maxScore
+     * @param float                                           $totalTime
      */
     public function __construct(array $results, $totalHits, $maxScore, $totalTime)
     {
