@@ -6,7 +6,11 @@ use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 
 trait Searchable
 {
-
+    /**
+     * The laralastica instance.
+     *
+     * @var Laralastica
+     */
     protected $laralastica;
 
     /**
