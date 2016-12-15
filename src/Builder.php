@@ -66,9 +66,7 @@ class Builder implements BuilderContract
      */
     public function query($query)
     {
-        $this->queries[] = $this->newQuery($query);
-
-        return $this;
+        return $this->queries[] = $this->newQuery($query);
     }
 
     /**
@@ -139,8 +137,6 @@ class Builder implements BuilderContract
     {
         $query = call_user_func_array([$this->driver, $method], $args);
 
-        $this->query($query);
-
-        return $this;
+        return $this->query($query);
     }
 }
