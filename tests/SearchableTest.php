@@ -3,8 +3,9 @@
 namespace Michaeljennings\Laralastica\Tests;
 
 use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
+use Mockery;
 
-class SearchableTest extends TestCase
+class SearchableTest extends HelperTestCase
 {
     /** @test */
     public function it_gets_the_indexable_attributes()
@@ -71,5 +72,29 @@ class SearchableTest extends TestCase
         $this->assertInternalType('float', $attributes['price']);
         $this->assertInternalType('boolean', $attributes['active']);
         $this->assertInternalType('boolean', $attributes['online']);
+    }
+
+    /** @test */
+    public function it_gets_laralastica_by_its_test()
+    {
+        $model = new TestModel();
+
+        $query = Mockery::mock("Illuminate\\Database\\Query\\Builder");
+
+        $query->shouldReceive('whereIn')
+              ->once();
+
+        $query->shouldNotReceive('orderBy');
+
+        $model->scopeSearch($query, function ($builder) {
+            $builder->matchAll();
+        });
+    }
+
+    public function tearDown()
+    {
+        Mockery::close();
+
+        parent::tearDown();
     }
 }
