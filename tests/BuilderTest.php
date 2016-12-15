@@ -26,7 +26,7 @@ class BuilderTest extends TestCase
 
         $query = $builder->match('foo', 'bar');
 
-        $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Builder::class, $query);
+        $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Query::class, $query);
     }
 
     /** @test */
@@ -37,7 +37,7 @@ class BuilderTest extends TestCase
 
         $query = $builder->query($query);
 
-        $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Builder::class, $query);
+        $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Query::class, $query);
     }
 
     /** @test */
