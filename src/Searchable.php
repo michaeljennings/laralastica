@@ -73,7 +73,7 @@ trait Searchable
      */
     public function getRelativeSearchKey()
     {
-        return $this->getTable() . '.' / $this->getSearchKey();
+        return $this->getTable() . '.' . $this->getSearchKey();
     }
 
     /**

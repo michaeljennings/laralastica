@@ -19,11 +19,27 @@ class TestModel extends Model
         return 'id';
     }
 
+    public function getSearchDataTypes()
+    {
+        return [
+            'id' => 'int',
+            'sort_order' => 'integer',
+            'name' => 'string',
+            'price' => 'float',
+            'active' => 'bool',
+            'online' => 'boolean',
+        ];
+    }
+
     public function getAttributes()
     {
         return [
-            'id' => 1,
+            'id' => '1',
+            'sort_order' => '10',
             'name' => 'test',
+            'price' => '9.99',
+            'active' => 1,
+            'online' => 1,
         ];
     }
 
