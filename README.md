@@ -44,9 +44,25 @@ The package also comes with a facade, to use it add it to your aliases array in 
 
 ### Configuration
 
-Finally publish the package config using `php artisan vendor:publish`. Once the config has published you can edit the
-`config/laralastica.php' file to set your elasticsearch connection. To set the connections you can either pass the 
-host and port to connect to, or alternatively you can pass a url to connect with.
+Finally publish the package config using `php artisan vendor:publish`. Once the config has published you can edit the `config/laralastica.php' file to set your elasticsearch connection.
+ 
+The package comes with 2 drivers: elastica, and null. By default the package will use the elastica driver. The null driver is mainly testing purposes where you don't want to have an elasticsearch instance running.
+
+```php
+'driver' => 'elastica',
+```
+
+Next you will need to set the elasticsearch index you want to connect to.
+
+```php
+'index' => 'yourindex',
+```
+
+Finally you need to configure your elasticsearch connection. Out of the box the package comes ready to support multiple connections. 
+
+However you can pass through any of the parameters the elastica client can receive, check the [elastica documentation](https://github.com/ruflin/Elastica) for more information.
+
+To set the connection you wish to use either enter the host and port you want to connect to, or the url to connect with.
 
 ```php
 'drivers' => [
@@ -57,6 +73,9 @@ host and port to connect to, or alternatively you can pass a url to connect with
         [
           'host' => 'localhost',
           'port' => 9200
+        ],
+        [
+          'url' => 'https://user:pass@your-search.com/'
         ]
       ]
     ],
