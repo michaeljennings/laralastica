@@ -8,6 +8,7 @@ use Michaeljennings\Laralastica\Drivers\ArrayDriver;
 use Michaeljennings\Laralastica\Drivers\ElasticaDriver;
 use Michaeljennings\Laralastica\Drivers\NullDriver;
 use Michaeljennings\Laralastica\Exceptions\DriverNotSetException;
+use Michaeljennings\Laralastica\Exceptions\IndexNotSetException;
 
 class ClientManager extends Manager
 {
@@ -27,9 +28,14 @@ class ClientManager extends Manager
      * Create the elastica driver.
      *
      * @return Client
+     * @throws IndexNotSetException
      */
     protected function createElasticaDriver()
     {
+        if ( ! isset($this->config['index'])) {
+            throw new IndexNotSetException("You must set the index to connect to in the laralastica config.");
+        }
+
         $config = isset($this->config['drivers']['elastica']) ? $this->config['drivers']['elastica'] : [];
         $client = new Client($config);
         $index = $client->getIndex($this->config['index']);
@@ -55,7 +61,7 @@ class ClientManager extends Manager
      */
     public function getDefaultDriver()
     {
-        if ( ! isset($this->config['driver']) && ! is_null($this->config['driver'])) {
+        if ( ! array_key_exists('driver', $this->config)) {
             throw new DriverNotSetException("You must set the default driver to connect to in the laralastica config.");
         }
 
