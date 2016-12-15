@@ -63,7 +63,7 @@ class SearchableTest extends TestCase
         $this->assertInternalType('integer', $attributes['active']);
         $this->assertInternalType('integer', $attributes['online']);
 
-        $attributes = $model->transformAttributes($attributecls);
+        $attributes = $model->transformAttributes($attributes);
 
         $this->assertInternalType('integer', $attributes['id']);
         $this->assertInternalType('integer', $attributes['sort_order']);
