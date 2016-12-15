@@ -15,30 +15,13 @@ trait Searchable
     protected $laralastica;
 
     /**
-     * Add the model event listeners to fire the IndexesWhenSaved and
-     * RemovesDocumentWhenDeleted events.
+     * Boot the trait.
      */
     protected static function bootSearchable()
     {
-        static::created(function ($model) {
-            static::$dispatcher->fire(new IndexesWhenSaved($model));
-        });
-
-        static::saved(function ($model) {
-            static::$dispatcher->fire(new IndexesWhenSaved($model));
-        });
-
-        static::updated(function ($model) {
-            static::$dispatcher->fire(new IndexesWhenSaved($model));
-        });
-
-        static::deleted(function ($model) {
-            static::$dispatcher->fire(new RemovesDocumentWhenDeleted($model));
-        });
-
-        static::restored(function ($model) {
-            static::$dispatcher->fire(new IndexesWhenSaved($model));
-        });
+        if ( ! is_null(static::$dispatcher)) {
+            static::observe(new Observer(static::$dispatcher));
+        }
     }
 
     /**
@@ -136,14 +119,6 @@ trait Searchable
     }
 
     /**
-     * @return array
-     */
-    public static function getEagerLoaded()
-    {
-        return [];
-    }
-
-    /**
      * Run the provided query on the elastic search index and then run a where
      * in.
      *
@@ -161,7 +136,7 @@ trait Searchable
 
         $results = $this->laralastica->search($this->getSearchType(), $searchQuery);
         $searchKey = $key ?: $this->getSearchKey();
-        $values = $results->map(function($result) {
+        $values = $results->map(function ($result) {
             return $result->{$this->getSearchKey()};
         });
 
