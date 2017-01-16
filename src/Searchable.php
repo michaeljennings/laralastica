@@ -57,11 +57,21 @@ trait Searchable
     }
 
     /**
-     * Return the key to be used when indexing a document.
+     * Return the search key value.
      *
      * @return mixed
      */
     public function getSearchKey()
+    {
+        return $this->getAttribute($this->getSearchKeyName());
+    }
+
+    /**
+     * Return the key to be used when indexing a document.
+     *
+     * @return mixed
+     */
+    public function getSearchKeyName()
     {
         return $this->getKeyName();
     }
@@ -73,7 +83,7 @@ trait Searchable
      */
     public function getRelativeSearchKey()
     {
-        return $this->getTable() . '.' . $this->getSearchKey();
+        return $this->getTable() . '.' . $this->getSearchKeyName();
     }
 
     /**
@@ -135,9 +145,9 @@ trait Searchable
         }
 
         $results = $this->laralastica->search($this->getSearchType(), $searchQuery);
-        $searchKey = $key ?: $this->getSearchKey();
+        $searchKey = $key ?: $this->getSearchKeyName();
         $values = $results->map(function ($result) {
-            return $result->{$this->getSearchKey()};
+            return $result->{$this->getSearchKeyName()};
         });
 
         if ($values instanceof Collection) {
