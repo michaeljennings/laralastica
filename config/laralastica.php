@@ -51,5 +51,27 @@ return [
             ],
             'size'  => 10,
         ]
+    ],
+
+    /*
+     |--------------------------------------------------------------------------
+     | Indexable Models
+     |--------------------------------------------------------------------------
+     |
+     | Here you can set any models you want to be re-indexed when the
+     | laralastica:index command is run.
+     |
+     | The models are added as an associative array, with the key being a custom
+     | string to reference the model by, and the value being the full namespace
+     | of the model.
+     |
+     | If you want to re-index just one of the models, then pass the key through
+     | to the command like so - laralastica:index {key}
+     |
+    */
+
+    'indexable' => [
+        'users' => \App\User::class,
     ]
+
 ];
