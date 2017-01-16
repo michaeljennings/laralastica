@@ -3,6 +3,7 @@
 namespace Michaeljennings\Laralastica;
 
 use Illuminate\Events\EventServiceProvider;
+use Michaeljennings\Laralastica\Commands\ReIndexLaralastica;
 
 class LaralasticaServiceProvider extends EventServiceProvider
 {
@@ -50,5 +51,7 @@ class LaralasticaServiceProvider extends EventServiceProvider
         });
 
         $this->app->alias('Michaeljennings\Laralastica\Contracts\Laralastica', 'laralastica');
+
+        $this->commands([ReIndexLaralastica::class]);
     }
 }
