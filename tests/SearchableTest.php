@@ -40,7 +40,15 @@ class SearchableTest extends HelperTestCase
     {
         $model = new TestModel();
 
-        $this->assertEquals('id', $model->getSearchKey());
+        $this->assertEquals('1', $model->getSearchKey());
+    }
+
+    /** @test */
+    public function it_gets_the_search_key_name()
+    {
+        $model = new TestModel();
+
+        $this->assertEquals('id', $model->getSearchKeyName());
     }
 
     /** @test */

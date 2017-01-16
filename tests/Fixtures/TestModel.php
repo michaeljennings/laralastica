@@ -9,6 +9,15 @@ class TestModel extends Model
 {
     use Searchable;
 
+    protected $attributes = [
+        'id' => '1',
+        'sort_order' => '10',
+        'name' => 'test',
+        'price' => '9.99',
+        'active' => 1,
+        'online' => 1,
+    ];
+
     public function getTable()
     {
         return 'test';
@@ -33,14 +42,7 @@ class TestModel extends Model
 
     public function getAttributes()
     {
-        return [
-            'id' => '1',
-            'sort_order' => '10',
-            'name' => 'test',
-            'price' => '9.99',
-            'active' => 1,
-            'online' => 1,
-        ];
+        return $this->attributes;
     }
 
     public static function resolveConnection($connection = null)
