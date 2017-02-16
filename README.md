@@ -13,7 +13,7 @@ indexing and removing documents when you save or delete models.
 - [The Result Collection](#the-result-collection)
 
 ## Installation
-This package requires at least PHP 5.4 and Laravel >=5.0.
+This package requires at least PHP 5.5 and Laravel >=5.0.
 
 To install through composer either run `composer require michaeljennings/laralastica` or add the package to you 
 composer.json.
