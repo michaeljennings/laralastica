@@ -157,7 +157,17 @@ trait Searchable
         if ($sortByResults && ! $results->isEmpty()) {
             $relativeKey = $key ?: $this->getRelativeSearchKey();
 
-            $query->orderBy(\DB::raw('FIELD(' . $relativeKey . ', ' . implode(',', $values) . ')'), 'ASC');
+            $relativeKey = $key ?: $this->getRelativeSearchKey();
+
+            $order = "CASE $relativeKey ";
+
+            foreach ($values as $key => $value) {
+                $order .= 'WHEN ' . $value . ' THEN ' . $key . ' ';
+            }
+
+            $order .= 'END';
+
+            $query->orderBy(\DB::raw($order));
         }
 
         return $query->whereIn($searchKey, $values);
