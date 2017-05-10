@@ -155,12 +155,30 @@ trait Searchable
         }
 
         if ($sortByResults && ! $results->isEmpty()) {
-            $relativeKey = $key ?: $this->getRelativeSearchKey();
-
-            $query->orderBy(\DB::raw('FIELD(' . $relativeKey . ', ' . implode(',', $values) . ')'), 'ASC');
+            $query->orderBy(\DB::raw($this->buildOrderByConstraints($values, $key)));
         }
 
         return $query->whereIn($searchKey, $values);
+    }
+
+    /**
+     * Build the order by constraint
+     *
+     * @param mixed $values The values to order by
+     * @param string $key The search key
+     * @return string
+     */
+    protected function buildOrderByConstraints($values, $key)
+    {
+        $relativeKey = $key ?: $this->getRelativeSearchKey();
+        $order = "CASE $relativeKey ";
+        foreach ($values as $key => $value) {
+            $order .= 'WHEN ' . $value . ' THEN ' . $key . ' ';
+        }
+
+        $order .= 'END';
+
+        return $order;
     }
 
 }
