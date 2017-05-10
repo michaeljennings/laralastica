@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Michaeljennings\Laralastica\Contracts\ResultCollection;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
 use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 
@@ -155,16 +156,30 @@ trait Searchable
         }
 
         if ($sortByResults && ! $results->isEmpty()) {
-            $relativeKey = $key ?: $this->getRelativeSearchKey();
-            $order = "CASE $relativeKey ";
-            foreach ($values as $key => $value) {
-                $order .= 'WHEN ' . $value . ' THEN ' . $key . ' ';
-            }
-            $order .= 'END';
-            $query->orderBy(\DB::raw($order));
+            $query->orderBy(\DB::raw($this->buildOrderByConstraints($values, $key)));
         }
 
         return $query->whereIn($searchKey, $values);
+    }
+
+    /**
+     * Build the order by constraint
+     *
+     * @param ResultCollection $values The values to order by
+     * @param string $key The search key
+     * @return string
+     */
+    protected function buildOrderByConstraints(ResultCollection $values, $key)
+    {
+        $relativeKey = $key ?: $this->getRelativeSearchKey();
+        $order = "CASE $relativeKey ";
+        foreach ($values as $key => $value) {
+            $order .= 'WHEN ' . $value . ' THEN ' . $key . ' ';
+        }
+
+        $order .= 'END';
+
+        return $order;
     }
 
 }
