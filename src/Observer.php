@@ -30,6 +30,16 @@ class Observer
     {
         $this->dispatcher->fire(new IndexesWhenSaved($model));
     }
+    
+    /**
+     * Handle the saved event for the model.
+     *
+     * @param Model $model
+     */
+    public function saved(Model $model)
+    {
+        $this->created($model);
+    }
 
     /**
      * Handle the updated event for the model.
