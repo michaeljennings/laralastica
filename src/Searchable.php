@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Michaeljennings\Laralastica\Contracts\ResultCollection;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
 use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 
@@ -165,11 +164,11 @@ trait Searchable
     /**
      * Build the order by constraint
      *
-     * @param ResultCollection $values The values to order by
+     * @param mixed $values The values to order by
      * @param string $key The search key
      * @return string
      */
-    protected function buildOrderByConstraints(ResultCollection $values, $key)
+    protected function buildOrderByConstraints($values, $key)
     {
         $relativeKey = $key ?: $this->getRelativeSearchKey();
         $order = "CASE $relativeKey ";
