@@ -145,7 +145,7 @@ trait Searchable
         }
 
         $results = $this->laralastica->search($this->getSearchType(), $searchQuery);
-        $searchKey = $key ?: $this->getSearchKeyName();
+        $searchKey = $key ?: $this->getRelativeSearchKey();
         $values = $results->map(function ($result) {
             return $result->{$this->getSearchKeyName()};
         });
