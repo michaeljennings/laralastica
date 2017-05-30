@@ -14,7 +14,7 @@ return [
      |
     */
 
-    'driver' => 'elastica',
+    'driver' => env('ELASTICSEARCH_DRIVER', 'elastica'),
 
     /*
      |--------------------------------------------------------------------------
@@ -27,7 +27,7 @@ return [
      |
     */
 
-    'index' => 'yourindex',
+    'index' => env('ELASTICSEARCH_INDEX', 'yourindex'),
 
     /*
      |--------------------------------------------------------------------------
@@ -44,8 +44,8 @@ return [
                 'connectionStrategy' => 'RoundRobin',
                 "connections" => [
                     [
-                        'host' => 'localhost',
-                        'port' => 9200
+                        'host' => env('ELASTICSEARCH_HOST', 'localhost'),
+                        'port' => env('ELASTICSEARCH_PORT', 9200)
                     ]
                 ]
             ],
