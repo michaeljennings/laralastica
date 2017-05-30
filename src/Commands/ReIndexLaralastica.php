@@ -3,8 +3,10 @@
 namespace Michaeljennings\Laralastica\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Database\Eloquent\Model;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
+use Michaeljennings\Laralastica\Jobs\IndexModels;
 
 class ReIndexLaralastica extends Command
 {
@@ -13,7 +15,7 @@ class ReIndexLaralastica extends Command
      *
      * @var string
      */
-    protected $signature = 'laralastica:index {index?}';
+    protected $signature = 'laralastica:index {index?} {--queue}';
 
     /**
      * The console command description.
@@ -30,13 +32,23 @@ class ReIndexLaralastica extends Command
     protected $config;
 
     /**
-     * Create a new command instance.
+     * The job dispatcher.
+     *
+     * @var Dispatcher
      */
-    public function __construct()
+    protected $dispatcher;
+
+    /**
+     * Create a new command instance.
+     *
+     * @param Dispatcher $dispatcher
+     */
+    public function __construct(Dispatcher $dispatcher)
     {
         parent::__construct();
 
         $this->config = config('laralastica') ?: [];
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -48,6 +60,22 @@ class ReIndexLaralastica extends Command
     {
         $models = $this->getIndexableModels($this->argument('index'));
 
+        if ($this->option('queue')) {
+            $this->indexViaQueue($models);
+        } else {
+            $this->index($models);
+        }
+
+        $this->info("\n\nThe re-indexing has been completed successfully\n");
+    }
+
+    /**
+     * Re-index all of the provided models.
+     *
+     * @param $models
+     */
+    protected function index($models)
+    {
         foreach ($models as $key => $model) {
             $this->info("\n\nRe-indexing " . $key . "\n");
 
@@ -63,8 +91,22 @@ class ReIndexLaralastica extends Command
 
             $bar->finish();
         }
+    }
 
-        $this->info("\n\nThe re-indexing has been completed successfully\n");
+    /**
+     * Index the provided models via the queue.
+     *
+     * @param $models
+     */
+    protected function indexViaQueue($models)
+    {
+        foreach ($models as $key => $model) {
+            $this->info("\n\nQueuing " . $key . "\n");
+
+            $model->chunk(1000, function($indexable) {
+                $this->dispatcher->dispatch(new IndexModels($indexable));
+            });
+        }
     }
 
     /**
