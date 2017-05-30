@@ -15,6 +15,8 @@ class ReIndexCommandTest extends OrchestraTestCase
      */
     public function it_re_indexes_the_cluster()
     {
+        factory(TestModel::class, 3)->create();
+
         Artisan::call('laralastica:index');
 
         $result = Artisan::output();
@@ -29,6 +31,8 @@ class ReIndexCommandTest extends OrchestraTestCase
      */
     public function it_reindexes_a_specific_index()
     {
+        factory(TestModel::class, 3)->create();
+
         Artisan::call('laralastica:index', [
             'index' => 'test'
         ]);
@@ -45,6 +49,8 @@ class ReIndexCommandTest extends OrchestraTestCase
      */
     public function it_queues_the_re_indexing()
     {
+        factory(TestModel::class, 3)->create();
+
         Artisan::call('laralastica:index', [
             '--queue' => true
         ]);
@@ -61,6 +67,8 @@ class ReIndexCommandTest extends OrchestraTestCase
      */
     public function it_queues_a_specific_index_re_indexing()
     {
+        factory(TestModel::class, 3)->create();
+
         Artisan::call('laralastica:index', [
             'index' => 'test',
             '--queue' => true
