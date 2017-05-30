@@ -16,6 +16,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\Contracts\Result;
 use Michaeljennings\Laralastica\Drivers\ElasticaDriver;
+use Michaeljennings\Laralastica\Query;
 use Michaeljennings\Laralastica\ResultCollection;
 
 class ElasticaDriverTest extends TestCase
@@ -276,6 +277,87 @@ class ElasticaDriverTest extends TestCase
         $result = $driver->delete('foo', 1);
 
         $this->assertInstanceOf(Driver::class, $result);
+    }
+
+    /** @test */
+    public function it_sets_the_type_of_query_to_must()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->addMultiple('foo', [
+            1 => [
+                'id' => 1,
+                'foo' => 'bar',
+            ],
+            2 => [
+                'id' => 2,
+                'foo' => 'baz',
+            ],
+        ]);
+
+        $query = $driver->match('foo', 'bar');
+        $query = new Query($query);
+
+        $this->assertInstanceOf(Query::class, $query->must());
+
+        $results = $driver->get('foo', [$query]);
+
+        $this->assertInstanceOf(ResultCollection::class, $results);
+        $this->assertInstanceOf(Result::class, $results->first());
+    }
+
+    /** @test */
+    public function it_sets_the_type_of_query_to_should()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->addMultiple('foo', [
+            1 => [
+                'id' => 1,
+                'foo' => 'bar',
+            ],
+            2 => [
+                'id' => 2,
+                'foo' => 'baz',
+            ],
+        ]);
+
+        $query = $driver->match('foo', 'bar');
+        $query = new Query($query);
+
+        $this->assertInstanceOf(Query::class, $query->should());
+
+        $results = $driver->get('foo', [$query]);
+
+        $this->assertInstanceOf(ResultCollection::class, $results);
+        $this->assertInstanceOf(Result::class, $results->first());
+    }
+
+    /** @test */
+    public function it_sets_the_type_of_query_to_must_not()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->addMultiple('foo', [
+            1 => [
+                'id' => 1,
+                'foo' => 'bar',
+            ],
+            2 => [
+                'id' => 2,
+                'foo' => 'baz',
+            ],
+        ]);
+
+        $query = $driver->match('foo', 'bar');
+        $query = new Query($query);
+
+        $this->assertInstanceOf(Query::class, $query->mustNot());
+
+        $results = $driver->get('foo', [$query]);
+
+        $this->assertInstanceOf(ResultCollection::class, $results);
+        $this->assertInstanceOf(Result::class, $results->first());
     }
 
     protected function makeDriver()

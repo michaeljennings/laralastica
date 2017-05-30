@@ -28,6 +28,23 @@ class ObserverTest extends TestCase
     }
 
     /** @test */
+    public function it_fires_the_index_when_saved_event_when_a_model_is_saved()
+    {
+        $model = new TestModel();
+        $dispatcher = Mockery::mock('Illuminate\Contracts\Events\Dispatcher')
+                             ->shouldReceive('fire')
+                             ->once()
+                             ->with(Mockery::on(function ($event) {
+                                 return $event instanceof IndexesWhenSaved;
+                             }))
+                             ->getMock();
+
+        $observer = new Observer($dispatcher);
+
+        $observer->saved($model);
+    }
+
+    /** @test */
     public function it_fires_the_index_when_saved_event_when_a_model_is_updated()
     {
         $dispatcher = Mockery::mock('Illuminate\Contracts\Events\Dispatcher')

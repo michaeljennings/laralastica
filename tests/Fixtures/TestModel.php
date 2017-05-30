@@ -9,24 +9,9 @@ class TestModel extends Model
 {
     use Searchable;
 
-    protected $attributes = [
-        'id' => '1',
-        'sort_order' => '10',
-        'name' => 'test',
-        'price' => '9.99',
-        'active' => 1,
-        'online' => 1,
-    ];
+    protected $table = 'test_data';
 
-    public function getTable()
-    {
-        return 'test';
-    }
-
-    public function getKeyName()
-    {
-        return 'id';
-    }
+    protected $guarded = [];
 
     public function getSearchDataTypes()
     {
@@ -38,15 +23,5 @@ class TestModel extends Model
             'active' => 'bool',
             'online' => 'boolean',
         ];
-    }
-
-    public function getAttributes()
-    {
-        return $this->attributes;
-    }
-
-    public static function resolveConnection($connection = null)
-    {
-        return null;
     }
 }
