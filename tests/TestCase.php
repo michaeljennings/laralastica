@@ -4,6 +4,7 @@ namespace Michaeljennings\Laralastica\Tests;
 
 use Elastica\Client;
 use Elastica\Connection;
+use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
 use PHPUnit_Framework_TestCase;
 
 class TestCase extends PHPUnit_Framework_TestCase
@@ -24,6 +25,9 @@ class TestCase extends PHPUnit_Framework_TestCase
                     'port' => $this->getPort(),
                     'size' => 10,
                 ]
+            ],
+            'indexable' => [
+                'test' => TestModel::class,
             ]
         ];
     }
