@@ -5,9 +5,9 @@ namespace Michaeljennings\Laralastica\Tests;
 use Michaeljennings\Laralastica\LaralasticaServiceProvider;
 use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
 use Orchestra\Database\ConsoleServiceProvider;
-use Orchestra\Testbench\TestCase;
+use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
-class SearchableTest extends TestCase
+class SearchableTest extends OrchestraTestCase
 {
     /**
      * @test
