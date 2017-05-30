@@ -82,6 +82,22 @@ class ReIndexCommandTest extends OrchestraTestCase
     }
 
     /**
+     * @test
+     * @group
+     * @expectedException \Michaeljennings\Laralastica\Exceptions\IndexableModelNotSetException
+     */
+    public function it_throws_an_exception_if_the_specified_index_is_not_in_the_config()
+    {
+        Artisan::call('laralastica:index', [
+            'index' => 'does_not_exist',
+        ]);
+
+        $result = Artisan::output();
+
+        dd($result);
+    }
+
+    /**
      * Setup the test environment.
      */
     public function setUp()

@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Database\Eloquent\Model;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
+use Michaeljennings\Laralastica\Exceptions\IndexableModelNotSetException;
 use Michaeljennings\Laralastica\Jobs\IndexModels;
 
 class ReIndexLaralastica extends Command
