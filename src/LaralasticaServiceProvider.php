@@ -44,6 +44,15 @@ class LaralasticaServiceProvider extends EventServiceProvider
      */
     public function register()
     {
+        $this->registerClient();
+        $this->registerCommands();
+    }
+
+    /**
+     * Register the laralastica client.
+     */
+    protected function registerClient()
+    {
         $this->app->bind('Michaeljennings\Laralastica\Contracts\Laralastica', function($app) {
             $manager = new ClientManager(config('laralastica'));
 
@@ -51,7 +60,13 @@ class LaralasticaServiceProvider extends EventServiceProvider
         });
 
         $this->app->alias('Michaeljennings\Laralastica\Contracts\Laralastica', 'laralastica');
+    }
 
+    /**
+     * Register any artisan commands.
+     */
+    protected function registerCommands()
+    {
         $this->commands([ReIndexLaralastica::class]);
     }
 }
