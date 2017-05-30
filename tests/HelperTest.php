@@ -5,9 +5,9 @@ namespace Michaeljennings\Laralastica\Tests;
 use Michaeljennings\Laralastica\Contracts\ResultCollection;
 use Michaeljennings\Laralastica\Laralastica;
 use Michaeljennings\Laralastica\LaralasticaServiceProvider;
-use Orchestra\Testbench\TestCase;
+use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
-class HelperTest extends TestCase
+class HelperTest extends OrchestraTestCase
 {
     /** @test */
     public function assert_helper_returns_laralastica_instance()
