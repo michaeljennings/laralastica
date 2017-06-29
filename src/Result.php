@@ -25,7 +25,7 @@ class Result implements ResultContract
      */
     public function get($key)
     {
-        return $this->attributes[$key];
+        return isset($this->attributes[$key]) ? $this->attributes[$key] : null;
     }
 
     /**

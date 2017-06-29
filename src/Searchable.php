@@ -173,7 +173,9 @@ trait Searchable
         $relativeKey = $key ?: $this->getRelativeSearchKey();
         $order = "CASE $relativeKey ";
         foreach ($values as $key => $value) {
-            $order .= 'WHEN ' . $value . ' THEN ' . $key . ' ';
+            if ($value) {
+                $order .= 'WHEN ' . $value . ' THEN ' . $key . ' ';
+            }
         }
 
         $order .= 'END';
