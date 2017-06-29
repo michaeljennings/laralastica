@@ -30,6 +30,16 @@ class ResultTest extends TestCase
         $this->assertEquals('bar', $result->foo);
     }
 
+    /**
+     * @test
+     */
+    public function it_returns_null_if_the_attributes_is_not_set()
+    {
+        $result = $this->makeResult();
+
+        $this->assertNull($result->test);
+    }
+
     /** @test */
     public function it_converts_nested_items_to_a_result_instance()
     {
