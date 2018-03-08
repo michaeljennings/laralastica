@@ -73,7 +73,7 @@ interface Driver
      * @param string|null   $field
      * @param string|null   $value
      * @param callable|null $callback
-     * @return AbstractQuery
+     * @return mixed
      */
     public function matchPhrase($field = null, $value = null, callable $callback = null);
 
@@ -85,7 +85,7 @@ interface Driver
      * @param string|null   $field
      * @param string|null   $value
      * @param callable|null $callback
-     * @return AbstractQuery
+     * @return mixed
      */
     public function matchPhrasePrefix($field = null, $value = null, callable $callback = null);
 
@@ -106,7 +106,7 @@ interface Driver
      * @param array|null    $fields
      * @param string|null   $value
      * @param callable|null $callback
-     * @return AbstractQuery
+     * @return mixed
      */
     public function multiMatch(array $fields = null, $value = null, callable $callback = null);
 
