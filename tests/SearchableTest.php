@@ -120,8 +120,8 @@ class SearchableTest extends OrchestraTestCase
         })->get();
 
         $this->assertEquals(2, $results->count());
-        $this->assertEquals('Tests', $results->first()->name);
         $this->assertEquals('Test', $results->last()->name);
+        $this->assertEquals('Tests', $results->first()->name);
     }
 
     /**
