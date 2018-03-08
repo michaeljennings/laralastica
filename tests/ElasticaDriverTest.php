@@ -6,6 +6,9 @@ use Elastica\Query\Common;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
+use Elastica\Query\MatchPhrase;
+use Elastica\Query\MatchPhrasePrefix;
+use Elastica\Query\MultiMatch;
 use Elastica\Query\QueryString;
 use Elastica\Query\Range;
 use Elastica\Query\Regexp;
@@ -85,12 +88,76 @@ class ElasticaDriverTest extends TestCase
     }
 
     /** @test */
+    public function it_returns_a_match_phrase_query()
+    {
+        $driver = $this->makeDriver();
+        $query = $driver->matchPhrase('foo', 'bar');
+
+        $this->assertInstanceOf(MatchPhrase::class, $query);
+    }
+
+    /** @test */
+    public function it_returns_a_match_phrase_query_and_runs_a_callback_on_it()
+    {
+        $driver = $this->makeDriver();
+        $query = $driver->matchPhrase(null, null, function($query) {
+            $query->setFieldBoost('foo');
+        });
+
+        $this->assertInstanceOf(MatchPhrase::class, $query);
+        $this->assertEquals(1, $query->toArray()['match_phrase']['foo']['boost']);
+    }
+
+    /** @test */
+    public function it_returns_a_match_phrase_prefix_query()
+    {
+        $driver = $this->makeDriver();
+        $query = $driver->matchPhrasePrefix('foo', 'bar');
+
+        $this->assertInstanceOf(MatchPhrasePrefix::class, $query);
+    }
+
+    /** @test */
+    public function it_returns_a_match_phrase_prefix_query_and_runs_a_callback_on_it()
+    {
+        $driver = $this->makeDriver();
+        $query = $driver->matchPhrasePrefix(null, null, function($query) {
+            $query->setFieldBoost('foo');
+        });
+
+        $this->assertInstanceOf(MatchPhrasePrefix::class, $query);
+        $this->assertEquals(1, $query->toArray()['match_phrase_prefix']['foo']['boost']);
+    }
+
+    /** @test */
     public function it_returns_a_match_all_query()
     {
         $driver = $this->makeDriver();
         $query = $driver->matchAll();
 
         $this->assertInstanceOf(MatchAll::class, $query);
+    }
+
+
+    /** @test */
+    public function it_returns_a_multi_match_prefix_query()
+    {
+        $driver = $this->makeDriver();
+        $query = $driver->multiMatch(['foo'], 'bar');
+
+        $this->assertInstanceOf(MultiMatch::class, $query);
+    }
+
+    /** @test */
+    public function it_returns_a_multi_match_prefix_query_and_runs_a_callback_on_it()
+    {
+        $driver = $this->makeDriver();
+        $query = $driver->multiMatch(null, null, function($query) {
+            $query->setMinimumShouldMatch('70%');
+        });
+        
+        $this->assertInstanceOf(MultiMatch::class, $query);
+        $this->assertEquals('70%', $query->toArray()['multi_match']['minimum_should_match']);
     }
 
     /** @test */

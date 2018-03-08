@@ -2,6 +2,7 @@
 
 namespace Michaeljennings\Laralastica\Drivers;
 
+use Michaeljennings\Laralastica\Contracts\AbstractQuery;
 use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\LengthAwarePaginator;
 use Michaeljennings\Laralastica\ResultCollection;
@@ -85,6 +86,37 @@ class NullDriver implements Driver
         //
     }
 
+
+    /**
+     * Create a new match phrase query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query-phrase.html
+     *
+     * @param string|null   $field
+     * @param string|null   $value
+     * @param callable|null $callback
+     * @return null
+     */
+    public function matchPhrase($field = null, $value = null, callable $callback = null)
+    {
+        //
+    }
+
+    /**
+     * Create a new match phrase prefix query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query-phrase-prefix.html
+     *
+     * @param string|null   $field
+     * @param string|null   $value
+     * @param callable|null $callback
+     * @return null
+     */
+    public function matchPhrasePrefix($field = null, $value = null, callable $callback = null)
+    {
+        //
+    }
+
     /**
      * Create a match all query.
      *
@@ -93,6 +125,21 @@ class NullDriver implements Driver
      * @return mixed
      */
     public function matchAll()
+    {
+        //
+    }
+
+    /**
+     * Create a new multi match query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-multi-match-query.html
+     *
+     * @param array|null    $fields
+     * @param string|null   $value
+     * @param callable|null $callback
+     * @return null
+     */
+    public function multiMatch(array $fields = null, $value = null, callable $callback = null)
     {
         //
     }

@@ -66,6 +66,30 @@ interface Driver
     public function match($field = null, $value = null, callable $callback = null);
 
     /**
+     * Create a new match phrase query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query-phrase.html
+     *
+     * @param string|null   $field
+     * @param string|null   $value
+     * @param callable|null $callback
+     * @return mixed
+     */
+    public function matchPhrase($field = null, $value = null, callable $callback = null);
+
+    /**
+     * Create a new match phrase prefix query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query-phrase-prefix.html
+     *
+     * @param string|null   $field
+     * @param string|null   $value
+     * @param callable|null $callback
+     * @return mixed
+     */
+    public function matchPhrasePrefix($field = null, $value = null, callable $callback = null);
+
+    /**
      * Create a match all query.
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html
@@ -73,6 +97,18 @@ interface Driver
      * @return mixed
      */
     public function matchAll();
+
+    /**
+     * Create a new multi match query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-multi-match-query.html
+     *
+     * @param array|null    $fields
+     * @param string|null   $value
+     * @param callable|null $callback
+     * @return mixed
+     */
+    public function multiMatch(array $fields = null, $value = null, callable $callback = null);
 
     /**
      * Create a query string query.

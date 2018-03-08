@@ -12,6 +12,9 @@ use Elastica\Query\Common;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
+use Elastica\Query\MatchPhrase;
+use Elastica\Query\MatchPhrasePrefix;
+use Elastica\Query\MultiMatch;
 use Elastica\Query\QueryString;
 use Elastica\Query\Range;
 use Elastica\Query\Regexp;
@@ -96,7 +99,8 @@ class ElasticaDriver implements Driver
 
         $results = $search->search();
 
-        $paginator = new LengthAwarePaginator($this->hydrateResults($results), $results->getTotalHits(), $perPage, $page);
+        $paginator = new LengthAwarePaginator($this->hydrateResults($results), $results->getTotalHits(), $perPage,
+            $page);
 
         return $paginator->setQueryStats($results->getTotalHits(), $results->getMaxScore(), $results->getTotalTime());
     }
@@ -112,7 +116,6 @@ class ElasticaDriver implements Driver
     public function add($type, $id, array $data)
     {
         $type = $this->getType($type);
-
         $document = new Document($id, $data);
         $type->addDocument($document);
 
@@ -218,6 +221,44 @@ class ElasticaDriver implements Driver
     }
 
     /**
+     * Create a new match phrase query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query-phrase.html
+     *
+     * @param string|null   $field
+     * @param string|null   $value
+     * @param callable|null $callback
+     * @return AbstractQuery
+     */
+    public function matchPhrase($field = null, $value = null, callable $callback = null)
+    {
+        $query = new MatchPhrase();
+
+        $query->setFieldQuery($field, $value);
+
+        return $this->returnQuery($query, $callback);
+    }
+
+    /**
+     * Create a new match phrase prefix query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-query-phrase-prefix.html
+     *
+     * @param string|null   $field
+     * @param string|null   $value
+     * @param callable|null $callback
+     * @return AbstractQuery
+     */
+    public function matchPhrasePrefix($field = null, $value = null, callable $callback = null)
+    {
+        $query = new MatchPhrasePrefix();
+
+        $query->setFieldQuery($field, $value);
+
+        return $this->returnQuery($query, $callback);
+    }
+
+    /**
      * Create a match all query.
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-match-all-query.html
@@ -227,6 +268,31 @@ class ElasticaDriver implements Driver
     public function matchAll()
     {
         return new MatchAll();
+    }
+
+    /**
+     * Create a new multi match query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/6.2/query-dsl-multi-match-query.html
+     *
+     * @param array|null    $fields
+     * @param string|null   $value
+     * @param callable|null $callback
+     * @return AbstractQuery
+     */
+    public function multiMatch(array $fields = null, $value = null, callable $callback = null)
+    {
+        $query = new MultiMatch();
+
+        if ($fields) {
+            $query->setFields($fields);
+        }
+
+        if ($value) {
+            $query->setQuery($value);
+        }
+
+        return $this->returnQuery($query, $callback);
     }
 
     /**

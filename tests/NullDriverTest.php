@@ -62,11 +62,35 @@ class NullDriverTest extends TestCase
     }
 
     /** @test */
+    public function it_returns_null_when_creating_a_match_phrase_query()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertNull($driver->matchPhrase());
+    }
+
+    /** @test */
+    public function it_returns_null_when_creating_a_match_phrase_prefix_query()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertNull($driver->matchPhrasePrefix());
+    }
+
+    /** @test */
     public function it_returns_null_when_creating_a_match_all_query()
     {
         $driver = $this->makeDriver();
 
         $this->assertNull($driver->matchAll());
+    }
+
+    /** @test */
+    public function it_returns_null_when_creating_a_multi_match_all_query()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertNull($driver->multiMatch());
     }
 
     /** @test */
