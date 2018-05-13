@@ -22,7 +22,7 @@ composer.json.
 "michaeljennings/laralastica": "~2.1"
 ```
 
-Then add the laralastica service provider into your providers array in `config/app.php`.
+For Laravel 5.5 and upwards, the service provider and facade will be loaded automatically. For older versions of Laravel, you will need to add the laralastica service provider into your providers array in `config/app.php`.
 
 ```php
 'providers' => array(
