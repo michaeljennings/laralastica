@@ -48,7 +48,15 @@
     "component": "package",
     "frameworks": [
       "Laravel 5"
-    ]
+    ],
+    "laravel": {
+        "providers": [
+            "Michaeljennings\\Laralastica\\LaralasticaServiceProvider"
+        ],
+        "aliases": {
+            "Laralastica": "Michaeljennings\\Laralastica\\Facades\\Laralastica"
+        }
+    }
   },
   "minimum-stability": "stable"
 }
