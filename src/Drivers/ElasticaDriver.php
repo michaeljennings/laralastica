@@ -505,7 +505,13 @@ class ElasticaDriver implements Driver
      */
     protected function newResult(Result $result)
     {
-        return new \Michaeljennings\Laralastica\Result($result->getData());
+        return new \Michaeljennings\Laralastica\Result(
+            $result->getData(),
+            $result,
+            $result->getIndex(),
+            $result->getType(),
+            $result->getScore()
+        );
     }
 
     /**
