@@ -7,6 +7,7 @@ indexing and removing documents when you save or delete models.
     - [Configuration](#configuration)
 - [Usage](#usage)
 - [Searching](#searching)
+    - [Searching Soft Deleted Records](#searching-soft-deleted-records)
     - [Searching Without the Searchable Trait](#searching-without-the-searchable-trait)
 - [Queries](#queries)
 - [Paginate Results](#paginate-results)
@@ -19,7 +20,7 @@ To install through composer either run `composer require michaeljennings/laralas
 composer.json.
 
 ```php
-"michaeljennings/laralastica": "~2.1"
+"michaeljennings/laralastica": "^2.4"
 ```
 
 For Laravel 5.5 and upwards, the service provider and facade will be loaded automatically. For older versions of Laravel, you will need to add the laralastica service provider into your providers array in `config/app.php`.
