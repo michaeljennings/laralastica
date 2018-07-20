@@ -1,0 +1,61 @@
+<?php
+
+namespace Michaeljennings\Laralastica;
+
+use Elastica\Query\Exists;
+use Michaeljennings\Laralastica\Contracts\Builder;
+
+trait SearchSoftDeletes
+{
+    use Searchable;
+
+    /**
+     * Run the elasticsearch query and ignore soft deleted results.
+     *
+     * @param callable $query
+     * @param callable $searchQuery
+     * @param string|null $key
+     * @param bool $sortByResults
+     * @return mixed
+     */
+    public function scopeSearch($query, callable $searchQuery, $key = null, $sortByResults = true)
+    {
+        $searchQuery = $this->addSoftDeleteQuery($searchQuery, 'mustNot');
+
+        return $this->runSearch($query, $searchQuery, $key, $sortByResults);
+    }
+
+    /**
+     * Run the elasticsearch query and only get soft deleted results.
+     *
+     * @param callable $query
+     * @param callable $searchQuery
+     * @param string|null $key
+     * @param bool $sortByResults
+     * @return mixed
+     */
+    public function scopeSearchTrashed($query, callable $searchQuery, $key = null, $sortByResults = true)
+    {
+        $searchQuery = $this->addSoftDeleteQuery($searchQuery, 'must');
+
+        return $this->runSearch($query, $searchQuery, $key, $sortByResults);
+    }
+
+    /**
+     * Add the soft delete query to the builder query.
+     *
+     * @param callable $searchQuery
+     * @param string $level
+     * @return callable
+     */
+    protected function addSoftDeleteQuery(callable $searchQuery, $level)
+    {
+        return function (Builder $builder) use ($searchQuery, $level) {
+            $searchQuery($builder);
+
+            $exists = new Exists($this->getDeletedAtColumn());
+
+            $builder->query($exists)->$level();
+        };
+    }
+}

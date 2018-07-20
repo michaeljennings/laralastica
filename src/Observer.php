@@ -58,7 +58,9 @@ class Observer
      */
     public function deleted(Model $model)
     {
-        $this->dispatcher->fire(new RemovesDocumentWhenDeleted($model));
+        if ( ! in_array(SearchSoftDeletes::class, class_uses($model))) {
+            $this->dispatcher->fire(new RemovesDocumentWhenDeleted($model));
+        }
     }
 
     /**

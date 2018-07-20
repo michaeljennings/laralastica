@@ -1,9 +1,13 @@
-<?php namespace Michaeljennings\Laralastica;
+<?php
+
+namespace Michaeljennings\Laralastica;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Michaeljennings\Laralastica\Contracts\Builder;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
 use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
+use Michaeljennings\Laralastica\SearchSoftDeletes;
 
 trait Searchable
 {
@@ -19,7 +23,7 @@ trait Searchable
      */
     protected static function bootSearchable()
     {
-        if ( ! is_null(static::$dispatcher)) {
+        if (!is_null(static::$dispatcher)) {
             static::observe(new Observer(static::$dispatcher));
         }
     }
@@ -96,7 +100,7 @@ trait Searchable
     {
         $searchDataTypes = $this->getSearchDataTypes();
 
-        if ( ! empty($searchDataTypes)) {
+        if (!empty($searchDataTypes)) {
             foreach ($attributes as $key => $attribute) {
                 if (array_key_exists($key, $searchDataTypes)) {
                     switch ($searchDataTypes[$key]) {
@@ -132,13 +136,27 @@ trait Searchable
      * Run the provided query on the elastic search index and then run a where
      * in.
      *
-     * @param callable    $query
-     * @param callable    $searchQuery
+     * @param callable $query
+     * @param callable $searchQuery
      * @param string|null $key
-     * @param bool        $sortByResults
+     * @param bool $sortByResults
      * @return mixed
      */
     public function scopeSearch($query, callable $searchQuery, $key = null, $sortByResults = true)
+    {
+        return $this->runSearch($query, $searchQuery, $key, $sortByResults);
+    }
+
+    /**
+     * Execute the elasticsearch query and then scope the query.
+     *
+     * @param mixed $query
+     * @param callable $searchQuery
+     * @param string|null $key
+     * @param bool $sortByResults
+     * @return mixed
+     */
+    protected function runSearch($query, callable $searchQuery, $key = null, $sortByResults = true)
     {
         if ( ! isset($this->laralastica)) {
             $this->laralastica = laralastica();
@@ -154,7 +172,7 @@ trait Searchable
             $values = $values->all();
         }
 
-        if ($sortByResults && ! $results->isEmpty()) {
+        if ($sortByResults && !$results->isEmpty()) {
             $query->orderBy(\DB::raw($this->buildOrderByConstraints($values, $key)));
         }
 

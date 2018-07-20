@@ -1,0 +1,291 @@
+<?php
+
+namespace Michaeljennings\Laralastica\Tests;
+
+use Carbon\Carbon;
+use Michaeljennings\Laralastica\LaralasticaServiceProvider;
+use Michaeljennings\Laralastica\Tests\Fixtures\TestSoftDeleteModel;
+use Orchestra\Database\ConsoleServiceProvider;
+use Orchestra\Testbench\TestCase as OrchestraTestCase;
+
+class SearchSoftDeletesTest extends OrchestraTestCase
+{
+    /**
+     * @test
+     */
+    public function it_gets_the_indexable_attributes()
+    {
+        $model = factory(TestSoftDeleteModel::class)->create();
+
+        $attributes = $model->getIndexableAttributes($model);
+
+        $this->assertArrayHasKey('id', $attributes);
+        $this->assertArrayHasKey('sort_order', $attributes);
+        $this->assertArrayHasKey('name', $attributes);
+        $this->assertArrayHasKey('price', $attributes);
+        $this->assertArrayHasKey('active', $attributes);
+        $this->assertArrayHasKey('online', $attributes);
+    }
+
+    /**
+     * @test
+     */
+    public function it_gets_the_search_types_for_the_model()
+    {
+        $model = new TestSoftDeleteModel();
+        $types = $model->getSearchDataTypes();
+
+        $this->assertArrayHasKey('id', $types);
+        $this->assertArrayHasKey('sort_order', $types);
+        $this->assertArrayHasKey('name', $types);
+        $this->assertArrayHasKey('price', $types);
+        $this->assertArrayHasKey('active', $types);
+        $this->assertArrayHasKey('online', $types);
+    }
+
+    /**
+     * @test
+     */
+    public function it_gets_the_elasticsearch_type_for_the_model()
+    {
+        $model = new TestSoftDeleteModel();
+
+        $this->assertEquals('test_data', $model->getSearchType());
+    }
+
+    /**
+     * @test
+     */
+    public function it_gets_the_search_key_for_the_model()
+    {
+        $model = factory(TestSoftDeleteModel::class)->create();
+
+        $this->assertEquals($model->id, $model->getSearchKey());
+    }
+
+    /**
+     * @test
+     */
+    public function it_gets_the_search_key_name()
+    {
+        $model = new TestSoftDeleteModel();
+
+        $this->assertEquals('id', $model->getSearchKeyName());
+    }
+
+    /**
+     * @test
+     */
+    public function it_gets_the_relative_key_name()
+    {
+        $model = new TestSoftDeleteModel();
+
+        $this->assertEquals('test_data.id', $model->getRelativeSearchKey());
+    }
+
+    /** @test */
+    public function it_transforms_the_attributes()
+    {
+        $model = factory(TestSoftDeleteModel::class)->create();
+        $attributes = $model->getIndexableAttributes($model);
+
+        $this->assertInternalType('integer', $attributes['id']);
+        $this->assertInternalType('integer', $attributes['sort_order']);
+        $this->assertInternalType('string', $attributes['name']);
+        $this->assertInternalType('float', $attributes['price']);
+        $this->assertInternalType('boolean', $attributes['active']);
+        $this->assertInternalType('boolean', $attributes['online']);
+
+        $attributes = $model->transformAttributes($attributes);
+
+        $this->assertInternalType('integer', $attributes['id']);
+        $this->assertInternalType('integer', $attributes['sort_order']);
+        $this->assertInternalType('string', $attributes['name']);
+        $this->assertInternalType('float', $attributes['price']);
+        $this->assertInternalType('boolean', $attributes['active']);
+        $this->assertInternalType('boolean', $attributes['online']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_gets_the_search_results()
+    {
+        factory(TestSoftDeleteModel::class)->create(['name' => 'Tests']);
+        factory(TestSoftDeleteModel::class)->create(['name' => 'Test']);
+        $shouldNotMatch = factory(TestSoftDeleteModel::class)->create(['name' => 'Test', 'deleted_at' => new Carbon()]);
+
+        $results = TestSoftDeleteModel::search(function($builder) {
+            $builder->match('name', 'Test', function($query) {
+                $query->setFieldFuzziness('name', 2);
+            });
+        })->get();
+
+        $this->assertEquals(2, $results->count());
+        $this->assertEquals('Test', $results->first()->name);
+        $this->assertEquals('Tests', $results->last()->name);
+        $this->assertNotContains($shouldNotMatch->id, $results->pluck('id')->all());
+    }
+
+    /**
+     * @test
+     */
+    public function it_search_trashed_records()
+    {
+        factory(TestSoftDeleteModel::class)->create(['name' => 'Tests', 'deleted_at' => new Carbon()]);
+        factory(TestSoftDeleteModel::class)->create(['name' => 'Test', 'deleted_at' => new Carbon()]);
+        $shouldNotMatch = factory(TestSoftDeleteModel::class)->create(['name' => 'Test']);
+
+        $results = TestSoftDeleteModel::searchTrashed(function($builder) {
+            $builder->match('name', 'Test', function($query) {
+                $query->setFieldFuzziness('name', 2);
+            });
+        })->get();
+
+        $this->assertEquals(2, $results->count());
+        $this->assertEquals('Test', $results->first()->name);
+        $this->assertEquals('Tests', $results->last()->name);
+        $this->assertNotContains($shouldNotMatch->id, $results->pluck('id')->all());
+    }
+
+    /**
+     * @test
+     */
+    public function it_doesnt_bind_the_observer_if_the_dispatcher_is_not_set()
+    {
+        TestSoftDeleteModel::unsetEventDispatcher();
+
+        $model = new TestSoftDeleteModel();
+
+        $this->assertNull($model::saving(function() {}));
+    }
+
+    /**
+     * Setup the test environment.
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->loadMigrationsFrom(realpath(__DIR__.'/database/migrations'));
+        $this->artisan('migrate');
+
+        $this->withFactories(__DIR__.'/database/factories');
+    }
+
+    protected function getPackageProviders($app)
+    {
+        return [LaralasticaServiceProvider::class, ConsoleServiceProvider::class];
+    }
+
+//    /** @test */
+//    public function it_gets_the_indexable_attributes()
+//    {
+//        $model = new TestSoftDeleteModel();
+//        $attributes = $model->getIndexableAttributes($model);
+//
+//        $this->assertContains('1', $attributes);
+//        $this->assertContains('test', $attributes);
+//    }
+//
+//    /** @test */
+//    public function it_gets_the_search_data_types()
+//    {
+//        $model = new TestSoftDeleteModel();
+//        $types = $model->getSearchDataTypes();
+//
+//        $this->assertArrayHasKey('id', $types);
+//        $this->assertContains('int', $types);
+//    }
+//
+//    /** @test */
+//    public function it_gets_the_search_type_name()
+//    {
+//        $model = new TestSoftDeleteModel();
+//
+//        $this->assertEquals('test', $model->getSearchType());
+//    }
+//
+//    /** @test */
+//    public function it_gets_the_search_key()
+//    {
+//        $model = new TestSoftDeleteModel();
+//
+//        $this->assertEquals('1', $model->getSearchKey());
+//    }
+//
+//    /** @test */
+//    public function it_gets_the_search_key_name()
+//    {
+//        $model = new TestSoftDeleteModel();
+//
+//        $this->assertEquals('id', $model->getSearchKeyName());
+//    }
+//
+//    /** @test */
+//    public function it_gets_the_relative_search_key()
+//    {
+//        $model = new TestSoftDeleteModel();
+//
+//        $this->assertEquals('test.id', $model->getRelativeSearchKey());
+//    }
+//
+//    /** @test */
+//    public function it_transforms_the_attributes()
+//    {
+//        $model = new TestSoftDeleteModel();
+//        $attributes = $model->getIndexableAttributes($model);
+//
+//        $this->assertInternalType('string', $attributes['id']);
+//        $this->assertInternalType('string', $attributes['sort_order']);
+//        $this->assertInternalType('string', $attributes['name']);
+//        $this->assertInternalType('string', $attributes['price']);
+//        $this->assertInternalType('integer', $attributes['active']);
+//        $this->assertInternalType('integer', $attributes['online']);
+//
+//        $attributes = $model->transformAttributes($attributes);
+//
+//        $this->assertInternalType('integer', $attributes['id']);
+//        $this->assertInternalType('integer', $attributes['sort_order']);
+//        $this->assertInternalType('string', $attributes['name']);
+//        $this->assertInternalType('float', $attributes['price']);
+//        $this->assertInternalType('boolean', $attributes['active']);
+//        $this->assertInternalType('boolean', $attributes['online']);
+//    }
+//
+//    /** @test */
+//    public function it_gets_laralastica_by_its_test()
+//    {
+//        $model = new TestSoftDeleteModel();
+//
+//        $query = Mockery::mock("Illuminate\\Database\\Query\\Builder");
+//
+//        $query->shouldReceive('whereIn')
+//              ->once();
+//
+//        $query->shouldNotReceive('orderBy');
+//
+//        $model->scopeSearch($query, function ($builder) {
+//            $builder->matchAll();
+//        });
+//    }
+//
+//    /**
+//     * @test
+//     */
+//    public function it_doesnt_bind_the_observer_if_the_dispatcher_is_not_set()
+//    {
+//        TestSoftDeleteModel::unsetEventDispatcher();
+//
+//        $model = new TestSoftDeleteModel();
+//
+//        $this->assertNull($model::saving(function() {}));
+//    }
+//
+//    public function tearDown()
+//    {
+//        Mockery::close();
+//
+//        parent::tearDown();
+//    }
+}
