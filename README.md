@@ -202,6 +202,27 @@ Foo::where('foo', 'bar')->search(function(Builder $query) {
 })->orderBy('baz')->get();
 ```
 
+### Searching Soft Deleted Records
+
+By default laralastica will delete the elasticsearch record when a model is deleted. 
+
+Occasionally you may want to search against your soft deleted records, to do that you implement the `SearchSoftDeletes` trait instead of the `Searchable` trait in your model.
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Michaeljennings\Laralastica\SearchSoftDeletes;
+
+class Foo extends Model 
+{
+	use SearchSoftDeletes;
+}
+```
+This adds adds two new methods - `searchWithTrashed` and `searchOnlyTrashed`.
+
+Both methods take the same parameters as the search method, but `searchWithTrashed` will search both soft deleted and non-soft deleted results, and `searchOnlyTrashed` will only get soft deleted results.
+
+To only search for non-soft deleted results just use the `search` method as usual.
+
 ### Searching Without the Searchable Trait
 
 It is also possible to use Laralastica without using the searchable trait. To do so you can either dependency inject 
