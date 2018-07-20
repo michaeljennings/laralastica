@@ -6,6 +6,7 @@ use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
 use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 use Michaeljennings\Laralastica\Observer;
 use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
+use Michaeljennings\Laralastica\Tests\Fixtures\TestSoftDeleteModel;
 use Mockery;
 
 class ObserverTest extends TestCase
@@ -91,6 +92,23 @@ class ObserverTest extends TestCase
 
         $observer = new Observer($dispatcher);
         $model = new TestModel();
+
+        $observer->deleted($model);
+    }
+
+    /** @test */
+    public function it_does_not_remove_the_document_if_the_model_search_soft_deletes()
+    {
+        $dispatcher = Mockery::mock('Illuminate\Contracts\Events\Dispatcher')
+                             ->shouldReceive('fire')
+                             ->times(0)
+                             ->with(Mockery::on(function ($event) {
+                                 return $event instanceof RemovesDocumentWhenDeleted;
+                             }))
+                             ->getMock();
+
+        $observer = new Observer($dispatcher);
+        $model = new TestSoftDeleteModel();
 
         $observer->deleted($model);
     }
