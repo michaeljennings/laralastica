@@ -30,7 +30,7 @@ class Observer
     {
         $this->dispatcher->fire(new IndexesWhenSaved($model));
     }
-    
+
     /**
      * Handle the saved event for the model.
      *

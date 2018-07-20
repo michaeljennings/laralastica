@@ -113,7 +113,7 @@ class SearchSoftDeletesTest extends OrchestraTestCase
     {
         factory(TestSoftDeleteModel::class)->create(['name' => 'Tests']);
         factory(TestSoftDeleteModel::class)->create(['name' => 'Test']);
-        $shouldNotMatch = factory(TestSoftDeleteModel::class)->create(['name' => 'Test', 'deleted_at' => new Carbon()]);
+        $shouldNotMatch = factory(TestSoftDeleteModel::class)->create(['name' => 'Test', 'deleted_at' => (string) new Carbon()]);
 
         $results = TestSoftDeleteModel::search(function($builder) {
             $builder->match('name', 'Test', function($query) {
@@ -130,13 +130,13 @@ class SearchSoftDeletesTest extends OrchestraTestCase
     /**
      * @test
      */
-    public function it_search_trashed_records()
+    public function it_searches_only_trashed()
     {
-        factory(TestSoftDeleteModel::class)->create(['name' => 'Tests', 'deleted_at' => new Carbon()]);
-        factory(TestSoftDeleteModel::class)->create(['name' => 'Test', 'deleted_at' => new Carbon()]);
+        factory(TestSoftDeleteModel::class)->create(['name' => 'Tests', 'deleted_at' => (string) new Carbon()]);
+        factory(TestSoftDeleteModel::class)->create(['name' => 'Test', 'deleted_at' => (string) new Carbon()]);
         $shouldNotMatch = factory(TestSoftDeleteModel::class)->create(['name' => 'Test']);
 
-        $results = TestSoftDeleteModel::searchTrashed(function($builder) {
+        $results = TestSoftDeleteModel::searchOnlyTrashed(function($builder) {
             $builder->match('name', 'Test', function($query) {
                 $query->setFieldFuzziness('name', 2);
             });
@@ -146,6 +146,28 @@ class SearchSoftDeletesTest extends OrchestraTestCase
         $this->assertEquals('Test', $results->first()->name);
         $this->assertEquals('Tests', $results->last()->name);
         $this->assertNotContains($shouldNotMatch->id, $results->pluck('id')->all());
+    }
+
+    /**
+     * @test
+     */
+    public function it_searches_with_trashed()
+    {
+        factory(TestSoftDeleteModel::class)->create(['name' => 'Tests', 'deleted_at' => (string) new Carbon()]);
+        factory(TestSoftDeleteModel::class)->create(['name' => 'Test', 'deleted_at' => (string) new Carbon()]);
+        $shouldNotMatch = factory(TestSoftDeleteModel::class)->create(['name' => 'Test']);
+
+        $results = TestSoftDeleteModel::searchWithTrashed(function($builder) {
+            $builder->match('name', 'Test', function($query) {
+                $query->setFieldFuzziness('name', 2);
+            });
+        })->get();
+
+        $this->assertEquals(3, $results->count());
+        $this->assertEquals('Test', $results->first()->name);
+        $this->assertEquals('Tests', $results[1]->name);
+        $this->assertEquals('Test', $results->last()->name);
+        $this->assertContains($shouldNotMatch->id, $results->pluck('id')->all());
     }
 
     /**

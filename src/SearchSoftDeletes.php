@@ -26,6 +26,25 @@ trait SearchSoftDeletes
     }
 
     /**
+     * Run the elasticsearch query and match both soft deleted and
+     * non-soft deleted results.
+     *
+     * @param callable $query
+     * @param callable $searchQuery
+     * @param string|null $key
+     * @param bool $sortByResults
+     * @return mixed
+     */
+    public function scopeSearchWithTrashed($query, callable $searchQuery, $key = null, $sortByResults = true)
+    {
+        $searchQuery = $this->addSoftDeleteQuery($searchQuery, 'should');
+
+        $query->withTrashed();
+
+        return $this->runSearch($query, $searchQuery, $key, $sortByResults);
+    }
+
+    /**
      * Run the elasticsearch query and only get soft deleted results.
      *
      * @param callable $query
@@ -34,9 +53,11 @@ trait SearchSoftDeletes
      * @param bool $sortByResults
      * @return mixed
      */
-    public function scopeSearchTrashed($query, callable $searchQuery, $key = null, $sortByResults = true)
+    public function scopeSearchOnlyTrashed($query, callable $searchQuery, $key = null, $sortByResults = true)
     {
         $searchQuery = $this->addSoftDeleteQuery($searchQuery, 'must');
+
+        $query->onlyTrashed();
 
         return $this->runSearch($query, $searchQuery, $key, $sortByResults);
     }
