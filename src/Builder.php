@@ -62,11 +62,30 @@ class Builder implements BuilderContract
      * Add a new query.
      *
      * @param mixed $query
-     * @return $this
+     * @return \Michaeljennings\Laralastica\Contracts\Query
      */
     public function query($query)
     {
         return $this->queries[] = $this->newQuery($query);
+    }
+
+    /**
+     * Add a new filter.
+     *
+     * @param mixed $filter
+     * @return \Michaeljennings\Laralastica\Contracts\Filter
+     */
+    public function filter($filter)
+    {
+        if (is_callable($filter)) {
+            $builder = new static($this->manager);
+
+            $filter($builder);
+
+            return $this->queries[] = $this->newFilter($builder);
+        }
+
+        return $this->queries[] = $this->newFilter($filter);
     }
 
     /**
@@ -123,6 +142,27 @@ class Builder implements BuilderContract
     protected function newQuery($query)
     {
         return new Query($query);
+    }
+
+    /**
+     * Create a new filter.
+     *
+     * @param mixed $filter
+     * @return Filter
+     */
+    protected function newFilter($filter)
+    {
+        return new Filter($filter);
+    }
+
+    /**
+     * Get all of the queries registered in the builder.
+     *
+     * @return array
+     */
+    public function getQueries()
+    {
+        return $this->queries;
     }
 
     /**

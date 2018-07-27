@@ -7,7 +7,6 @@ use Michaeljennings\Laralastica\ResultCollection;
 
 interface Builder
 {
-
     /**
      * Execute the query.
      *
@@ -31,9 +30,17 @@ interface Builder
      * Add a new query.
      *
      * @param mixed $query
-     * @return \Michaeljennings\Laralastica\Builder
+     * @return \Michaeljennings\Laralastica\Contracts\Query
      */
     public function query($query);
+
+    /**
+     * Add a new filter.
+     *
+     * @param mixed $filter
+     * @return \Michaeljennings\Laralastica\Contracts\Filter
+     */
+    public function filter($filter);
 
     /**
      * Add a new document to the provided type.
@@ -64,4 +71,11 @@ interface Builder
      * @return \Michaeljennings\Laralastica\Builder
      */
     public function delete($type, $id);
+
+    /**
+     * Get all of the queries registered in the builder.
+     *
+     * @return array
+     */
+    public function getQueries();
 }

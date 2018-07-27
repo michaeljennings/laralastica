@@ -74,9 +74,9 @@ trait SearchSoftDeletes
         return function (Builder $builder) use ($searchQuery, $level) {
             $searchQuery($builder);
 
-            $exists = new Exists($this->getDeletedAtColumn());
-
-            $builder->query($exists)->$level();
+            $builder->filter(function($builder) use ($level) {
+                $builder->exists($this->getDeletedAtColumn())->$level();
+            });
         };
     }
 }

@@ -9,6 +9,7 @@ use Elastica\Query as ElasticaQuery;
 use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Common;
+use Elastica\Query\Exists;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
@@ -24,7 +25,9 @@ use Elastica\Query\Wildcard;
 use Elastica\Result;
 use Elastica\ResultSet;
 use Elastica\Search;
+use Michaeljennings\Laralastica\Contracts\Builder;
 use Michaeljennings\Laralastica\Contracts\Driver;
+use Michaeljennings\Laralastica\Contracts\Filter;
 use Michaeljennings\Laralastica\Contracts\Query;
 use Michaeljennings\Laralastica\LengthAwarePaginator;
 use Michaeljennings\Laralastica\ResultCollection;
@@ -180,6 +183,22 @@ class ElasticaDriver implements Driver
     public function common($field, $query, $cutoffFrequency, callable $callback = null)
     {
         $query = new Common($field, $query, $cutoffFrequency);
+
+        return $this->returnQuery($query, $callback);
+    }
+
+    /**
+     * Create a new exists query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html
+     *
+     * @param string        $key
+     * @param callable|null $callback
+     * @return AbstractQuery
+     */
+    public function exists($key, callable $callback = null)
+    {
+        $query = new Exists($key);
 
         return $this->returnQuery($query, $callback);
     }
@@ -426,11 +445,7 @@ class ElasticaDriver implements Driver
     protected function newQuery(array $queries)
     {
         if ( ! empty($queries)) {
-            $container = new BoolQuery();
-
-            foreach ($queries as $query) {
-                $container = $this->addQueryToContainer($query, $container);
-            }
+            $container = $this->addQueries(new BoolQuery(), $queries);
 
             $query = new ElasticaQuery($container);
             $query->addSort('_score');
@@ -439,6 +454,26 @@ class ElasticaDriver implements Driver
         }
 
         return $query;
+    }
+
+    /**
+     * Add the queries to the container.
+     *
+     * @param BoolQuery $container
+     * @param array     $queries
+     * @return BoolQuery
+     */
+    protected function addQueries(BoolQuery $container, array $queries)
+    {
+        foreach ($queries as $query) {
+            if ($query instanceof Filter) {
+                $container = $this->addFilterToContainer($query, $container);
+            } else {
+                $container = $this->addQueryToContainer($query, $container);
+            }
+        }
+
+        return $container;
     }
 
     /**
@@ -461,6 +496,31 @@ class ElasticaDriver implements Driver
                 $container->addMustNot($query->getQuery());
                 break;
         }
+
+        return $container;
+    }
+
+    /**
+     * Add the filter to the query container.
+     *
+     * @param Filter    $filter
+     * @param BoolQuery $container
+     * @return BoolQuery
+     */
+    protected function addFilterToContainer(Filter $filter, BoolQuery $container)
+    {
+        $filterQuery = new BoolQuery();
+        $filter = $filter->getFilter();
+
+        if ($filter instanceof Builder) {
+            foreach ($filter->getQueries() as $query) {
+                $this->addQueryToContainer($query, $filterQuery);
+            }
+        } else {
+            $this->addQueryToContainer($filter, $filterQuery);
+        }
+
+        $container->addFilter($filterQuery);
 
         return $container;
     }

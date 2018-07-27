@@ -57,6 +57,20 @@ class NullDriver implements Driver
     }
 
     /**
+     * Create a new exists query.
+     *
+     * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html
+     *
+     * @param string        $key
+     * @param callable|null $callback
+     * @return AbstractQuery
+     */
+    public function exists($key, callable $callback = null)
+    {
+        //
+    }
+
+    /**
      * Create a new fuzzy query.
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html
