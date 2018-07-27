@@ -3,6 +3,7 @@
 namespace Michaeljennings\Laralastica\Tests;
 
 use Elastica\Query\Common;
+use Elastica\Query\Exists;
 use Elastica\Query\Fuzzy;
 use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
@@ -43,6 +44,27 @@ class ElasticaDriverTest extends TestCase
 
         $this->assertInstanceOf(Common::class, $query);
         $this->assertEquals(5, $query->toArray()['common']['foo']['minimum_should_match']);
+    }
+
+    /** @test */
+    public function it_returns_a_exists_query()
+    {
+        $driver = $this->makeDriver();
+        $query = $driver->exists('foo');
+
+        $this->assertInstanceOf(Exists::class, $query);
+    }
+
+    /** @test */
+    public function it_returns_a_exists_query_and_runs_a_callback_on_it()
+    {
+        $driver = $this->makeDriver();
+        $query = $driver->exists('foo', function($query) {
+            $query->setParam('boost', 2);
+        });
+
+        $this->assertInstanceOf(Exists::class, $query);
+        $this->assertEquals(2, $query->toArray()['exists']['boost']);
     }
 
     /** @test */
@@ -155,7 +177,7 @@ class ElasticaDriverTest extends TestCase
         $query = $driver->multiMatch(null, null, function($query) {
             $query->setMinimumShouldMatch('70%');
         });
-        
+
         $this->assertInstanceOf(MultiMatch::class, $query);
         $this->assertEquals('70%', $query->toArray()['multi_match']['minimum_should_match']);
     }

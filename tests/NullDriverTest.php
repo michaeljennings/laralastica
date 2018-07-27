@@ -46,6 +46,14 @@ class NullDriverTest extends TestCase
     }
 
     /** @test */
+    public function it_returns_null_when_creating_an_exists_query()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertNull($driver->exists('foo'));
+    }
+
+    /** @test */
     public function it_returns_null_when_creating_a_fuzzy_query()
     {
         $driver = $this->makeDriver();

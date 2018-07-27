@@ -2,6 +2,7 @@
 
 namespace Michaeljennings\Laralastica\Tests;
 
+use Elastica\Query\Exists;
 use Elastica\Query\Match;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Builder;
@@ -18,9 +19,9 @@ class BuilderTest extends TestCase
 
         $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Builder::class, $builder);
     }
-    
+
     /** @test */
-    public function it_dynamically_calls_methods_on_the_driver() 
+    public function it_dynamically_calls_methods_on_the_driver()
     {
         $builder = $this->makeBuilder();
 
@@ -38,6 +39,32 @@ class BuilderTest extends TestCase
         $query = $builder->query($query);
 
         $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Query::class, $query);
+    }
+
+    /** @test */
+    public function it_adds_a_filter()
+    {
+        $builder = $this->makeBuilder();
+        $query = new Exists();
+
+        $filter = $builder->filter($query);
+
+        $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Filter::class, $filter);
+    }
+
+    /** @test */
+    public function it_adds_a_filter_using_a_callback()
+    {
+        $builder = $this->makeBuilder();
+
+        $filter = $builder->filter(function($builder) {
+            $query = new Exists('Test');
+
+            $builder->query($query);
+        });
+
+        $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Filter::class, $filter);
+        $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Builder::class, $filter->getFilter());
     }
 
     /** @test */
@@ -123,7 +150,7 @@ class BuilderTest extends TestCase
         $this->assertInstanceOf(Result::class, $results->first());
         $this->assertEquals(1, $results->count());
     }
-    
+
     protected function makeBuilder()
     {
         return new Builder(new ClientManager($this->getConfig()));

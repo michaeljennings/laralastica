@@ -120,6 +120,7 @@ class ReIndexLaralastica extends Command
      *
      * @param string|null $index
      * @return array
+     * @throws IndexableModelNotSetException
      */
     protected function getIndexableModels($index = null)
     {
