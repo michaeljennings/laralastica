@@ -7,6 +7,7 @@ indexing and removing documents when you save or delete models.
     - [Configuration](#configuration)
 - [Usage](#usage)
 - [Searching](#searching)
+    - [Searching Soft Deleted Records](#searching-soft-deleted-records)
     - [Searching Without the Searchable Trait](#searching-without-the-searchable-trait)
 - [Queries](#queries)
 - [Paginate Results](#paginate-results)
@@ -19,7 +20,7 @@ To install through composer either run `composer require michaeljennings/laralas
 composer.json.
 
 ```php
-"michaeljennings/laralastica": "~2.1"
+"michaeljennings/laralastica": "^2.4"
 ```
 
 For Laravel 5.5 and upwards, the service provider and facade will be loaded automatically. For older versions of Laravel, you will need to add the laralastica service provider into your providers array in `config/app.php`.
@@ -201,6 +202,27 @@ Foo::where('foo', 'bar')->search(function(Builder $query) {
 
 })->orderBy('baz')->get();
 ```
+
+### Searching Soft Deleted Records
+
+By default laralastica will delete the elasticsearch record when a model is deleted. 
+
+Occasionally you may want to search against your soft deleted records, to do that you implement the `SearchSoftDeletes` trait instead of the `Searchable` trait in your model.
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Michaeljennings\Laralastica\SearchSoftDeletes;
+
+class Foo extends Model 
+{
+	use SearchSoftDeletes;
+}
+```
+This adds adds two new methods - `searchWithTrashed` and `searchOnlyTrashed`.
+
+Both methods take the same parameters as the search method, but `searchWithTrashed` will search both soft deleted and non-soft deleted results, and `searchOnlyTrashed` will only get soft deleted results.
+
+To only search for non-soft deleted results just use the `search` method as usual.
 
 ### Searching Without the Searchable Trait
 

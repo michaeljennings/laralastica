@@ -21,6 +21,7 @@ class CreateTestDataTable extends Migration
             $table->boolean('active');
             $table->boolean('online');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
