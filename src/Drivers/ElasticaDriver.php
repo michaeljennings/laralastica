@@ -509,18 +509,19 @@ class ElasticaDriver implements Driver
      */
     protected function addFilterToContainer(Filter $filter, BoolQuery $container)
     {
-        $filterQuery = new BoolQuery();
         $filter = $filter->getFilter();
 
         if ($filter instanceof Builder) {
+            $filterQuery = new BoolQuery();
+
             foreach ($filter->getQueries() as $query) {
                 $this->addQueryToContainer($query, $filterQuery);
             }
-        } else {
-            $this->addQueryToContainer($filter, $filterQuery);
-        }
 
-        $container->addFilter($filterQuery);
+            $container->addFilter($filterQuery);
+        } else {
+            $container->addFilter($filter);
+        }
 
         return $container;
     }
