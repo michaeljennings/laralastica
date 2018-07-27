@@ -155,7 +155,7 @@ class SearchSoftDeletesTest extends OrchestraTestCase
     {
         factory(TestSoftDeleteModel::class)->create(['name' => 'Tests', 'deleted_at' => (string) new Carbon()]);
         factory(TestSoftDeleteModel::class)->create(['name' => 'Test', 'deleted_at' => (string) new Carbon()]);
-        $shouldNotMatch = factory(TestSoftDeleteModel::class)->create(['name' => 'Test']);
+        $notTrashed = factory(TestSoftDeleteModel::class)->create(['name' => 'Test']);
 
         $results = TestSoftDeleteModel::searchWithTrashed(function($builder) {
             $builder->match('name', 'Test', function($query) {
@@ -165,9 +165,9 @@ class SearchSoftDeletesTest extends OrchestraTestCase
 
         $this->assertEquals(3, $results->count());
         $this->assertEquals('Test', $results->first()->name);
-        $this->assertEquals('Tests', $results[1]->name);
-        $this->assertEquals('Test', $results->last()->name);
-        $this->assertContains($shouldNotMatch->id, $results->pluck('id')->all());
+        $this->assertEquals('Test', $results[1]->name);
+        $this->assertEquals('Tests', $results->last()->name);
+        $this->assertContains($notTrashed->id, $results->pluck('id')->all());
     }
 
     /**
