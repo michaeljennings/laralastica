@@ -45,7 +45,7 @@ class BuilderTest extends TestCase
     public function it_adds_a_filter()
     {
         $builder = $this->makeBuilder();
-        $query = new Exists();
+        $query = new Exists('foo');
 
         $filter = $builder->filter($query);
 
@@ -58,7 +58,7 @@ class BuilderTest extends TestCase
         $builder = $this->makeBuilder();
 
         $filter = $builder->filter(function($builder) {
-            $query = new Exists('Test');
+            $query = new Exists('foo');
 
             $builder->query($query);
         });

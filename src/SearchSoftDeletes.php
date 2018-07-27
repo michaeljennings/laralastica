@@ -37,8 +37,6 @@ trait SearchSoftDeletes
      */
     public function scopeSearchWithTrashed($query, callable $searchQuery, $key = null, $sortByResults = true)
     {
-        $searchQuery = $this->addSoftDeleteQuery($searchQuery, 'should');
-
         $query->withTrashed();
 
         return $this->runSearch($query, $searchQuery, $key, $sortByResults);
