@@ -2,7 +2,6 @@
 
 namespace Michaeljennings\Laralastica;
 
-use Michaeljennings\Laralastica\Contracts\Builder;
 use Michaeljennings\Laralastica\Contracts\Filter as FilterContract;
 
 class Filter implements FilterContract
@@ -10,7 +9,7 @@ class Filter implements FilterContract
     /**
      * The filter(s) to be applied.
      *
-     * @var Builder|mixed
+     * @var mixed
      */
     protected $filter;
 
@@ -22,7 +21,7 @@ class Filter implements FilterContract
     /**
      * Get the filter(s).
      *
-     * @return Builder|mixed
+     * @return mixed
      */
     public function getFilter()
     {
