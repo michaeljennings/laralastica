@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
 use Michaeljennings\Laralastica\Exceptions\IndexableModelNotSetException;
 use Michaeljennings\Laralastica\Jobs\IndexModels;
+use Michaeljennings\Laralastica\SearchSoftDeletes;
 
 class ReIndexLaralastica extends Command
 {
@@ -80,7 +81,11 @@ class ReIndexLaralastica extends Command
         foreach ($models as $key => $model) {
             $this->info("\n\nRe-indexing " . $key . "\n");
 
-            $toBeIndexed = $model->all();
+            if (in_array(SearchSoftDeletes::class, class_uses($model))) {
+                $toBeIndexed = $model->withTrashed()->get();
+            } else {
+                $toBeIndexed = $model->all();
+            }
 
             $bar = $this->output->createProgressBar(count($toBeIndexed));
 
