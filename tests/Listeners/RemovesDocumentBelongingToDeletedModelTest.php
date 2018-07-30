@@ -19,7 +19,7 @@ class RemovesDocumentBelongingToDeletedModelTest extends TestCase
 
         $model = Mockery::mock('Illuminate\Database\Eloquent\Model');
 
-        $model->shouldReceive('getSearchType')
+        $model->shouldReceive('getIndex')
               ->once();
 
         $model->shouldReceive('getSearchKey')

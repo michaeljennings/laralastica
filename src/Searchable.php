@@ -62,6 +62,7 @@ trait Searchable
     /**
      * Get the elasticsearch type.
      *
+     * @deprecated Update to use getIndex.
      * @return string
      */
     public function getSearchType()

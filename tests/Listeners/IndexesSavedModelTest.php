@@ -27,7 +27,7 @@ class IndexesSavedModelTest extends TestCase
               ->once()
               ->andReturn(['id' => 1, 'name' => 'test']);
 
-        $model->shouldReceive('getSearchType')
+        $model->shouldReceive('getIndex')
               ->once();
 
         $model->shouldReceive('getSearchKey')

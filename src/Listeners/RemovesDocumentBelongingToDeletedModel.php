@@ -29,6 +29,6 @@ class RemovesDocumentBelongingToDeletedModel
     {
         $model = $event->getModel();
 
-        $this->laralastica->delete($model->getSearchType(), $model->getSearchKey());
+        $this->laralastica->delete($model->getIndex(), $model->getSearchKey());
     }
 }
