@@ -2,10 +2,7 @@
 
 namespace Michaeljennings\Laralastica\Tests;
 
-use Michaeljennings\Laralastica\LaralasticaServiceProvider;
-use Orchestra\Testbench\TestCase as OrchestraTestCase;
-
-class FacadeTest extends OrchestraTestCase
+class FacadeTest extends TestCase
 {
     /**
      * @test
@@ -15,11 +12,6 @@ class FacadeTest extends OrchestraTestCase
         $result = \Laralastica::add('foo', 1, ['foo' => 'bar', 'id' => 1]);
 
         $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Laralastica::class, $result);
-    }
-
-    protected function getPackageProviders($app)
-    {
-        return [LaralasticaServiceProvider::class];
     }
 
     protected function getPackageAliases($app)

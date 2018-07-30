@@ -35,7 +35,7 @@ class ClientManager extends Manager
         $config = isset($this->config['drivers']['elastica']) ? $this->config['drivers']['elastica'] : [];
         $client = new Client($config);
 
-        return new ElasticaDriver($client, $config);
+        return new ElasticaDriver($client, new IndexPrefixer(), $config);
     }
 
     /**

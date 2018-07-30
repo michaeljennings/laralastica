@@ -153,6 +153,6 @@ class BuilderTest extends TestCase
 
     protected function makeBuilder()
     {
-        return new Builder(new ClientManager($this->getConfig()));
+        return new Builder(new ClientManager(config('laralastica')));
     }
 }

@@ -36,26 +36,26 @@ class Builder implements BuilderContract
     /**
      * Execute the query.
      *
-     * @param string|array $types
+     * @param string|array $indices
      * @return ResultCollection
      */
-    public function get($types)
+    public function get($indices)
     {
-        return $this->driver->get($types, $this->queries);
+        return $this->driver->get($indices, $this->queries);
     }
 
     /**
      * Execute the query and then paginate the results.
      *
-     * @param string|array $types
+     * @param string|array $indices
      * @param int          $page
      * @param int          $perPage
      * @param int          $offset
      * @return LengthAwarePaginator
      */
-    public function paginate($types, $page, $perPage, $offset)
+    public function paginate($indices, $page, $perPage, $offset)
     {
-        return $this->driver->paginate($types, $this->queries, $page, $perPage, $offset);
+        return $this->driver->paginate($indices, $this->queries, $page, $perPage, $offset);
     }
 
     /**
@@ -89,46 +89,46 @@ class Builder implements BuilderContract
     }
 
     /**
-     * Add a new document to the provided type.
+     * Add a new document to the provided index.
      *
-     * @param string     $type
+     * @param string     $index
      * @param string|int $id
      * @param array      $data
      * @return $this
      */
-    public function add($type, $id, array $data)
+    public function add($index, $id, array $data)
     {
-        $this->driver->add($type, $id, $data);
+        $this->driver->add($index, $id, $data);
 
         return $this;
     }
 
     /**
-     * Add multiple documents to the elasticsearch type. The data array must be a
-     * multidimensional array with the key as the desired id and the value as
-     * the data to be added to the document.
+     * Add multiple documents to the elasticsearch index. The data must be an
+     * associative array with the key as the desired id and the value as the
+     * data to be added to the document.
      *
-     * @param string $type
+     * @param string $index
      * @param array  $data
      * @return $this
      */
-    public function addMultiple($type, array $data)
+    public function addMultiple($index, array $data)
     {
-        $this->driver->addMultiple($type, $data);
+        $this->driver->addMultiple($index, $data);
 
         return $this;
     }
 
     /**
-     * Delete a document from the provided type.
+     * Delete a document from the provided index.
      *
-     * @param string     $type
+     * @param string     $index
      * @param string|int $id
      * @return $this
      */
-    public function delete($type, $id)
+    public function delete($index, $id)
     {
-        $this->driver->delete($type, $id);
+        $this->driver->delete($index, $id);
 
         return $this;
     }

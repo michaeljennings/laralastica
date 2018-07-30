@@ -2,10 +2,10 @@
 
 namespace Michaeljennings\Laralastica;
 
-use Illuminate\Events\EventServiceProvider;
+use Illuminate\Support\ServiceProvider;
 use Michaeljennings\Laralastica\Commands\ReIndexLaralastica;
 
-class LaralasticaServiceProvider extends EventServiceProvider
+class LaralasticaServiceProvider extends ServiceProvider
 {
     /**
      * The event handler mappings for the package.
@@ -30,8 +30,6 @@ class LaralasticaServiceProvider extends EventServiceProvider
             __DIR__.'/../config/laralastica.php' => config_path('laralastica.php'),
         ]);
 
-        $this->mergeConfigFrom(__DIR__.'/../config/laralastica.php', 'laralastica');
-
         foreach ($this->listeners as $event => $handlers) {
             foreach ($handlers as $listener) {
                 $this->app['events']->listen($event, $listener);
@@ -44,6 +42,8 @@ class LaralasticaServiceProvider extends EventServiceProvider
      */
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/laralastica.php', 'laralastica');
+
         $this->registerClient();
         $this->registerCommands();
     }

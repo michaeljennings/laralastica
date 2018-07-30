@@ -20,6 +20,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\Contracts\Result;
 use Michaeljennings\Laralastica\Drivers\ElasticaDriver;
+use Michaeljennings\Laralastica\IndexPrefixer;
 use Michaeljennings\Laralastica\Query;
 use Michaeljennings\Laralastica\ResultCollection;
 
@@ -453,6 +454,6 @@ class ElasticaDriverTest extends TestCase
     {
         $client = $this->getClient();
 
-        return new ElasticaDriver($client, $this->getConfig()['drivers']['elastica']);
+        return new ElasticaDriver($client, new IndexPrefixer(), config('laralastica.drivers.elastica'));
     }
 }

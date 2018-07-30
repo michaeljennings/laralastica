@@ -4,31 +4,51 @@ namespace Michaeljennings\Laralastica\Tests;
 
 use Elastica\Client;
 use Elastica\Connection;
+use Michaeljennings\Laralastica\LaralasticaServiceProvider;
 use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
-use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
-class TestCase extends PHPUnitTestCase
+class TestCase extends OrchestraTestCase
 {
     /**
-     * Return a mock config array.
-     *
-     * @return array
+     * Setup the test environment.
      */
-    protected function getConfig()
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->loadMigrationsFrom(realpath(__DIR__.'/database/migrations'));
+        $this->artisan('migrate');
+
+        $this->withFactories(__DIR__.'/database/factories');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('laralastica.driver', 'elastica');
+        $app['config']->set('laralastica.index_prefix', 'testing_');
+
+        $app['config']->set('laralastica.indexable', [
+            'test' => TestModel::class,
+        ]);
+
+        $app['config']->set('laralastica.drivers.elastica', [
+            'host' => $this->getHost(),
+            'port' => $this->getPort(),
+            'size' => 10,
+        ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPackageProviders($app)
     {
         return [
-            'driver' => 'elastica',
-            'index' => 'testindex',
-            'drivers' => [
-                'elastica' => [
-                    'host' => $this->getHost(),
-                    'port' => $this->getPort(),
-                    'size' => 10,
-                ]
-            ],
-            'indexable' => [
-                'test' => TestModel::class,
-            ]
+            LaralasticaServiceProvider::class,
         ];
     }
 
@@ -37,7 +57,7 @@ class TestCase extends PHPUnitTestCase
      */
     public function getClient()
     {
-        return new Client($this->getConfig()['drivers']['elastica']);
+        return app(Client::class);
     }
 
     /**

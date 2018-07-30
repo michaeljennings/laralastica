@@ -17,6 +17,22 @@ return [
     'driver' => env('ELASTICSEARCH_DRIVER', 'elastica'),
 
     /*
+     |---------------------------------------------------------------------
+     | Index Prefix
+     |---------------------------------------------------------------------
+     |
+     | As of elasticsearch 6 you can no longer have multiple types within
+     | a singular index so we now create an index per model. However this
+     | may cause issues if you have multiple environments.
+     |
+     | Here you can set a prefix that will be added to every index we
+     | create, this allows you to have a dev index, testing index etc.
+     |
+    */
+
+    'index_prefix' => env('ELASTICSEARCH_INDEX_PREFIX'),
+
+    /*
      |--------------------------------------------------------------------------
      | Drivers
      |--------------------------------------------------------------------------

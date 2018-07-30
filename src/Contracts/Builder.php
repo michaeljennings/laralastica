@@ -10,21 +10,21 @@ interface Builder
     /**
      * Execute the query.
      *
-     * @param string|array $types
+     * @param string|array $indices
      * @return ResultCollection
      */
-    public function get($types);
+    public function get($indices);
 
     /**
      * Execute the query and then paginate the results.
      *
-     * @param string|array $types
+     * @param string|array $indices
      * @param int          $page
      * @param int          $perPage
      * @param int          $offset
      * @return LengthAwarePaginator
      */
-    public function paginate($types, $page, $perPage, $offset);
+    public function paginate($indices, $page, $perPage, $offset);
 
     /**
      * Add a new query.

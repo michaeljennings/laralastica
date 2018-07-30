@@ -111,6 +111,6 @@ class LaralasticaTest extends TestCase
     {
         $request = new Request(['page' => 1]);
 
-        return new Laralastica(new ClientManager($this->getConfig()), $request);
+        return new Laralastica(new ClientManager(config('laralastica')), $request);
     }
 }

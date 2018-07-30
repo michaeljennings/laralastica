@@ -29,6 +29,7 @@ use Michaeljennings\Laralastica\Contracts\Builder;
 use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\Contracts\Filter;
 use Michaeljennings\Laralastica\Contracts\Query;
+use Michaeljennings\Laralastica\IndexPrefixer;
 use Michaeljennings\Laralastica\LengthAwarePaginator;
 use Michaeljennings\Laralastica\ResultCollection;
 
@@ -42,11 +43,11 @@ class ElasticaDriver implements Driver
     protected $client;
 
     /**
-     * The elastica index.
+     * The index prefixing service.
      *
-     * @var Index
+     * @var IndexPrefixer
      */
-    protected $index;
+    protected $indexPrefixer;
 
     /**
      * The laralastica config.
@@ -55,9 +56,10 @@ class ElasticaDriver implements Driver
      */
     protected $config;
 
-    public function __construct(Client $client, array $config)
+    public function __construct(Client $client, IndexPrefixer $indexPrefixer, array $config)
     {
         $this->client = $client;
+        $this->indexPrefixer = $indexPrefixer;
         $this->config = $config;
     }
 
@@ -121,6 +123,8 @@ class ElasticaDriver implements Driver
      */
     public function add(string $index, $id, array $data)
     {
+        $index = $this->getIndexName($index);
+
         $document = $this->newDocument($index, $id, $data);
 
         $this->addDocumentsToIndex($index, [$document]);
@@ -139,6 +143,7 @@ class ElasticaDriver implements Driver
      */
     public function addMultiple(string $index, array $data)
     {
+        $index = $this->getIndexName($index);
         $documents = [];
 
         foreach ($data as $id => $values) {
@@ -168,7 +173,7 @@ class ElasticaDriver implements Driver
             $document->setType($index);
         }
 
-        $index = $this->getIndex($index);
+        $index = $this->getIndex($this->getIndexName($index));
 
         $index->addDocuments($documents);
 
@@ -184,7 +189,7 @@ class ElasticaDriver implements Driver
      */
     public function delete(string $index, $id)
     {
-        $document = $this->newDocument($index, $id);
+        $document = $this->newDocument($this->getIndexName($index), $id);
         $index = $this->getIndex($index);
 
         $index->deleteDocuments([$document]);
@@ -453,6 +458,10 @@ class ElasticaDriver implements Driver
             $indices = func_get_args();
         }
 
+        foreach ($indices as $key => $index) {
+            $indices[$key] = $this->getIndexName($index);
+        }
+
         $search = new Search($this->client);
 
         $search->addIndices($indices);
@@ -618,9 +627,20 @@ class ElasticaDriver implements Driver
      * @param string $index
      * @return Index
      */
-    protected function getIndex($index)
+    protected function getIndex(string $index)
     {
-        return $this->client->getIndex($index);
+        return $this->client->getIndex($this->getIndexName($index));
+    }
+
+    /**
+     * Get the index name including the prefix if required.
+     *
+     * @param string $index
+     * @return string
+     */
+    protected function getIndexName(string $index)
+    {
+        return $this->indexPrefixer->prefix($index);
     }
 
     /**
