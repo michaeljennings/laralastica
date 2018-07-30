@@ -43,6 +43,8 @@ trait Searchable
      * Return an array of columns to be indexed with the column as the key and
      * the desired data type as the value.
      *
+     * If you are using the casts attribute.
+     *
      * @return array
      */
     public function getSearchDataTypes()
@@ -162,7 +164,7 @@ trait Searchable
             $this->laralastica = laralastica();
         }
 
-        $results = $this->laralastica->search($this->getSearchType(), $searchQuery);
+        $results = $this->laralastica->search($this->getIndex(), $searchQuery);
         $searchKey = $key ?: $this->getRelativeSearchKey();
         $values = $results->map(function ($result) {
             return $result->{$this->getSearchKeyName()};

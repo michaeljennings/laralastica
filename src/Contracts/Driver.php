@@ -10,23 +10,23 @@ interface Driver
     /**
      * Execute the provided queries.
      *
-     * @param string|array $types
+     * @param string|array $indices
      * @param array        $queries
      * @return ResultCollection
      */
-    public function get($types, array $queries);
+    public function get($indices, array $queries);
 
     /**
      * Execute the query and return a paginated list of results.
      *
-     * @param string|array $types
+     * @param string|array $indices
      * @param array        $queries
      * @param int          $page
      * @param int          $perPage
      * @param int          $offset
      * @return LengthAwarePaginator
      */
-    public function paginate($types, array $queries, $page, $perPage, $offset);
+    public function paginate($indices, array $queries, $page, $perPage, $offset);
 
     /**
      * Create a common query.
@@ -39,7 +39,7 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function common($field, $query, $cutoffFrequency, callable $callback = null);
+    public function common(string $field, string $query, float $cutoffFrequency, callable $callback = null);
 
     /**
      * Create a new exists query.
@@ -50,7 +50,7 @@ interface Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function exists($key, callable $callback = null);
+    public function exists(string $key, callable $callback = null);
 
     /**
      * Create a new fuzzy query.
@@ -62,7 +62,7 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function fuzzy($field, $value, callable $callback = null);
+    public function fuzzy(string $field, string $value, callable $callback = null);
 
     /**
      * Create a new match query.
@@ -74,7 +74,7 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function match($field = null, $value = null, callable $callback = null);
+    public function match(string $field = null, string $value = null, callable $callback = null);
 
     /**
      * Create a new match phrase query.
@@ -86,7 +86,7 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function matchPhrase($field = null, $value = null, callable $callback = null);
+    public function matchPhrase(string $field = null, string $value = null, callable $callback = null);
 
     /**
      * Create a new match phrase prefix query.
@@ -98,7 +98,7 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function matchPhrasePrefix($field = null, $value = null, callable $callback = null);
+    public function matchPhrasePrefix(string $field = null, string $value = null, callable $callback = null);
 
     /**
      * Create a match all query.
@@ -119,7 +119,7 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function multiMatch(array $fields = null, $value = null, callable $callback = null);
+    public function multiMatch(array $fields = null, string $value = null, callable $callback = null);
 
     /**
      * Create a query string query.
@@ -130,7 +130,7 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function queryString($query = '', callable $callback = null);
+    public function queryString(string $query = '', callable $callback = null);
 
     /**
      * Create a range query.
@@ -142,7 +142,7 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function range($fieldName = null, $args = [], callable $callback = null);
+    public function range(string $fieldName = null, array $args = [], callable $callback = null);
 
     /**
      * Create a new regular expression query.
@@ -155,7 +155,7 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function regexp($key = '', $value = null, $boost = 1.0, callable $callback = null);
+    public function regexp(string $key = '', string $value = null, float $boost = 1.0, callable $callback = null);
 
     /**
      * Create a new term query.
@@ -178,7 +178,7 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function terms($key = '', array $terms = [], callable $callback = null);
+    public function terms(string $key = '', array $terms = [], callable $callback = null);
 
     /**
      * Create a new wildcard query.
@@ -191,35 +191,35 @@ interface Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function wildcard($key = '', $value = null, $boost = 1.0, callable $callback = null);
+    public function wildcard(string $key = '', string $value = null, float $boost = 1.0, callable $callback = null);
 
     /**
-     * Add a new document to the provided type.
+     * Add a new document to the provided index.
      *
-     * @param string     $type
+     * @param string     $index
      * @param string|int $id
      * @param array      $data
-     * @return mixed
+     * @return Driver
      */
-    public function add($type, $id, array $data);
+    public function add(string $index, $id, array $data);
 
     /**
-     * Add multiple documents to the elasticsearch type. The data array must be a
-     * multidimensional array with the key as the desired id and the value as
-     * the data to be added to the document.
+     * Add multiple documents to the elasticsearch index. The data must be an
+     * associative array with the key as the desired id and the value as the
+     * data to be added to the document.
      *
-     * @param string $type
+     * @param string $index
      * @param array  $data
      * @return Driver
      */
-    public function addMultiple($type, array $data);
+    public function addMultiple(string $index, array $data);
 
     /**
-     * Delete a document from the provided type.
+     * Delete a document from the provided index.
      *
-     * @param string     $type
+     * @param string     $index
      * @param string|int $id
      * @return Driver
      */
-    public function delete($type, $id);
+    public function delete(string $index, $id);
 }

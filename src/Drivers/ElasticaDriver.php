@@ -55,23 +55,22 @@ class ElasticaDriver implements Driver
      */
     protected $config;
 
-    public function __construct(Client $client, Index $index, array $config)
+    public function __construct(Client $client, array $config)
     {
         $this->client = $client;
-        $this->index = $index;
         $this->config = $config;
     }
 
     /**
      * Execute the provided queries.
      *
-     * @param string|array $types
+     * @param string|array $indices
      * @param array        $queries
      * @return ResultCollection
      */
-    public function get($types, array $queries)
+    public function get($indices, array $queries)
     {
-        $search = $this->newSearch($types);
+        $search = $this->newSearch($indices);
         $query = $this->newQuery($queries);
 
         $query->setSize($this->config['size']);
@@ -83,16 +82,16 @@ class ElasticaDriver implements Driver
     /**
      * Execute the query and return a paginated list of results.
      *
-     * @param string|array $types
+     * @param string|array $indices
      * @param array        $queries
      * @param int          $page
      * @param int          $perPage
      * @param int          $offset
      * @return LengthAwarePaginator
      */
-    public function paginate($types, array $queries, $page, $perPage, $offset)
+    public function paginate($indices, array $queries, $page, $perPage, $offset)
     {
-        $search = $this->newSearch($types);
+        $search = $this->newSearch($indices);
         $query = $this->newQuery($queries);
 
         $query->setSize($perPage);
@@ -102,69 +101,95 @@ class ElasticaDriver implements Driver
 
         $results = $search->search();
 
-        $paginator = new LengthAwarePaginator($this->hydrateResults($results), $results->getTotalHits(), $perPage,
-            $page);
+        $paginator = new LengthAwarePaginator(
+            $this->hydrateResults($results),
+            $results->getTotalHits(),
+            $perPage,
+            $page
+        );
 
         return $paginator->setQueryStats($results->getTotalHits(), $results->getMaxScore(), $results->getTotalTime());
     }
 
     /**
-     * Add a new document to the provided type.
+     * Add a new document to the provided index.
      *
-     * @param string     $type
+     * @param string     $index
      * @param string|int $id
      * @param array      $data
      * @return $this
      */
-    public function add($type, $id, array $data)
+    public function add(string $index, $id, array $data)
     {
-        $type = $this->getType($type);
-        $document = new Document($id, $data);
-        $type->addDocument($document);
+        $document = $this->newDocument($index, $id, $data);
 
-        $this->refreshIndex();
+        $this->addDocumentsToIndex($index, [$document]);
 
         return $this;
     }
 
     /**
-     * Add multiple documents to the elasticsearch type. The data array must be a
-     * multidimensional array with the key as the desired id and the value as
-     * the data to be added to the document.
+     * Add multiple documents to the elasticsearch index. The data must be an
+     * associative array with the key as the desired id and the value as the
+     * data to be added to the document.
      *
-     * @param string $type
+     * @param string $index
      * @param array  $data
      * @return $this
      */
-    public function addMultiple($type, array $data)
+    public function addMultiple(string $index, array $data)
     {
-        $type = $this->getType($type);
         $documents = [];
 
         foreach ($data as $id => $values) {
-            $documents[] = new Document($id, $values);
+            $documents[] = $this->newDocument($index, $id, $values);
         }
 
-        $type->addDocuments($documents);
-
-        $this->refreshIndex();
+        $this->addDocumentsToIndex($index, $documents);
 
         return $this;
+    }
+
+    /**
+     * Add the documents to the index.
+     *
+     * @param string           $index
+     * @param array|Document[] $documents
+     */
+    protected function addDocumentsToIndex(string $index, array $documents)
+    {
+        // Elasticsearch types are being deprecated so you can only have
+        // one type per index in elasticsearch 6, types will be removed
+        // completely in elasticsearch 7. However in elasticsearch 6 you
+        // cannot create a document without a type so here we are setting
+        // the type to be same as the index.
+        // See: https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
+        foreach ($documents as $document) {
+            $document->setType($index);
+        }
+
+        $index = $this->getIndex($index);
+
+        $index->addDocuments($documents);
+
+        $index->refresh();
     }
 
     /**
      * Delete a document from the provided type.
      *
-     * @param string     $type
+     * @param string     $index
      * @param string|int $id
      * @return $this
      */
-    public function delete($type, $id)
+    public function delete(string $index, $id)
     {
-        $type = $this->getType($type);
-        $type->deleteById($id);
+        $document = $this->newDocument($index, $id);
+        $index = $this->getIndex($index);
 
-        $this->refreshIndex();
+        $index->deleteDocuments([$document]);
+
+        $index->refresh();
 
         return $this;
     }
@@ -180,7 +205,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return Common
      */
-    public function common($field, $query, $cutoffFrequency, callable $callback = null)
+    public function common(string $field, string $query, float $cutoffFrequency, callable $callback = null)
     {
         $query = new Common($field, $query, $cutoffFrequency);
 
@@ -196,7 +221,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function exists($key, callable $callback = null)
+    public function exists(string $key, callable $callback = null)
     {
         $query = new Exists($key);
 
@@ -213,7 +238,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return Fuzzy
      */
-    public function fuzzy($field, $value, callable $callback = null)
+    public function fuzzy(string $field, string $value, callable $callback = null)
     {
         $query = new Fuzzy($field, $value);
 
@@ -230,7 +255,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function match($field = null, $value = null, callable $callback = null)
+    public function match(string $field = null, string $value = null, callable $callback = null)
     {
         $query = new Match();
 
@@ -249,7 +274,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function matchPhrase($field = null, $value = null, callable $callback = null)
+    public function matchPhrase(string $field = null, string $value = null, callable $callback = null)
     {
         $query = new MatchPhrase();
 
@@ -268,7 +293,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function matchPhrasePrefix($field = null, $value = null, callable $callback = null)
+    public function matchPhrasePrefix(string $field = null, string $value = null, callable $callback = null)
     {
         $query = new MatchPhrasePrefix();
 
@@ -299,7 +324,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function multiMatch(array $fields = null, $value = null, callable $callback = null)
+    public function multiMatch(array $fields = null, string $value = null, callable $callback = null)
     {
         $query = new MultiMatch();
 
@@ -323,7 +348,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function queryString($query = '', callable $callback = null)
+    public function queryString(string $query = '', callable $callback = null)
     {
         $query = new QueryString($query);
 
@@ -340,7 +365,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function range($fieldName = null, $args = [], callable $callback = null)
+    public function range(string $fieldName = null, array $args = [], callable $callback = null)
     {
         $query = new Range($fieldName, $args);
 
@@ -358,7 +383,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function regexp($key = '', $value = null, $boost = 1.0, callable $callback = null)
+    public function regexp(string $key = '', string $value = null, float $boost = 1.0, callable $callback = null)
     {
         $query = new Regexp($key, $value, $boost);
 
@@ -391,7 +416,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function terms($key = '', array $terms = [], callable $callback = null)
+    public function terms(string $key = '', array $terms = [], callable $callback = null)
     {
         $query = new Terms($key, $terms);
 
@@ -409,7 +434,7 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function wildcard($key = '', $value = null, $boost = 1.0, callable $callback = null)
+    public function wildcard(string $key = '', string $value = null, float $boost = 1.0, callable $callback = null)
     {
         $query = new Wildcard($key, $value, $boost);
 
@@ -419,19 +444,18 @@ class ElasticaDriver implements Driver
     /**
      * Create a new search.
      *
-     * @param string|array $types
+     * @param string|array $indices
      * @return Search
      */
-    protected function newSearch($types)
+    protected function newSearch($indices)
     {
-        if ( ! is_array($types)) {
-            $types = func_get_args();
+        if ( ! is_array($indices)) {
+            $indices = func_get_args();
         }
 
         $search = new Search($this->client);
 
-        $search->addIndex($this->index);
-        $search->addTypes($types);
+        $search->addIndices($indices);
 
         return $search;
     }
@@ -440,7 +464,7 @@ class ElasticaDriver implements Driver
      * Create a new elastica query from an array of queries.
      *
      * @param array $queries
-     * @return Query
+     * @return ElasticaQuery
      */
     protected function newQuery(array $queries)
     {
@@ -576,25 +600,27 @@ class ElasticaDriver implements Driver
     }
 
     /**
-     * Get an elasticsearch type from its index.
+     * Create a new document.
      *
-     * @param string $type
-     * @return \Elastica\Type
+     * @param string     $type
+     * @param int|string $id
+     * @param array      $values
+     * @return Document
      */
-    protected function getType($type)
+    protected function newDocument(string $type, $id, array $values = [])
     {
-        return $this->index->getType($type);
+        return new Document($id, $values, $type);
     }
 
     /**
-     * Refreshes the elasticsearch index, this should be run after adding
-     * or deleting documents.
+     * Get the index from the client.
      *
-     * @return \Elastica\Response
+     * @param string $index
+     * @return Index
      */
-    protected function refreshIndex()
+    protected function getIndex($index)
     {
-        return $this->index->refresh();
+        return $this->client->getIndex($index);
     }
 
     /**

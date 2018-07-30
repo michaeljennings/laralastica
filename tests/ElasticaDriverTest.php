@@ -452,8 +452,7 @@ class ElasticaDriverTest extends TestCase
     protected function makeDriver()
     {
         $client = $this->getClient();
-        $index = $client->getIndex('testindex');
 
-        return new ElasticaDriver($client, $index, $this->getConfig()['drivers']['elastica']);
+        return new ElasticaDriver($client, $this->getConfig()['drivers']['elastica']);
     }
 }

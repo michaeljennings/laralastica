@@ -18,19 +18,6 @@ return [
 
     /*
      |--------------------------------------------------------------------------
-     | Index
-     |--------------------------------------------------------------------------
-     |
-     | Set the name of the elasticsearch index you want to connect to. This must
-     | be lower-case, alphanumeric, and must not contain any spaces, hyphens
-     | or underscores.
-     |
-    */
-
-    'index' => env('ELASTICSEARCH_INDEX', 'yourindex'),
-
-    /*
-     |--------------------------------------------------------------------------
      | Drivers
      |--------------------------------------------------------------------------
      |
