@@ -14,13 +14,19 @@ indexing and removing documents when you save or delete models.
 - [The Result Collection](#the-result-collection)
 
 ## Installation
-This package requires at least PHP 5.5 and Laravel >=5.0.
+
+Check the table below to see which version you will need.
+
+|Laralastica|Laravel|Elasticsearch|PHP
+|---|---|---|---|
+|3.x|^5.1|6.x|^7.0
+|2.x|^5.1|2.x-5.x|^5.5.9|
 
 To install through composer either run `composer require michaeljennings/laralastica` or add the package to you 
 composer.json.
 
 ```php
-"michaeljennings/laralastica": "^2.4"
+"michaeljennings/laralastica": "^3.0"
 ```
 
 For Laravel 5.5 and upwards, the service provider and facade will be loaded automatically. For older versions of Laravel, you will need to add the laralastica service provider into your providers array in `config/app.php`.
@@ -28,7 +34,7 @@ For Laravel 5.5 and upwards, the service provider and facade will be loaded auto
 ```php
 'providers' => array(
 
-	'Michaeljennings\Laralastica\LaralasticaServiceProvider'
+  'Michaeljennings\Laralastica\LaralasticaServiceProvider'
 
 );
 ```
@@ -53,7 +59,9 @@ The package comes with 2 drivers: elastica, and null. By default the package wil
 'driver' => 'elastica',
 ```
 
-Next you will need to set the elasticsearch index you want to connect to.
+As of laralastica 3.0 we now use multiple indexes, rather than multiple types in one index. To see why check this post [about the removal of types](https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html).
+
+If you are using an older version you will need to define the name of your index in the config.
 
 ```php
 'index' => 'yourindex',
@@ -101,13 +109,13 @@ class Foo extends Model
 Once you have added the trait it will use [model events](http://laravel.com/docs/5.0/eloquent#model-events) to watch
 when a model is saved, deleted or restored and will add or delete the elasticsearch document as appropriate.
 
-### Set Elasticsearch Type
+### Set Elasticsearch Index
 
-To set the elasticsearch type for the model use the `getSearchType` method to return the name of the type. By default 
-this will return the table name the model is using.
+To set the elasticsearch index for the model use the `getIndex` method to return the name of the index. By default 
+this will return the table name the model is using. The index must be lowercase.
 
 ```php
-public function getSearchType()
+public function getIndex()
 {
 	return 'foo';
 }
@@ -141,25 +149,27 @@ public function getIndexableAttributes()
 
 ### Type Cast Attributes
 
-When you index attributes you may need to type cast the value, to do this use the `getSearchDataTypes` method. This 
-must return an array with the key as the column being indexed and the value as the data type. The data types supported 
-are:
-
-- int
-- string
-- float
-- bool
+In elasticsearch each index has a mapping type which will determine how records are indexed, this means that you have to supply each object in the same format. To this we can use the `casts` property that is supplied by laravel.
 
 ```php
-public function getSearchDataTypes()
-{
-	return [
-		'price' => 'float',
-		'active' => 'bool',
-		'quantity' => 'int',
-		'name' => 'string'
-	];
-}
+protected $casts = [
+	'price' => 'float',
+	'active' => 'bool',
+	'quantity' => 'int',
+	'name' => 'string'
+];
+```
+
+Occasionally you may find yourself wanting to cast values slightly differently for your elasticsearch records. To that you can define the `laralasticaCasts` property and this will allow you to override the casts property.
+
+```php
+protected $casts = [
+	'price' => 'float',
+];
+
+protected $laralasticaCasts = [
+	'price' => 'string',
+];
 ```
 
 ## Searching
