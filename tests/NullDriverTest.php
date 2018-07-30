@@ -3,6 +3,7 @@
 namespace Michaeljennings\Laralastica\Tests;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\Drivers\NullDriver;
 
 class NullDriverTest extends TestCase
@@ -147,6 +148,46 @@ class NullDriverTest extends TestCase
         $driver = $this->makeDriver();
 
         $this->assertNull($driver->wildcard());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_minimum_should_match()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->minimumShouldMatch(1));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_minimum_should_match_using_the_alias()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->setMinimumShouldMatch(1));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_boost()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->boost(1));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_boost_using_the_alias()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->setBoost(1));
     }
 
     /** @test */

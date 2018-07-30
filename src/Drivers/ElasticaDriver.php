@@ -56,6 +56,20 @@ class ElasticaDriver implements Driver
      */
     protected $config;
 
+    /**
+     * Set the minimum fields that should be matched by a result.
+     *
+     * @var int|string
+     */
+    protected $minimumShouldMatch;
+
+    /**
+     * Set the amount to boost results by.
+     *
+     * @var float
+     */
+    protected $boost;
+
     public function __construct(Client $client, IndexPrefixer $indexPrefixer, array $config)
     {
         $this->client = $client;
@@ -447,6 +461,54 @@ class ElasticaDriver implements Driver
     }
 
     /**
+     * Set the minimum should match value.
+     *
+     * @param int|string $minimumShouldMatch
+     * @return $this
+     */
+    public function minimumShouldMatch($minimumShouldMatch)
+    {
+        $this->minimumShouldMatch = $minimumShouldMatch;
+
+        return $this;
+    }
+
+    /**
+     * Alias for "minimumShouldMatch".
+     *
+     * @param int|string $minimumShouldMatch
+     * @return ElasticaDriver
+     */
+    public function setMinimumShouldMatch($minimumShouldMatch)
+    {
+        return $this->minimumShouldMatch($minimumShouldMatch);
+    }
+
+    /**
+     * Set the boost value.
+     *
+     * @param float $boost
+     * @return $this
+     */
+    public function boost($boost)
+    {
+        $this->boost = $boost;
+
+        return $this;
+    }
+
+    /**
+     * Alias for "boost".
+     *
+     * @param int|float $boost
+     * @return ElasticaDriver
+     */
+    public function setBoost($boost)
+    {
+        return $this->boost($boost);
+    }
+
+    /**
      * Create a new search.
      *
      * @param string|array $indices
@@ -479,6 +541,14 @@ class ElasticaDriver implements Driver
     {
         if ( ! empty($queries)) {
             $container = $this->addQueries(new BoolQuery(), $queries);
+
+            if (isset($this->minimumShouldMatch)) {
+                $container->setMinimumShouldMatch($this->minimumShouldMatch);
+            }
+
+            if (isset($this->boost)) {
+                $container->setBoost($this->boost);
+            }
 
             $query = new ElasticaQuery($container);
             $query->addSort('_score');

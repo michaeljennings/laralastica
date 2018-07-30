@@ -4,6 +4,7 @@ namespace Michaeljennings\Laralastica\Drivers;
 
 use Michaeljennings\Laralastica\Contracts\AbstractQuery;
 use Michaeljennings\Laralastica\Contracts\Driver;
+use Michaeljennings\Laralastica\Contracts\ElasticaDriver;
 use Michaeljennings\Laralastica\LengthAwarePaginator;
 use Michaeljennings\Laralastica\ResultCollection;
 
@@ -246,6 +247,50 @@ class NullDriver implements Driver
     public function wildcard(string $key = '', string $value = null, float $boost = 1.0, callable $callback = null)
     {
         //
+    }
+
+    /**
+     * Set the minimum should match value.
+     *
+     * @param int|string $minimumShouldMatch
+     * @return $this
+     */
+    public function minimumShouldMatch($minimumShouldMatch)
+    {
+        return $this;
+    }
+
+    /**
+     * Alias for "minimumShouldMatch".
+     *
+     * @param int|string $minimumShouldMatch
+     * @return $this
+     */
+    public function setMinimumShouldMatch($minimumShouldMatch)
+    {
+        return $this;
+    }
+
+    /**
+     * Set the boost value.
+     *
+     * @param float $boost
+     * @return $this
+     */
+    public function boost($boost)
+    {
+        return $this;
+    }
+
+    /**
+     * Alias for "boost".
+     *
+     * @param int|float $boost
+     * @return $this
+     */
+    public function setBoost($boost)
+    {
+        return $this;
     }
 
     /**

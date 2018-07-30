@@ -194,6 +194,38 @@ interface Driver
     public function wildcard(string $key = '', string $value = null, float $boost = 1.0, callable $callback = null);
 
     /**
+     * Set the minimum should match value.
+     *
+     * @param int|string $minimumShouldMatch
+     * @return Driver
+     */
+    public function minimumShouldMatch($minimumShouldMatch);
+
+    /**
+     * Alias for "minimumShouldMatch".
+     *
+     * @param int|string $minimumShouldMatch
+     * @return Driver
+     */
+    public function setMinimumShouldMatch($minimumShouldMatch);
+
+    /**
+     * Set the boost value.
+     *
+     * @param float $boost
+     * @return Driver
+     */
+    public function boost($boost);
+
+    /**
+     * Alias for "boost".
+     *
+     * @param int|float $boost
+     * @return Driver
+     */
+    public function setBoost($boost);
+
+    /**
      * Add a new document to the provided index.
      *
      * @param string     $index

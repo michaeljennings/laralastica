@@ -285,6 +285,50 @@ class ElasticaDriverTest extends TestCase
         $this->assertInstanceOf(Wildcard::class, $query);
     }
 
+    /**
+     * @test
+     */
+    public function it_sets_the_minimum_should_match()
+    {
+        $driver = $this->makeDriver();
+        $result = $driver->minimumShouldMatch(1);
+
+        $this->assertInstanceOf(Driver::class, $result);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_minimum_should_match_using_the_alias()
+    {
+        $driver = $this->makeDriver();
+        $result = $driver->setMinimumShouldMatch(1);
+
+        $this->assertInstanceOf(Driver::class, $result);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_boost()
+    {
+        $driver = $this->makeDriver();
+        $result = $driver->boost(1);
+
+        $this->assertInstanceOf(Driver::class, $result);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_boost_using_the_alias()
+    {
+        $driver = $this->makeDriver();
+        $result = $driver->setBoost(1);
+
+        $this->assertInstanceOf(Driver::class, $result);
+    }
+
     /** @test */
     public function it_adds_a_document_to_the_index()
     {
