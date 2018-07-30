@@ -171,11 +171,15 @@ class Builder implements BuilderContract
      *
      * @param string $method
      * @param array  $args
-     * @return $this
+     * @return $this|Driver
      */
     public function __call($method, array $args)
     {
         $query = call_user_func_array([$this->driver, $method], $args);
+
+        if (! $query || $query instanceof Driver) {
+            return $query;
+        }
 
         return $this->query($query);
     }
