@@ -32,15 +32,10 @@ class ClientManager extends Manager
      */
     protected function createElasticaDriver()
     {
-        if ( ! isset($this->config['index'])) {
-            throw new IndexNotSetException("You must set the index to connect to in the laralastica config.");
-        }
-
         $config = isset($this->config['drivers']['elastica']) ? $this->config['drivers']['elastica'] : [];
         $client = new Client($config);
-        $index = $client->getIndex($this->config['index']);
 
-        return new ElasticaDriver($client, $index, $config);
+        return new ElasticaDriver($client, $config);
     }
 
     /**
