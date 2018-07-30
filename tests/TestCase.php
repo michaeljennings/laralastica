@@ -6,6 +6,7 @@ use Elastica\Client;
 use Elastica\Connection;
 use Michaeljennings\Laralastica\LaralasticaServiceProvider;
 use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
+use Orchestra\Database\ConsoleServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 class TestCase extends OrchestraTestCase
@@ -17,8 +18,7 @@ class TestCase extends OrchestraTestCase
     {
         parent::setUp();
 
-        $this->loadMigrationsFrom(realpath(__DIR__.'/database/migrations'));
-        $this->artisan('migrate');
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
 
         $this->withFactories(__DIR__.'/database/factories');
     }
@@ -48,6 +48,7 @@ class TestCase extends OrchestraTestCase
     public function getPackageProviders($app)
     {
         return [
+            ConsoleServiceProvider::class,
             LaralasticaServiceProvider::class,
         ];
     }
