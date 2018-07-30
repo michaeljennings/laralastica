@@ -52,7 +52,7 @@ The package also comes with a facade, to use it add it to your aliases array in 
 ### Configuration
 
 Finally publish the package config using `php artisan vendor:publish`. Once the config has published you can edit the `config/laralastica.php' file to set your elasticsearch connection.
- 
+
 The package comes with 2 drivers: elastica, and null. By default the package will use the elastica driver. The null driver is mainly testing purposes where you don't want to have an elasticsearch instance running.
 
 ```php
@@ -61,10 +61,10 @@ The package comes with 2 drivers: elastica, and null. By default the package wil
 
 As of laralastica 3.0 we now use multiple indexes, rather than multiple types in one index. To see why check this post [about the removal of types](https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html).
 
-If you are using an older version you will need to define the name of your index in the config.
+If you are using multiple environments (production, staging, testing etc.) you can define a index prefix in the config. This will the be added to each index when searcing, adding documents etc. 
 
 ```php
-'index' => 'yourindex',
+'index_prefix' => 'testing_',
 ```
 
 Finally you need to configure your elasticsearch connection. Out of the box the package comes ready to support multiple connections. 
