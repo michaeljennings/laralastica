@@ -27,16 +27,6 @@ class ClientManagerTest extends TestCase
         $this->assertEquals('null', $manager->getDefaultDriver());
     }
 
-    /**
-     * @test
-     * @expectedException \Michaeljennings\Laralastica\Exceptions\IndexNotSetException
-     */
-    public function it_throws_an_exception_if_an_index_is_not_set()
-    {
-        $manager = new ClientManager(['driver' => 'elastica']);
-        $manager->driver();
-    }
-
     /** @test */
     public function it_makes_the_elastica_driver()
     {

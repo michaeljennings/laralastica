@@ -18,6 +18,8 @@ class HelperTest extends OrchestraTestCase
     /** @test */
     public function it_searches_if_parameters_are_passed_to_laralastica_helper()
     {
+        laralastica()->add('test', 1, ['foo' => 'bar']);
+
         $this->assertInstanceOf(ResultCollection::class, laralastica('test', function($query) {
             $query->matchAll();
         }));

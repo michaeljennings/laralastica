@@ -13,15 +13,15 @@ class TestModel extends Model
 
     protected $guarded = [];
 
-    public function getSearchDataTypes()
-    {
-        return [
-            'id' => 'int',
-            'sort_order' => 'integer',
-            'name' => 'string',
-            'price' => 'float',
-            'active' => 'bool',
-            'online' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'id' => 'int',
+        'sort_order' => 'integer',
+    ];
+
+    protected $laralasticaCasts = [
+        'name' => 'string',
+        'price' => 'float',
+        'active' => 'bool',
+        'online' => 'boolean',
+    ];
 }

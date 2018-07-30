@@ -29,10 +29,10 @@ class SearchableTest extends OrchestraTestCase
     /**
      * @test
      */
-    public function it_gets_the_search_types_for_the_model()
+    public function it_gets_the_castable_attributes_for_the_model()
     {
         $model = new TestModel();
-        $types = $model->getSearchDataTypes();
+        $types = $model->getLaralasticaCasts();
 
         $this->assertArrayHasKey('id', $types);
         $this->assertArrayHasKey('sort_order', $types);

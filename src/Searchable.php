@@ -23,7 +23,7 @@ trait Searchable
      */
     protected static function bootSearchable()
     {
-        if (!is_null(static::$dispatcher)) {
+        if ( ! is_null(static::$dispatcher)) {
             static::observe(new Observer(static::$dispatcher));
         }
     }
@@ -40,16 +40,23 @@ trait Searchable
     }
 
     /**
-     * Return an array of columns to be indexed with the column as the key and
-     * the desired data type as the value.
-     *
-     * If you are using the casts attribute.
+     * Get the fields that should be cast.
      *
      * @return array
      */
-    public function getSearchDataTypes()
+    public function getLaralasticaCasts()
     {
-        return ['id' => 'int'];
+        return array_merge($this->getCasts(), isset($this->laralasticaCasts) ? $this->laralasticaCasts : []);
+    }
+
+    /**
+     * Get the elasticsearch index.
+     *
+     * @return string
+     */
+    public function getIndex()
+    {
+        return strtolower($this->getTable());
     }
 
     /**
@@ -59,7 +66,7 @@ trait Searchable
      */
     public function getSearchType()
     {
-        return $this->getTable();
+        return $this->getIndex();
     }
 
     /**
@@ -93,41 +100,18 @@ trait Searchable
     }
 
     /**
-     * Loop through the attributes and type cast them if neccesary.
+     * Loop through the attributes and type cast them if necessary.
      *
      * @param array $attributes
      * @return array
      */
     public function transformAttributes(array $attributes)
     {
-        $searchDataTypes = $this->getSearchDataTypes();
+        $casts = $this->getLaralasticaCasts();
 
-        if (!empty($searchDataTypes)) {
-            foreach ($attributes as $key => $attribute) {
-                if (array_key_exists($key, $searchDataTypes)) {
-                    switch ($searchDataTypes[$key]) {
-                        case "int":
-                            $attribute = (int)$attribute;
-                            break;
-                        case "integer":
-                            $attribute = (int)$attribute;
-                            break;
-                        case "string":
-                            $attribute = (string)$attribute;
-                            break;
-                        case "float":
-                            $attribute = (float)$attribute;
-                            break;
-                        case "bool":
-                            $attribute = (bool)$attribute;
-                            break;
-                        case "boolean":
-                            $attribute = (bool)$attribute;
-                            break;
-                    }
-
-                    $attributes[$key] = $attribute;
-                }
+        if ( ! empty($casts)) {
+            foreach ($attributes as $key => $value) {
+                $attributes[$key] = $this->transformAttribute($casts, $key, $value);
             }
         }
 
@@ -135,13 +119,50 @@ trait Searchable
     }
 
     /**
+     * Cast the attribute to the required type.
+     *
+     * @param array  $casts
+     * @param string $key
+     * @param mixed  $value
+     * @return bool|float|int|string
+     */
+    protected function transformAttribute(array $casts, $key, $value)
+    {
+        if (array_key_exists($key, $casts)) {
+            switch ($casts[$key]) {
+                case "int":
+                case "integer":
+                    return (int)$value;
+                    break;
+                case "string":
+                    return (string)$value;
+                    break;
+                case 'real':
+                case 'float':
+                case 'double':
+                    return (float)$value;
+                    break;
+                case 'bool':
+                case 'boolean':
+                    return (bool)$value;
+                    break;
+                default:
+                    return $value;
+                    break;
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      * Run the provided query on the elastic search index and then run a where
      * in.
      *
-     * @param callable $query
-     * @param callable $searchQuery
+     * @param callable    $query
+     * @param callable    $searchQuery
      * @param string|null $key
-     * @param bool $sortByResults
+     * @param bool        $sortByResults
      * @return mixed
      */
     public function scopeSearch($query, callable $searchQuery, $key = null, $sortByResults = true)
@@ -152,10 +173,10 @@ trait Searchable
     /**
      * Execute the elasticsearch query and then scope the query.
      *
-     * @param mixed $query
-     * @param callable $searchQuery
+     * @param mixed       $query
+     * @param callable    $searchQuery
      * @param string|null $key
-     * @param bool $sortByResults
+     * @param bool        $sortByResults
      * @return mixed
      */
     protected function runSearch($query, callable $searchQuery, $key = null, $sortByResults = true)
@@ -174,7 +195,7 @@ trait Searchable
             $values = $values->all();
         }
 
-        if ($sortByResults && !$results->isEmpty()) {
+        if ($sortByResults && ! $results->isEmpty()) {
             $query->orderBy(\DB::raw($this->buildOrderByConstraints($values, $key)));
         }
 
@@ -184,8 +205,8 @@ trait Searchable
     /**
      * Build the order by constraint
      *
-     * @param mixed $values The values to order by
-     * @param string $key The search key
+     * @param mixed  $values The values to order by
+     * @param string $key    The search key
      * @return string
      */
     protected function buildOrderByConstraints($values, $key)
