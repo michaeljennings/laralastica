@@ -164,9 +164,6 @@ class SearchSoftDeletesTest extends OrchestraTestCase
         })->get();
 
         $this->assertEquals(3, $results->count());
-        $this->assertEquals('Test', $results->first()->name);
-        $this->assertEquals('Test', $results[1]->name);
-        $this->assertEquals('Tests', $results->last()->name);
         $this->assertContains($notTrashed->id, $results->pluck('id')->all());
     }
 
