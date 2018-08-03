@@ -1,5 +1,6 @@
 <?php namespace Michaeljennings\Laralastica\Handlers\Events;
 
+use Elastica\Exception\NotFoundException;
 use Michaeljennings\Laralastica\Contracts\Wrapper;
 use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 
@@ -27,7 +28,11 @@ class RemovesDocumentBelongingToDeletedModel {
     {
         $model = $event->getModel();
 
-        $this->laralastica->delete($model->getSearchType(), $model->getSearchKey());
+        try {
+            $this->laralastica->delete($model->getSearchType(), $model->getSearchKey());
+        } catch (NotFoundException $e) {
+            //
+        }
     }
 
 }
