@@ -42,7 +42,7 @@ class IndexModels
             $attributes = $model->getIndexableAttributes($model);
             $attributes = $model->transformAttributes($attributes);
 
-            $records[] = $attributes;
+            $records[$model->getSearchKey()] = $attributes;
         }
 
         laralastica()->addMultiple($this->index, $records);
