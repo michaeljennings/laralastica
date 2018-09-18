@@ -3,11 +3,13 @@
 namespace Michaeljennings\Laralastica\Jobs;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Bus\Dispatcher;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 
-class IndexModels
+class QueueIndexingModels implements ShouldQueue
 {
     use Queueable, SerializesModels, InteractsWithQueue;
 
@@ -33,18 +35,11 @@ class IndexModels
 
     /**
      * Execute the job.
+     *
+     * @param Dispatcher $dispatcher
      */
-    public function handle()
+    public function handle(Dispatcher $dispatcher)
     {
-        $records = [];
-
-        foreach ($this->models as $model) {
-            $attributes = $model->getIndexableAttributes($model);
-            $attributes = $model->transformAttributes($attributes);
-
-            $records[] = $attributes;
-        }
-
-        laralastica()->addMultiple($this->index, $records);
+        $dispatcher->dispatch(new IndexModels($this->models, $this->index));
     }
 }

@@ -182,6 +182,7 @@ class ElasticaDriver implements Driver
         // completely in elasticsearch 7. However in elasticsearch 6 you
         // cannot create a document without a type so here we are setting
         // the type to be same as the index.
+        //
         // See: https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
         foreach ($documents as $document) {
             $document->setType($index);
