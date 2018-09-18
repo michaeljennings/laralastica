@@ -14,7 +14,7 @@ services:
   - elasticsearch
 
 before_script:
-  - php -d memory_limit=-1 `which composer` install
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install --prefer-dist --no-interaction
   - sleep 10
 
 after_success:
