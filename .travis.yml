@@ -14,7 +14,7 @@ services:
   - elasticsearch
 
 before_script:
-  - composer install
+  - php -d memory_limit=-1 `which composer` install
   - sleep 10
 
 after_success:
