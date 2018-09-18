@@ -4,10 +4,6 @@ namespace Michaeljennings\Laralastica;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Michaeljennings\Laralastica\Contracts\Builder;
-use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
-use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
-use Michaeljennings\Laralastica\SearchSoftDeletes;
 
 trait Searchable
 {

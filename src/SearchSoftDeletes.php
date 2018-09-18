@@ -2,9 +2,6 @@
 
 namespace Michaeljennings\Laralastica;
 
-use Elastica\Query\Exists;
-use Michaeljennings\Laralastica\Contracts\Builder;
-
 trait SearchSoftDeletes
 {
     use Searchable;
@@ -69,7 +66,7 @@ trait SearchSoftDeletes
      */
     protected function addSoftDeleteQuery(callable $searchQuery, $level)
     {
-        return function (Builder $builder) use ($searchQuery, $level) {
+        return function ($builder) use ($searchQuery, $level) {
             $searchQuery($builder);
 
             $builder->filter(function($builder) use ($level) {
