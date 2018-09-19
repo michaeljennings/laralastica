@@ -3,6 +3,8 @@
 namespace Michaeljennings\Laralastica\Tests;
 
 use Michaeljennings\Laralastica\LaralasticaServiceProvider;
+use Michaeljennings\Laralastica\LengthAwarePaginator;
+use Michaeljennings\Laralastica\ResultCollection;
 use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
 
 class SearchableTest extends TestCase
@@ -117,9 +119,35 @@ class SearchableTest extends TestCase
             });
         })->get();
 
+        $this->assertInstanceOf(ResultCollection::class, $results);
         $this->assertEquals(2, $results->count());
         $this->assertEquals('Test', $results->first()->name);
         $this->assertEquals('Tests', $results->last()->name);
+        $this->assertEquals(2, $results->totalHits());
+        $this->assertNotNull($results->maxScore());
+        $this->assertNotNull($results->totalTime());
+    }
+
+    /**
+     * @test
+     */
+    public function it_paginates_the_search_results()
+    {
+        factory(TestModel::class)->create(['name' => 'Tests']);
+        factory(TestModel::class)->create(['name' => 'Test']);
+
+        $results = TestModel::search(function($builder) {
+            $builder->match('name', 'Test', function($query) {
+                $query->setFieldFuzziness('name', 2);
+            });
+        })->paginate(1);
+
+        $this->assertInstanceOf(LengthAwarePaginator::class, $results);
+        $this->assertEquals(1, $results->count());
+        $this->assertEquals('Test', $results->first()->name);
+        $this->assertEquals(2, $results->totalHits());
+        $this->assertNotNull($results->maxScore());
+        $this->assertNotNull($results->totalTime());
     }
 
     /**
@@ -132,5 +160,19 @@ class SearchableTest extends TestCase
         $model = new TestModel();
 
         $this->assertNull($model::saving(function() {}));
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+
+        $model = new TestModel();
+
+        $client = $this->getClient();
+        $index = $client->getIndex('testing_' . $model->getIndex());
+
+        if ($index->exists()) {
+            $index->delete();
+        }
     }
 }

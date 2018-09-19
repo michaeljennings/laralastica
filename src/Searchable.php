@@ -4,6 +4,7 @@ namespace Michaeljennings\Laralastica;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Michaeljennings\Laralastica\Eloquent\Builder;
 
 trait Searchable
 {
@@ -160,7 +161,7 @@ trait Searchable
      * @param callable    $searchQuery
      * @param string|null $key
      * @param bool        $sortByResults
-     * @return mixed
+     * @return Builder
      */
     public function scopeSearch($query, callable $searchQuery, $key = null, $sortByResults = true)
     {
@@ -174,7 +175,7 @@ trait Searchable
      * @param callable    $searchQuery
      * @param string|null $key
      * @param bool        $sortByResults
-     * @return mixed
+     * @return Builder
      */
     protected function runSearch($query, callable $searchQuery, $key = null, $sortByResults = true)
     {
@@ -196,7 +197,9 @@ trait Searchable
             $query->orderBy(\DB::raw($this->buildOrderByConstraints($values, $key)));
         }
 
-        return $query->whereIn($searchKey, $values);
+        $query->whereIn($searchKey, $values);
+
+        return new Builder($query, $results->totalHits(), $results->maxScore(), $results->totalTime());
     }
 
     /**
