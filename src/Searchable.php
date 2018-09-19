@@ -253,11 +253,11 @@ trait Searchable
      * Create a new database notification collection instance.
      *
      * @param array $models
-     * @return ResultCollection
+     * @return \Michaeljennings\Laralastica\Eloquent\ResultCollection
      */
     public function newCollection(array $models = [])
     {
-        $collection = new ResultCollection($models);
+        $collection = new \Michaeljennings\Laralastica\Eloquent\ResultCollection($models);
 
         $collection->setQueryStats($this->totalHits, $this->maxScore, $this->totalTime);
 

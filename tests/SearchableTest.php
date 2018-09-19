@@ -3,7 +3,7 @@
 namespace Michaeljennings\Laralastica\Tests;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Michaeljennings\Laralastica\ResultCollection;
+use Michaeljennings\Laralastica\Eloquent\ResultCollection;
 use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
 
 class SearchableTest extends TestCase

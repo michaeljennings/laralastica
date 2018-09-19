@@ -19,10 +19,10 @@ indexing and removing documents when you save or delete models.
 
 ## Upgrading from 3.0 to 3.1
 
-When hitting the `search` method on a model the query builder will return an instance of `Michaeljennings\Laralastica\ResultCollection` instead of `Illuminate\Database\Eloquent\Collection`.
+When hitting the `search` method on a model the query builder will return an instance of `Michaeljennings\Laralastica\Eloquent\ResultCollection` instead of `Illuminate\Database\Eloquent\Collection`.
 
 ```php
-// This will return an instance of Michaeljennings\Laralastica\ResultCollection
+// This will return an instance of Michaeljennings\Laralastica\Eloquent\ResultCollection
 Model::search(function(Builder $builder) {
   $builder->matchAll();
 })->get();
