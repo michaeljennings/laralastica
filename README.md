@@ -1,6 +1,6 @@
 # Laralastica [![Build Status](https://travis-ci.org/michaeljennings/laralastica.svg?branch=master)](https://travis-ci.org/michaeljennings/laralastica) [![Latest Stable Version](https://poser.pugx.org/michaeljennings/laralastica/v/stable)](https://packagist.org/packages/michaeljennings/laralastica) [![Coverage Status](https://coveralls.io/repos/github/michaeljennings/laralastica/badge.svg?branch=master)](https://coveralls.io/github/michaeljennings/laralastica?branch=master) [![License](https://poser.pugx.org/michaeljennings/laralastica/license)](https://packagist.org/packages/michaeljennings/laralastica)
 
-A laravel 5 package that adds the ability to search eloquent models using elasticsearch results, it also handles 
+A laravel 5 package that adds the ability to search eloquent models using elasticsearch results, it also handles
 indexing and removing documents when you save or delete models.
 
 - [Installation](#installation)
@@ -9,9 +9,41 @@ indexing and removing documents when you save or delete models.
 - [Searching](#searching)
     - [Searching Soft Deleted Records](#searching-soft-deleted-records)
     - [Searching Without the Searchable Trait](#searching-without-the-searchable-trait)
+    - [Limit Results](#limit-results)
+    - [Offsetting Results](#offsetting-results)
+    - [Sorting Results](#sorting-results)
 - [Queries](#queries)
+- [Filters](#filters)
 - [Paginate Results](#paginate-results)
 - [The Result Collection](#the-result-collection)
+
+## Upgrading from 3.0 to 3.1
+
+When hitting the `search` method on a model the query builder will return an instance of `Michaeljennings\Laralastica\ResultCollection` instead of `Illuminate\Database\Eloquent\Collection`.
+
+```php
+// This will return an instance of Michaeljennings\Laralastica\ResultCollection
+Model::search(function(Builder $builder) {
+  $builder->matchAll();
+})->get();
+```
+
+This is useful as you get access to the `totalHits`, `maxScore`, and `totalTime` methods.
+
+However if you want to use the default collection you may override the `newCollection` method on your model and return the collection instance you need.
+
+```php
+/**
+ * Create a new database notification collection instance.
+ *
+ * @param array $models
+ * @return ResultCollection
+ */
+public function newCollection(array $models = [])
+{
+    return new Illuminate\Database\Eloquent\Collection($models);
+}
+```
 
 ## Installation
 
@@ -22,11 +54,11 @@ Check the table below to see which version you will need.
 |3.x|^5.1|6.x|^7.0
 |2.x|^5.1|2.x-5.x|^5.5.9|
 
-To install through composer either run `composer require michaeljennings/laralastica` or add the package to you 
+To install through composer either run `composer require michaeljennings/laralastica` or add the package to you
 composer.json.
 
 ```php
-"michaeljennings/laralastica": "^3.0"
+"michaeljennings/laralastica": "^3.1"
 ```
 
 For Laravel 5.5 and upwards, the service provider and facade will be loaded automatically. For older versions of Laravel, you will need to add the laralastica service provider into your providers array in `config/app.php`.
@@ -61,13 +93,13 @@ The package comes with 2 drivers: elastica, and null. By default the package wil
 
 As of laralastica 3.0 we now use multiple indexes, rather than multiple types in one index. To see why check this post [about the removal of types](https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html).
 
-If you are using multiple environments (production, staging, testing etc.) you can define a index prefix in the config. This will the be added to each index when searcing, adding documents etc. 
+If you are using multiple environments (production, staging, testing etc.) you can define a index prefix in the config. This will the be added to each index when searcing, adding documents etc.
 
 ```php
 'index_prefix' => 'testing_',
 ```
 
-Finally you need to configure your elasticsearch connection. Out of the box the package comes ready to support multiple connections. 
+Finally you need to configure your elasticsearch connection. Out of the box the package comes ready to support multiple connections.
 
 However you can pass through any of the parameters the elastica client can receive, check the [elastica documentation](https://github.com/ruflin/Elastica) for more information.
 
@@ -100,7 +132,7 @@ To get started using the package simply add the `Searchable` trait to the models
 use Illuminate\Database\Eloquent\Model;
 use Michaeljennings\Laralastica\Searchable;
 
-class Foo extends Model 
+class Foo extends Model
 {
 	use Searchable;
 }
@@ -111,7 +143,7 @@ when a model is saved, deleted or restored and will add or delete the elasticsea
 
 ### Set Elasticsearch Index
 
-To set the elasticsearch index for the model use the `getIndex` method to return the name of the index. By default 
+To set the elasticsearch index for the model use the `getIndex` method to return the name of the index. By default
 this will return the table name the model is using. The index must be lowercase.
 
 ```php
@@ -123,7 +155,7 @@ public function getIndex()
 
 ### Set Elasticsearch Key To Index By
 
-To set the value to index the elasticsearch documents by use the 'getSearchKey' method to return the key. By default 
+To set the value to index the elasticsearch documents by use the 'getSearchKey' method to return the key. By default
 this will return the primary key of the model.
 
 ```php
@@ -135,10 +167,10 @@ public function getSearchKey()
 
 ### Set the Attributes to Index
 
-To set which attributes should be indexed for the model use the `getIndexableAttributes` method. The attributes must be 
+To set which attributes should be indexed for the model use the `getIndexableAttributes` method. The attributes must be
 returned as an array of key value pairs. By default all of the models attributes are indexed.
 
-```php 
+```php
 public function getIndexableAttributes()
 {
 	return [
@@ -174,7 +206,7 @@ protected $laralasticaCasts = [
 
 ## Searching
 
-To run a search use the `search` method. This uses a closure to search the elasticsearch type and then gets the results 
+To run a search use the `search` method. This uses a closure to search the elasticsearch type and then gets the results
 and adds a where in query from the results.
 
 The first parameter for the `search` method is a Closure which gets passed an instance of the laralastica query builder.
@@ -215,7 +247,7 @@ Foo::where('foo', 'bar')->search(function(Builder $query) {
 
 ### Searching Soft Deleted Records
 
-By default laralastica will delete the elasticsearch record when a model is deleted. 
+By default laralastica will delete the elasticsearch record when a model is deleted.
 
 Occasionally you may want to search against your soft deleted records, to do that you implement the `SearchSoftDeletes` trait instead of the `Searchable` trait in your model.
 
@@ -223,7 +255,7 @@ Occasionally you may want to search against your soft deleted records, to do tha
 use Illuminate\Database\Eloquent\Model;
 use Michaeljennings\Laralastica\SearchSoftDeletes;
 
-class Foo extends Model 
+class Foo extends Model
 {
 	use SearchSoftDeletes;
 }
@@ -236,11 +268,11 @@ To only search for non-soft deleted results just use the `search` method as usua
 
 ### Searching Without the Searchable Trait
 
-It is also possible to use Laralastica without using the searchable trait. To do so you can either dependency inject 
+It is also possible to use Laralastica without using the searchable trait. To do so you can either dependency inject
 the class via its contract, use the provided Facade, or use the `laralastica` helper method.
 
 ```php
-class Foo 
+class Foo
 {
 	public function __construct(Michaeljennings\Laralastica\Contracts\Laralastica $laralastica)
 	{
@@ -257,29 +289,67 @@ class Foo
 
 To run a new query use the `search` method. This takes two parameters:
 
-- The type/types you are searching in
+- The index/indices you are searching in
 - The query to be run
 
 ```php
-$laralastica->search('foo', function($q) {
-	$q->matchAll();
+$laralastica->search('foo', function($query) {
+	$query->matchAll();
 });
 ```
 
-To search across multiple elasticsearch types simply pass an array of types as the first parameter.
+To search across multiple elasticsearch indices simply pass an array of indices as the first parameter.
 
 ```php
-$laralastica->search(['foo', 'bar], function($q) {
-	$q->matchAll();
+$laralastica->search(['foo', 'bar], function($query) {
+	$query->matchAll();
 });
 ```
 
 To get a paginated list of results hit the `paginate` method and the amount to paginate by.
 
 ```php
-$laralastica->paginate('foo', function($q) {
-	$q->matchAll();
+$laralastica->paginate('foo', function($query) {
+	$query->matchAll();
 }, 15);
+```
+
+### Limit Results
+
+By default the results will be limited to the size set in the `laralastica.php` config file. However you can override it by hitting the `size` method.
+
+```php
+$laralastica->search('foo', function($query) {
+	$query->size(50);
+});
+```
+
+### Offsetting Results
+
+It is also possible to provide an offset by hitting the `from` method.
+
+```php
+$laralastica->search('foo', function($query) {
+	$query->from(10);
+});
+```
+
+### Sorting Results
+
+By default we sort the results by their score in descending order. You can override this by hitting the sort method.
+
+```php
+$laralastica->search('foo', function($query) {
+    // Sort by id in ascending order
+	$query->sort('id');
+	// Sort by id in descending order
+	$query->sort('id', 'desc');
+	// Sort by multiple fields
+	$query->sort([
+        '_score',
+        'id' => 'desc'
+	]);
+});
 ```
 
 ## Queries
@@ -287,10 +357,10 @@ $laralastica->paginate('foo', function($q) {
 The elasticsearch queries are powered by the great [elastica package](https://github.com/ruflin/Elastica).
 
 There are some preset queries on the query builder, but it is also possible to create an instance of an elastica query and pass that through.
- 
+
 ### Available Queries
 
-A list of the available queries can be found below. 
+A list of the available queries can be found below.
 
 Each of the queries can optionally be passed a callback as the final parameter which will allow you to access the raw elastica query.
 
@@ -303,7 +373,17 @@ $laralastica->search('foo', function($query) {
     $query->common('baz', 'qux', 1.0, function($commonQuery) {
         $commonQuery->setMinimumShouldMatch(5);
     });
-    
+
+});
+```
+
+### Exists Query
+
+```php
+$laralastica->search('foo', function($query) {
+
+    $query->exists('baz');
+
 });
 ```
 
@@ -316,7 +396,7 @@ $laralastica->search('foo', function($query) {
     $query->fuzzy('baz', 'qux', function($fuzzyQuery) {
         $fuzzyQuery->setFieldOption('fuzziness', 2);
     });
-    
+
 });
 ```
 
@@ -329,7 +409,7 @@ $laralastica->search('foo', function($query) {
     $query->match('baz', 'qux', function($matchQuery) {
         $matchQuery->setFieldBoost('foo');
     });
-    
+
 });
 ```
 
@@ -339,7 +419,7 @@ $laralastica->search('foo', function($query) {
 $laralastica->search('foo', function($query) {
 
     $query->matchAll();
-    
+
 });
 ```
 
@@ -352,7 +432,7 @@ $laralastica->search('foo', function($query) {
     $query->queryString('testing', function($queryStringQuery) {
         $queryStringQuery->setDefaultField('foo');
     });
-    
+
 });
 ```
 
@@ -365,7 +445,7 @@ $laralastica->search('foo', function($query) {
     $query->queryString('foo', ['gte' => 1, 'lte' => 20], function($rangeQuery) {
         $rangeQuery->setParam('foo', ['gte' => 1, 'lte' => 20, 'boost' => 1]);
     });
-    
+
 });
 ```
 
@@ -375,7 +455,7 @@ $laralastica->search('foo', function($query) {
 $laralastica->search('foo', function($query) {
 
     $query->regexp('foo', 'testing');
-    
+
 });
 ```
 
@@ -388,7 +468,7 @@ $laralastica->search('foo', function($query) {
     $query->term(['foo' => 'bar'], function($termQuery) {
         $termQuery->setTerm('baz', 'qux', 2.0);
     });
-    
+
 });
 ```
 
@@ -401,7 +481,7 @@ $laralastica->search('foo', function($query) {
     $query->terms('foo', ['bar', 'baz'], function($query) {
         $query->setMinimumMatch(5);
     });
-    
+
 });
 ```
 
@@ -411,7 +491,26 @@ $laralastica->search('foo', function($query) {
 $laralastica->search('foo', function($query) {
 
     $query->wildcard('foo', 'bar');
-    
+
+});
+```
+
+## Filters
+
+Occasionally you will want to run a query to exclude/include records, but you don't want the query to effect the score.
+
+You can do this using filters.
+
+To add a filter hit the `filter` methods and pass it a callback. The callback will be passed an instance of the laralastica builder as the first parameter.
+
+For example if only wanted to search against records that had a due date we could do the following.
+
+```php
+$laralastica->search('foo', function($query) {
+    $query->matchAll()
+          ->filter(function($query) {
+            $query->exists('due_date');
+          });
 });
 ```
 
@@ -423,7 +522,7 @@ To get a paginated list of results use the `paginate` method and pass the amount
 $laralastica->paginate('foo', function($query) {
 
     $query->matchAll();
-    
+
 }, 15);
 ```
 
@@ -437,7 +536,7 @@ $laralastica->search('foo', function($query) {
     $match = new \Elastica\Query\Match();
 
     $query->query($match);
-    
+
 });
 ```
 
