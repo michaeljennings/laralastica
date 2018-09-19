@@ -341,14 +341,14 @@ By default we sort the results by their score in descending order. You can overr
 ```php
 $laralastica->search('foo', function($query) {
     // Sort by id in ascending order
-	$query->sort('id');
-	// Sort by id in descending order
-	$query->sort('id', 'desc');
-	// Sort by multiple fields
-	$query->sort([
+    $query->sort('id');
+    // Sort by id in descending order
+    $query->sort('id', 'desc');
+    // Sort by multiple fields
+    $query->sort([
         '_score',
         'id' => 'desc'
-	]);
+    ]);
 });
 ```
 
