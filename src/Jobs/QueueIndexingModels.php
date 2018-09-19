@@ -5,9 +5,9 @@ namespace Michaeljennings\Laralastica\Jobs;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Collection;
 
 class QueueIndexingModels implements ShouldQueue
 {

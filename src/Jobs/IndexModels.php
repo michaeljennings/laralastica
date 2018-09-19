@@ -3,9 +3,9 @@
 namespace Michaeljennings\Laralastica\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Collection;
 
 class IndexModels
 {

@@ -16,6 +16,27 @@ trait Searchable
     protected $laralastica;
 
     /**
+     * The total amount of elasticsearch results matched.
+     *
+     * @var int
+     */
+    protected $totalHits;
+
+    /**
+     * The maximum score matched.
+     *
+     * @var float
+     */
+    protected $maxScore;
+
+    /**
+     * The total time the elasticsearch query took.
+     *
+     * @var float
+     */
+    protected $totalTime;
+
+    /**
      * Boot the trait.
      */
     protected static function bootSearchable()
@@ -199,7 +220,11 @@ trait Searchable
 
         $query->whereIn($searchKey, $values);
 
-        return new Builder($query, $results->totalHits(), $results->maxScore(), $results->totalTime());
+        $this->totalHits = $results->totalHits();
+        $this->maxScore = $results->maxScore();
+        $this->totalTime = $results->totalTime();
+
+        return $query;
     }
 
     /**
@@ -224,4 +249,18 @@ trait Searchable
         return $order;
     }
 
+    /**
+     * Create a new database notification collection instance.
+     *
+     * @param array $models
+     * @return ResultCollection
+     */
+    public function newCollection(array $models = [])
+    {
+        $collection = new ResultCollection($models);
+
+        $collection->setQueryStats($this->totalHits, $this->maxScore, $this->totalTime);
+
+        return $collection;
+    }
 }

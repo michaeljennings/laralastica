@@ -2,8 +2,7 @@
 
 namespace Michaeljennings\Laralastica\Tests;
 
-use Michaeljennings\Laralastica\LaralasticaServiceProvider;
-use Michaeljennings\Laralastica\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\ResultCollection;
 use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
 
@@ -142,12 +141,14 @@ class SearchableTest extends TestCase
             });
         })->paginate(1);
 
+
+
         $this->assertInstanceOf(LengthAwarePaginator::class, $results);
         $this->assertEquals(1, $results->count());
         $this->assertEquals('Test', $results->first()->name);
-        $this->assertEquals(2, $results->totalHits());
-        $this->assertNotNull($results->maxScore());
-        $this->assertNotNull($results->totalTime());
+        $this->assertEquals(2, $results->getCollection()->totalHits());
+        $this->assertNotNull($results->getCollection()->maxScore());
+        $this->assertNotNull($results->getCollection()->totalTime());
     }
 
     /**
