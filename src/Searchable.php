@@ -4,10 +4,6 @@ namespace Michaeljennings\Laralastica;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Michaeljennings\Laralastica\Contracts\Builder;
-use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
-use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
-use Michaeljennings\Laralastica\SearchSoftDeletes;
 
 trait Searchable
 {
@@ -216,7 +212,7 @@ trait Searchable
         $order = "CASE $relativeKey ";
         foreach ($values as $key => $value) {
             if ($value) {
-                $order .= 'WHEN ' . $value . ' THEN ' . $key . ' ';
+                $order .= 'WHEN ' . (is_numeric($value) ? $value : "'$value'") . ' THEN ' . $key . ' ';
             }
         }
 
