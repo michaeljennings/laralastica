@@ -109,8 +109,8 @@ class SearchSoftDeletesTest extends TestCase
      */
     public function it_gets_the_search_results()
     {
-        factory(TestSoftDeleteModel::class)->create(['name' => 'Tests']);
         factory(TestSoftDeleteModel::class)->create(['name' => 'Test']);
+        factory(TestSoftDeleteModel::class)->create(['name' => 'Tests']);
         $shouldNotMatch = factory(TestSoftDeleteModel::class)->create(['name' => 'Test', 'deleted_at' => (string) new Carbon()]);
 
         $results = TestSoftDeleteModel::search(function($builder) {

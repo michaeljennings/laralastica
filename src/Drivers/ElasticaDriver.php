@@ -70,6 +70,20 @@ class ElasticaDriver implements Driver
      */
     protected $boost;
 
+    /**
+     * Set the field to sort results by.
+     *
+     * @var string
+     */
+    protected $sort = '_score';
+
+    /**
+     * The query parameters.
+     *
+     * @var array
+     */
+    protected $params = [];
+
     public function __construct(Client $client, IndexPrefixer $indexPrefixer, array $config)
     {
         $this->client = $client;
@@ -89,7 +103,8 @@ class ElasticaDriver implements Driver
         $search = $this->newSearch($indices);
         $query = $this->newQuery($queries);
 
-        $query->setSize($this->config['size']);
+        $this->setQueryParams($query);
+
         $search->setQuery($query);
 
         return $this->newResultCollection($search->search());
@@ -110,8 +125,7 @@ class ElasticaDriver implements Driver
         $search = $this->newSearch($indices);
         $query = $this->newQuery($queries);
 
-        $query->setSize($perPage);
-        $query->setFrom($offset);
+        $this->setQueryParams($query, $perPage, $offset);
 
         $search->setQuery($query);
 
@@ -125,6 +139,40 @@ class ElasticaDriver implements Driver
         );
 
         return $paginator->setQueryStats($results->getTotalHits(), $results->getMaxScore(), $results->getTotalTime());
+    }
+
+    /**
+     * Set the query parameters.
+     *
+     * @param ElasticaQuery $query
+     * @param int|null      $size
+     * @param int|null      $from
+     */
+    protected function setQueryParams(ElasticaQuery $query, $size = null, $from = null)
+    {
+        if ($size) {
+            $this->size($size);
+        }
+
+        if ($from) {
+            $this->from($from);
+        }
+
+        if ( ! $this->hasParam('size')) {
+            $this->size($this->config['size']);
+        }
+
+        if ( ! $this->hasParam('sort')) {
+            $this->sort($this->sort);
+        }
+
+        foreach ($this->params as $key => $value) {
+            $query->setParam($key, $value);
+        }
+
+        // $query->setParams($this->params);
+
+        $this->params = [];
     }
 
     /**
@@ -462,6 +510,127 @@ class ElasticaDriver implements Driver
     }
 
     /**
+     * Set the offset for the first result.
+     *
+     * @param int $from
+     * @return $this
+     */
+    public function from(int $from)
+    {
+        return $this->setParam('from', $from);
+    }
+
+    /**
+     * Set the amount of results to be returned.
+     *
+     * @param int $size
+     * @return $this
+     */
+    public function size(int $size)
+    {
+        return $this->setParam('size', $size);
+    }
+
+    /**
+     * Set the field to sort by.
+     *
+     * @param string $field
+     * @return $this
+     */
+    public function sort(string $field)
+    {
+        return $this->setParam('sort', $field);
+    }
+
+    /**
+     * Keep track of the scores when sorting results.
+     *
+     * @param bool $trackScores
+     * @return $this
+     */
+    public function trackScores(bool $trackScores = true)
+    {
+        return $this->setParam('track_scores', $trackScores);
+    }
+
+    /**
+     * Sets highlight arguments for the query.
+     *
+     * @param array $config
+     * @return $this
+     */
+    public function highlight(array $config = [])
+    {
+        return $this->setParam('highlight', $config);
+    }
+
+    /**
+     * Enables explain on the query.
+     *
+     * @param bool $explain
+     * @return $this
+     */
+    public function explain($explain = true)
+    {
+        return $this->setParam('explain', $explain);
+    }
+
+    /**
+     * Sets the fields to be returned by the search.
+     *
+     * @param array $fields
+     * @return ElasticaDriver
+     */
+    public function storedFields(array $fields)
+    {
+        return $this->setParam('stored_fields', $fields);
+    }
+
+    /**
+     * Sets the fields not stored to be returned by the search.
+     *
+     * @param array $fields
+     * @return ElasticaDriver
+     */
+    public function fieldDataFields(array $fields)
+    {
+        return $this->setParam('docvalue_fields', $fields);
+    }
+
+    /**
+     * Sets the fields not stored to be returned by the search.
+     *
+     * @param array $fields
+     * @return ElasticaDriver
+     */
+    public function scriptFields(array $fields)
+    {
+        return $this->setParam('script_fields', $fields);
+    }
+
+    /**
+     * Set the minimum score a document must match.
+     *
+     * @param float $score
+     * @return $this
+     */
+    public function minScore(float $score)
+    {
+        return $this->setParam('min_score', $score);
+    }
+
+    /**
+     * Sets the _source field to be returned with every hit.
+     *
+     * @param array|bool $params
+     * @return $this
+     */
+    public function source($params)
+    {
+        return $this->setParam('_source', $params);
+    }
+
+    /**
      * Set the minimum should match value.
      *
      * @param int|string $minimumShouldMatch
@@ -510,6 +679,54 @@ class ElasticaDriver implements Driver
     }
 
     /**
+     * Set a query parameter.
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @return $this
+     */
+    public function setParam(string $key, $value)
+    {
+        $this->params[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Set all of the query parameters.
+     *
+     * @param array $params
+     * @return $this
+     */
+    public function setParams(array $params)
+    {
+        $this->params = $params;
+
+        return $this;
+    }
+
+    /**
+     * Check if a parameters has been set.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function hasParam(string $key)
+    {
+        return array_key_exists($key, $this->params);
+    }
+
+    /**
+     * Get all of the parameters.
+     *
+     * @return array
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
      * Create a new search.
      *
      * @param string|array $indices
@@ -552,7 +769,6 @@ class ElasticaDriver implements Driver
             }
 
             $query = new ElasticaQuery($container);
-            $query->addSort('_score');
         } else {
             $query = new ElasticaQuery();
         }

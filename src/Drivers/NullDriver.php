@@ -250,6 +250,39 @@ class NullDriver implements Driver
     }
 
     /**
+     * Set the field to sort by.
+     *
+     * @param string $field
+     * @return $this
+     */
+    public function sort(string $field)
+    {
+        return $this;
+    }
+
+    /**
+     * Set the offset for the first result.
+     *
+     * @param int $from
+     * @return $this
+     */
+    public function from(int $from)
+    {
+        return $this;
+    }
+
+    /**
+     * Set the amount of results to be returned.
+     *
+     * @param int $size
+     * @return $this
+     */
+    public function size(int $size)
+    {
+        return $this;
+    }
+
+    /**
      * Set the minimum should match value.
      *
      * @param int|string $minimumShouldMatch
@@ -291,6 +324,138 @@ class NullDriver implements Driver
     public function setBoost($boost)
     {
         return $this;
+    }
+
+    /**
+     * Keep track of the scores when sorting results.
+     *
+     * @param bool $trackScores
+     * @return Driver
+     */
+    public function trackScores(bool $trackScores = true)
+    {
+        return $this;
+    }
+
+    /**
+     * Sets highlight arguments for the query.
+     *
+     * @param array $config
+     * @return Driver
+     */
+    public function highlight(array $config = [])
+    {
+        return $this;
+    }
+
+    /**
+     * Enables explain on the query.
+     *
+     * @param bool $explain
+     * @return Driver
+     */
+    public function explain($explain = true)
+    {
+        return $this;
+    }
+
+    /**
+     * Sets the fields to be returned by the search.
+     *
+     * @param array $fields
+     * @return Driver
+     */
+    public function storedFields(array $fields)
+    {
+        return $this;
+    }
+
+    /**
+     * Sets the fields not stored to be returned by the search.
+     *
+     * @param array $fields
+     * @return Driver
+     */
+    public function fieldDataFields(array $fields)
+    {
+        return $this;
+    }
+
+    /**
+     * Sets the fields not stored to be returned by the search.
+     *
+     * @param array $fields
+     * @return Driver
+     */
+    public function scriptFields(array $fields)
+    {
+        return $this;
+    }
+
+    /**
+     * Set the minimum score a document must match.
+     *
+     * @param float $score
+     * @return Driver
+     */
+    public function minScore(float $score)
+    {
+        return $this;
+    }
+
+    /**
+     * Sets the _source field to be returned with every hit.
+     *
+     * @param array|bool $params
+     * @return Driver
+     */
+    public function source($params)
+    {
+        return $this;
+    }
+
+    /**
+     * Set a query param.
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @return Driver
+     */
+    public function setParam(string $key, $value)
+    {
+        return $this;
+    }
+
+    /**
+     * Set all of the query parameters.
+     *
+     * @param array $params
+     * @return Driver
+     */
+    public function setParams(array $params)
+    {
+        return $this;
+    }
+
+    /**
+     * Check if a parameters has been set.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function hasParam(string $key)
+    {
+        return true;
+    }
+
+    /**
+     * Get all of the parameters.
+     *
+     * @return array
+     */
+    public function getParams()
+    {
+        return [];
     }
 
     /**

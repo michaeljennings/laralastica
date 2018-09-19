@@ -194,6 +194,94 @@ interface Driver
     public function wildcard(string $key = '', string $value = null, float $boost = 1.0, callable $callback = null);
 
     /**
+     * Set the offset for the first result.
+     *
+     * @param int $from
+     * @return Driver
+     */
+    public function from(int $from);
+
+    /**
+     * Set the amount of results to be returned.
+     *
+     * @param int $size
+     * @return Driver
+     */
+    public function size(int $size);
+
+    /**
+     * Set the field to sort by.
+     *
+     * @param string $field
+     * @return Driver
+     */
+    public function sort(string $field);
+
+    /**
+     * Keep track of the scores when sorting results.
+     *
+     * @param bool $trackScores
+     * @return Driver
+     */
+    public function trackScores(bool $trackScores = true);
+
+    /**
+     * Sets highlight arguments for the query.
+     *
+     * @param array $config
+     * @return Driver
+     */
+    public function highlight(array $config = []);
+
+    /**
+     * Enables explain on the query.
+     *
+     * @param bool $explain
+     * @return Driver
+     */
+    public function explain($explain = true);
+
+    /**
+     * Sets the fields to be returned by the search.
+     *
+     * @param array $fields
+     * @return Driver
+     */
+    public function storedFields(array $fields);
+
+    /**
+     * Sets the fields not stored to be returned by the search.
+     *
+     * @param array $fields
+     * @return Driver
+     */
+    public function fieldDataFields(array $fields);
+
+    /**
+     * Sets the fields not stored to be returned by the search.
+     *
+     * @param array $fields
+     * @return Driver
+     */
+    public function scriptFields(array $fields);
+
+    /**
+     * Set the minimum score a document must match.
+     *
+     * @param float $score
+     * @return Driver
+     */
+    public function minScore(float $score);
+
+    /**
+     * Sets the _source field to be returned with every hit.
+     *
+     * @param array|bool $params
+     * @return Driver
+     */
+    public function source($params);
+
+    /**
      * Set the minimum should match value.
      *
      * @param int|string $minimumShouldMatch
@@ -224,6 +312,38 @@ interface Driver
      * @return Driver
      */
     public function setBoost($boost);
+
+    /**
+     * Set a query param.
+     *
+     * @param string $key
+     * @param mixed  $value
+     * @return Driver
+     */
+    public function setParam(string $key, $value);
+
+    /**
+     * Set all of the query parameters.
+     *
+     * @param array $params
+     * @return Driver
+     */
+    public function setParams(array $params);
+
+    /**
+     * Check if a parameters has been set.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function hasParam(string $key);
+
+    /**
+     * Get all of the parameters.
+     *
+     * @return array
+     */
+    public function getParams();
 
     /**
      * Add a new document to the provided index.

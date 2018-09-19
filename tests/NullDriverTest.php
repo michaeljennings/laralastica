@@ -153,6 +153,36 @@ class NullDriverTest extends TestCase
     /**
      * @test
      */
+    public function it_returns_the_driver_when_setting_the_sort()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->sort('_id'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_from()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->from(0));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_size()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->from(10));
+    }
+
+    /**
+     * @test
+     */
     public function it_returns_the_driver_when_setting_the_minimum_should_match()
     {
         $driver = $this->makeDriver();
@@ -188,6 +218,126 @@ class NullDriverTest extends TestCase
         $driver = $this->makeDriver();
 
         $this->assertInstanceOf(Driver::class, $driver->setBoost(1));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_track_scores_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->trackScores());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_highlight_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->highlight([]));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_explain_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->explain());
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_stored_fields_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->storedFields([]));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_field_data_fields_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->fieldDataFields([]));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_script_fields_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->scriptFields([]));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_min_score_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->minScore(5));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_the_source_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->source([]));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_a_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->setParam('foo', 'bar'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_driver_when_setting_all_the_parameters()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertInstanceOf(Driver::class, $driver->setParams(['foo' => 'bar']));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_true_while_checking_if_a_parameter_exists()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertTrue($driver->hasParam('foo'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_an_empty_while_getting_the_parameters()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertEquals([], $driver->getParams());
     }
 
     /** @test */

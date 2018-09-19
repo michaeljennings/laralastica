@@ -17,6 +17,7 @@ use Elastica\Query\Term;
 use Elastica\Query\Terms;
 use Elastica\Query\Wildcard;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Michaeljennings\Laralastica\Contracts\Driver;
 use Michaeljennings\Laralastica\Contracts\Result;
 use Michaeljennings\Laralastica\Drivers\ElasticaDriver;
@@ -402,6 +403,254 @@ class ElasticaDriverTest extends TestCase
         $this->assertEquals(1, $results->count());
     }
 
+    /**
+     * @test
+     */
+    public function it_sorts_the_results()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->addMultiple('foo', [
+            1 => [
+                'id' => 1,
+                'foo' => 'bar',
+            ],
+            2 => [
+                'id' => 2,
+                'foo' => 'baz',
+            ],
+        ]);
+
+        $driver->matchAll();
+        $driver->sort('_id');
+
+        $results = $driver->get('foo', []);
+
+        $this->assertInstanceOf(Collection::class, $results);
+        $this->assertEquals(2, $results->count());
+        $this->assertEquals(1, $results->first()->id);
+        $this->assertEquals(2, $results->last()->id);
+    }
+
+    /**
+     * @test
+     */
+    public function it_offsets_the_first_result()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->addMultiple('foo', [
+            1 => [
+                'id' => 1,
+                'foo' => 'bar',
+            ],
+            2 => [
+                'id' => 2,
+                'foo' => 'baz',
+            ],
+        ]);
+
+        $driver->from(1);
+        $driver->matchAll();
+        $driver->sort('_id');
+
+        $results = $driver->get('foo', []);
+
+        $this->assertInstanceOf(Collection::class, $results);
+
+        $this->assertInstanceOf(Result::class, $results->first());
+        $this->assertEquals(1, $results->count());
+        $this->assertEquals(2, $results->first()->id);
+    }
+
+    /**
+     * @test
+     */
+    public function it_limits_the_size_of_the_results()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->addMultiple('foo', [
+            1 => [
+                'id' => 1,
+                'foo' => 'bar',
+            ],
+            2 => [
+                'id' => 2,
+                'foo' => 'baz',
+            ],
+            3 => [
+                'id' => 3,
+                'foo' => 'qux',
+            ],
+            4 => [
+                'id' => 4,
+                'foo' => 'foo',
+            ],
+        ]);
+
+        $driver->from(1);
+        $driver->size(2);
+        $driver->matchAll();
+        $driver->sort('_id');
+
+        $results = $driver->get('foo', []);
+
+        $this->assertInstanceOf(Collection::class, $results);
+
+        $this->assertInstanceOf(Result::class, $results->first());
+        $this->assertEquals(2, $results->count());
+        $this->assertEquals(2, $results->first()->id);
+        $this->assertEquals(3, $results->last()->id);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_track_scores_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->trackScores();
+
+        $this->assertEquals(true, $driver->getParams()['track_scores']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_highlight_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->highlight([]);
+
+        $this->assertEquals([], $driver->getParams()['highlight']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_explain_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->explain();
+
+        $this->assertEquals(true, $driver->getParams()['explain']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_stored_fields_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->storedFields(['foo']);
+
+        $this->assertEquals(['foo'], $driver->getParams()['stored_fields']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_field_data_values_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->fieldDataFields(['foo']);
+
+        $this->assertEquals(['foo'], $driver->getParams()['docvalue_fields']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_script_fields_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->scriptFields(['foo']);
+
+        $this->assertEquals(['foo'], $driver->getParams()['script_fields']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_min_score_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->minScore(5);
+
+        $this->assertEquals(5, $driver->getParams()['min_score']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_the_source_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->source(['foo']);
+
+        $this->assertEquals(['foo'], $driver->getParams()['_source']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_a_parameter()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->setParam('foo', 'bar');
+
+        $this->assertEquals(['foo' => 'bar'], $driver->getParams());
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_all_of_the_parameters()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->setParams(['foo' => 'bar']);
+
+        $this->assertEquals(['foo' => 'bar'], $driver->getParams());
+    }
+
+    /**
+     * @test
+     */
+    public function it_checks_if_a_parameter_is_set()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertFalse($driver->hasParam('foo'));
+
+        $driver->setParam('foo', 'bar');
+
+        $this->assertTrue($driver->hasParam('foo'));
+    }
+
+
+    /**
+     * @test
+     */
+    public function it_gets_all_of_the_parameters()
+    {
+        $driver = $this->makeDriver();
+
+        $driver->setParams(['foo' => 'bar']);
+
+        $this->assertEquals(['foo' => 'bar'], $driver->getParams());
+    }
+
     /** @test */
     public function it_deletes_a_documents_from_the_index()
     {
@@ -492,6 +741,18 @@ class ElasticaDriverTest extends TestCase
 
         $this->assertInstanceOf(ResultCollection::class, $results);
         $this->assertInstanceOf(Result::class, $results->first());
+    }
+
+    public function tearDown()
+    {
+        parent::tearDown();
+
+        $client = $this->getClient();
+        $index = $client->getIndex('testing_foo');
+
+        if ($index->exists()) {
+            $index->delete();
+        }
     }
 
     protected function makeDriver()
