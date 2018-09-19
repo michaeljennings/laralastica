@@ -71,11 +71,11 @@ class ElasticaDriver implements Driver
     protected $boost;
 
     /**
-     * Set the field to sort results by.
+     * Set the default field to sort results by.
      *
-     * @var string
+     * @var array|string
      */
-    protected $sort = '_score';
+    protected $sort = ['_score' => 'desc'];
 
     /**
      * The query parameters.
@@ -534,12 +534,17 @@ class ElasticaDriver implements Driver
     /**
      * Set the field to sort by.
      *
-     * @param string $field
+     * @param array|string $field
+     * @param string       $order
      * @return $this
      */
-    public function sort(string $field)
+    public function sort($field, string $order = 'asc')
     {
-        return $this->setParam('sort', $field);
+        if (is_array($field)) {
+            return $this->setParam('sort', $field);
+        } else {
+            return $this->setParam('sort', [$field => $order]);
+        }
     }
 
     /**

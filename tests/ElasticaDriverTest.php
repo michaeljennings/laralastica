@@ -422,7 +422,7 @@ class ElasticaDriverTest extends TestCase
         ]);
 
         $driver->matchAll();
-        $driver->sort('_id');
+        $driver->sort('id');
 
         $results = $driver->get('foo', []);
 
@@ -452,7 +452,7 @@ class ElasticaDriverTest extends TestCase
 
         $driver->from(1);
         $driver->matchAll();
-        $driver->sort('_id');
+        $driver->sort('id');
 
         $results = $driver->get('foo', []);
 
@@ -492,7 +492,7 @@ class ElasticaDriverTest extends TestCase
         $driver->from(1);
         $driver->size(2);
         $driver->matchAll();
-        $driver->sort('_id');
+        $driver->sort('id');
 
         $results = $driver->get('foo', []);
 

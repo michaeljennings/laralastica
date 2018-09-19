@@ -212,10 +212,11 @@ interface Driver
     /**
      * Set the field to sort by.
      *
-     * @param string $field
+     * @param array|string $field
+     * @param string       $order
      * @return Driver
      */
-    public function sort(string $field);
+    public function sort($field, string $order = 'asc');
 
     /**
      * Keep track of the scores when sorting results.

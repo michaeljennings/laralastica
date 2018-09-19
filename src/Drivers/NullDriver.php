@@ -252,10 +252,11 @@ class NullDriver implements Driver
     /**
      * Set the field to sort by.
      *
-     * @param string $field
+     * @param array|string $field
+     * @param string       $order
      * @return $this
      */
-    public function sort(string $field)
+    public function sort($field, string $order = 'asc')
     {
         return $this;
     }
