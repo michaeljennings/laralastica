@@ -2,7 +2,7 @@
 
 namespace Michaeljennings\Laralastica;
 
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 use Michaeljennings\Laralastica\Contracts\ResultCollection as ResultCollectionContract;
 
 class ResultCollection extends Collection implements ResultCollectionContract
