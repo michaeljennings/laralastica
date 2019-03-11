@@ -43,13 +43,10 @@ return [
 
     'drivers' => [
         'elastica' => [
-            'hosts' => [
-                'connectionStrategy' => 'RoundRobin',
-                "connections" => [
-                    [
-                        'host' => env('ELASTICSEARCH_HOST', 'localhost'),
-                        'port' => env('ELASTICSEARCH_PORT', 9200)
-                    ]
+            'servers' => [
+                [
+                    'host' => env('ELASTICSEARCH_HOST', 'localhost'),
+                    'port' => env('ELASTICSEARCH_PORT', 9200)
                 ]
             ],
             'size'  => 10,
