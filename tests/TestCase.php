@@ -4,10 +4,11 @@ namespace Michaeljennings\Laralastica\Tests;
 
 use Elastica\Client;
 use Elastica\Connection;
+use Michaeljennings\Laralastica\LaralasticaServiceProvider;
 use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
-use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+use Orchestra\Testbench\TestCase as BaseTestCase;
 
-class TestCase extends PHPUnitTestCase
+class TestCase extends BaseTestCase
 {
     /**
      * Return a mock config array.
@@ -54,5 +55,15 @@ class TestCase extends PHPUnitTestCase
     protected function getPort()
     {
         return getenv('ES_PORT') ?: Connection::DEFAULT_PORT;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getPackageProviders($app)
+    {
+        return [
+            LaralasticaServiceProvider::class,
+        ];
     }
 }

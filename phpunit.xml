@@ -9,7 +9,7 @@
          processIsolation="false"
          stopOnFailure="false"
          beStrictAboutTestsThatDoNotTestAnything="false"
-        >
+>
     <testsuites>
         <testsuite name="Standard Test Suite">
             <directory>./tests/</directory>

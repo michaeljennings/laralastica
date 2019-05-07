@@ -2,7 +2,6 @@
 
 namespace Michaeljennings\Laralastica;
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\Model;
 use Michaeljennings\Laralastica\Events\IndexesWhenSaved;
 use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
@@ -10,25 +9,13 @@ use Michaeljennings\Laralastica\Events\RemovesDocumentWhenDeleted;
 class Observer
 {
     /**
-     * The event dispatcher instance.
-     *
-     * @var Dispatcher
-     */
-    protected $dispatcher;
-
-    public function __construct(Dispatcher $dispatcher)
-    {
-        $this->dispatcher = $dispatcher;
-    }
-
-    /**
      * Handle the created event for the model.
      *
      * @param Model $model
      */
     public function created(Model $model)
     {
-        $this->dispatcher->fire(new IndexesWhenSaved($model));
+        event(new IndexesWhenSaved($model));
     }
 
     /**
@@ -59,7 +46,7 @@ class Observer
     public function deleted(Model $model)
     {
         if ( ! in_array(SearchSoftDeletes::class, class_uses($model))) {
-            $this->dispatcher->fire(new RemovesDocumentWhenDeleted($model));
+            event(new RemovesDocumentWhenDeleted($model));
         }
     }
 

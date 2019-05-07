@@ -2,13 +2,12 @@
 
 namespace Michaeljennings\Laralastica\Tests;
 
-use Artisan;
+use Illuminate\Support\Facades\Artisan;
 use Michaeljennings\Laralastica\LaralasticaServiceProvider;
 use Michaeljennings\Laralastica\Tests\Fixtures\TestModel;
 use Orchestra\Database\ConsoleServiceProvider;
-use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
-class ReIndexCommandTest extends OrchestraTestCase
+class ReIndexCommandTest extends TestCase
 {
     /**
      * @test
@@ -93,14 +92,12 @@ class ReIndexCommandTest extends OrchestraTestCase
         ]);
 
         $result = Artisan::output();
-
-        dd($result);
     }
 
     /**
      * Setup the test environment.
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
