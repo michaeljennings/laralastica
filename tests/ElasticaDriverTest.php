@@ -743,7 +743,7 @@ class ElasticaDriverTest extends TestCase
         $this->assertInstanceOf(Result::class, $results->first());
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
 

@@ -40,7 +40,7 @@ class IndexesSavedModelTest extends TestCase
         $handler->handle($event);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         Mockery::close();
 

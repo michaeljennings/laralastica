@@ -163,7 +163,7 @@ class SearchableTest extends TestCase
         $this->assertNull($model::saving(function() {}));
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
 
