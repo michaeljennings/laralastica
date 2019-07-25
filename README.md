@@ -61,24 +61,26 @@ composer.json.
 "michaeljennings/laralastica": "^3.1"
 ```
 
-For Laravel 5.5 and upwards, the service provider and facade will be loaded automatically. For older versions of Laravel, you will need to add the laralastica service provider into your providers array in `config/app.php`.
+For Laravel 5.5 and upwards, the service provider and facade will be loaded automatically. 
+
+For older versions of Laravel, you will need to add the laralastica service provider into your providers array in `config/app.php`.
 
 ```php
-'providers' => array(
+'providers' => [
 
   'Michaeljennings\Laralastica\LaralasticaServiceProvider'
 
-);
+];
 ```
 
 The package also comes with a facade, to use it add it to your aliases array in `config/app.php`.
 
 ```php
-'aliases' => array(
+'aliases' => [
 
   'Laralastica' => 'Michaeljennings\Laralastica\Facades\Laralastica',
 
-);
+];
 ```
 
 ### Configuration
@@ -108,16 +110,13 @@ To set the connection you wish to use either enter the host and port you want to
 ```php
 'drivers' => [
   'elastica' => [
-    'hosts' => [
-      'connectionStrategy' => 'RoundRobin',
-      'connections' => [
-        [
-          'host' => 'localhost',
-          'port' => 9200
-        ],
-        [
-          'url' => 'https://user:pass@your-search.com/'
-        ]
+    'servers' => [
+      [
+        'host' => 'localhost',
+        'port' => 9200
+      ],
+      [
+        'url' => 'https://user:pass@your-search.com/'
       ]
     ],
   ]
