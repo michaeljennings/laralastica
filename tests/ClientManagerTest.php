@@ -10,10 +10,11 @@ class ClientManagerTest extends TestCase
 {
     /**
      * @test
-     * @expectedException \Michaeljennings\Laralastica\Exceptions\DriverNotSetException
      */
     public function it_throws_an_exception_if_the_driver_is_not_specified()
     {
+        $this->expectException(\Michaeljennings\Laralastica\Exceptions\DriverNotSetException::class);
+
         $manager = new ClientManager([]);
 
         $manager->getDefaultDriver();

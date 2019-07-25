@@ -87,21 +87,21 @@ class SearchableTest extends TestCase
         $model = factory(TestModel::class)->create();
         $attributes = $model->getIndexableAttributes($model);
 
-        $this->assertInternalType('integer', $attributes['id']);
-        $this->assertInternalType('integer', $attributes['sort_order']);
-        $this->assertInternalType('string', $attributes['name']);
-        $this->assertInternalType('float', $attributes['price']);
-        $this->assertInternalType('boolean', $attributes['active']);
-        $this->assertInternalType('boolean', $attributes['online']);
+        $this->assertIsInt($attributes['id']);
+        $this->assertIsInt($attributes['sort_order']);
+        $this->assertIsString($attributes['name']);
+        $this->assertIsFloat($attributes['price']);
+        $this->assertIsBool($attributes['active']);
+        $this->assertIsBool($attributes['online']);
 
         $attributes = $model->transformAttributes($attributes);
 
-        $this->assertInternalType('integer', $attributes['id']);
-        $this->assertInternalType('integer', $attributes['sort_order']);
-        $this->assertInternalType('string', $attributes['name']);
-        $this->assertInternalType('float', $attributes['price']);
-        $this->assertInternalType('boolean', $attributes['active']);
-        $this->assertInternalType('boolean', $attributes['online']);
+        $this->assertIsInt($attributes['id']);
+        $this->assertIsInt($attributes['sort_order']);
+        $this->assertIsString($attributes['name']);
+        $this->assertIsFloat($attributes['price']);
+        $this->assertIsBool($attributes['active']);
+        $this->assertIsBool($attributes['online']);
     }
 
     /**
