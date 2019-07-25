@@ -18,7 +18,7 @@ indexing and removing documents when you save or delete models.
 - [Paginate Results](#paginate-results)
 - [The Result Collection](#the-result-collection)
 
-## Upgrading from 3.0 to 3.1
+## Upgrading from 3.0 to 3.1+
 
 When hitting the `search` method on a model the query builder will return an instance of `Michaeljennings\Laralastica\Eloquent\ResultCollection` instead of `Illuminate\Database\Eloquent\Collection`.
 
