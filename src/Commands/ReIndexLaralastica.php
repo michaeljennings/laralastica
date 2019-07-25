@@ -89,15 +89,14 @@ class ReIndexLaralastica extends Command
     {
         $this->info("\n\nRe-indexing " . $key . "\n");
 
-        $toBeIndexed = $this->toBeIndexed($model, $this->with($key));
+        $total = $model->count();
+        $bar = $this->output->createProgressBar($total);
 
-        $bar = $this->output->createProgressBar(count($toBeIndexed));
+        $model->with($this->with($key))->chunk($chunks, function($models) use ($model, $bar) {
+            $this->dispatcher->dispatch(new IndexModels($models, $model->getIndex()));
 
-        foreach ($toBeIndexed->chunk($chunks) as $chunk) {
-            $this->dispatcher->dispatch(new IndexModels($chunk, $model->getIndex()));
-
-            $bar->advance($chunk->count());
-        }
+            $bar->advance($models->count());
+        });
 
         $bar->finish();
     }
@@ -116,22 +115,6 @@ class ReIndexLaralastica extends Command
         $model->with($this->with($key))->chunk($chunks, function ($indexable) use ($model) {
             $this->dispatcher->dispatch(new QueueIndexingModels($indexable, $model->getIndex()));
         });
-    }
-
-    /**
-     * Get the records to be indexed.
-     *
-     * @param Model $model
-     * @param array $with
-     * @return \Illuminate\Database\Eloquent\Collection|Model[]
-     */
-    protected function toBeIndexed(Model $model, array $with = [])
-    {
-        if (in_array(SearchSoftDeletes::class, class_uses($model))) {
-            return $model->with($with)->withTrashed()->get();
-        }
-
-        return $model->with($with)->get();
     }
 
     /**
