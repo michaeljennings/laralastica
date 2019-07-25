@@ -6,6 +6,7 @@ indexing and removing documents when you save or delete models.
 - [Installation](#installation)
     - [Configuration](#configuration)
 - [Usage](#usage)
+- [Building Your Index](#building-your-index)
 - [Searching](#searching)
     - [Searching Soft Deleted Records](#searching-soft-deleted-records)
     - [Searching Without the Searchable Trait](#searching-without-the-searchable-trait)
@@ -201,6 +202,71 @@ protected $casts = [
 protected $laralasticaCasts = [
 	'price' => 'string',
 ];
+```
+
+## Building Your Index
+If you already have data you in your database and you want to index it you can use the `laralastica:index` artisan command.
+
+### Defining Models To Index
+To get started you'll need to set the models you want to index in the indexable section of the `laralastica.php` config file.
+
+By default the package is setup to index the standard `App\User` class.
+
+```php
+'indexable' => [
+    'users' => \App\User::class,
+]
+```
+
+To add a new model we need to set a custom key to reference this model by, this will allow us to index just that model if we want to.
+
+Then the value needs to be the fully qualified path of the model class.
+
+For example if we wanted to index a products model we could do:
+
+```php
+'indexable' => [
+    'users' => \App\User::class,
+    'products' => \App\Product::class,
+]
+```
+
+Occasionally you may want to index relational data, if you have a large database this can take a long time to lazy load the relations. 
+To get around this you can specify the relations to bring when indexing.
+
+```php
+'indexable' => [
+    'users' => \App\User::class,
+    'products' => [
+        'model' => \App\Product::class,
+        'with' => [
+            'category' => function($query) {
+                $query->with('subcategories');
+            }
+        ]
+    ]
+]
+```
+
+### Indexing
+
+If you want to index all of the models you have setup then you can run:
+```
+php artisan laralastica:index
+```
+
+To run a specific index run:
+```
+php artisan laralastica:index [your-index]
+
+// For our example above it would be 
+php artisan laralastica:index products 
+```
+
+If you are indexing a large amount of data you may want to push it to the queue, you can do so by providing the queue option
+
+```
+php artisan laralastica:index --queue
 ```
 
 ## Searching
