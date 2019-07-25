@@ -24,4 +24,9 @@ class TestModel extends Model
         'active' => 'bool',
         'online' => 'boolean',
     ];
+
+    public function parent()
+    {
+        return $this->belongsTo(static::class, 'parent_id');
+    }
 }

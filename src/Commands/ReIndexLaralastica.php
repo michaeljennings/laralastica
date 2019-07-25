@@ -41,6 +41,8 @@ class ReIndexLaralastica extends Command
      */
     protected $dispatcher;
 
+    protected $with = [];
+
     /**
      * Create a new command instance.
      *
@@ -87,7 +89,7 @@ class ReIndexLaralastica extends Command
     {
         $this->info("\n\nRe-indexing " . $key . "\n");
 
-        $toBeIndexed = $this->toBeIndexed($model);
+        $toBeIndexed = $this->toBeIndexed($model, $this->with($key));
 
         $bar = $this->output->createProgressBar(count($toBeIndexed));
 
@@ -111,7 +113,7 @@ class ReIndexLaralastica extends Command
     {
         $this->info("\n\nQueuing " . $key . "\n");
 
-        $model->chunk($chunks, function ($indexable) use ($model) {
+        $model->with($this->with($key))->chunk($chunks, function ($indexable) use ($model) {
             $this->dispatcher->dispatch(new QueueIndexingModels($indexable, $model->getIndex()));
         });
     }
@@ -120,15 +122,16 @@ class ReIndexLaralastica extends Command
      * Get the records to be indexed.
      *
      * @param Model $model
+     * @param array $with
      * @return \Illuminate\Database\Eloquent\Collection|Model[]
      */
-    protected function toBeIndexed(Model $model)
+    protected function toBeIndexed(Model $model, array $with = [])
     {
         if (in_array(SearchSoftDeletes::class, class_uses($model))) {
-            return $model->withTrashed()->get();
+            return $model->with($with)->withTrashed()->get();
         }
 
-        return $model->all();
+        return $model->with($with)->get();
     }
 
     /**
@@ -160,9 +163,7 @@ class ReIndexLaralastica extends Command
             throw new IndexableModelNotSetException("There is no indexable model set with the key '$index'. Please make sure you've added it to the 'indexable' section of the laralastica config.");
         }
 
-        $model = new $this->config['indexable'][$index];
-
-        return [$index => $model];
+        return [$index => $this->getIndexableModel($index)];
     }
 
     /**
@@ -174,11 +175,39 @@ class ReIndexLaralastica extends Command
     {
         $collection = [];
 
-        foreach ($this->config['indexable'] as $index => $indexable) {
-            $collection[$index] = new $indexable;
+        foreach (array_keys($this->config['indexable']) as $index) {
+            $collection[$index] = $this->getIndexableModel($index);
         }
 
         return $collection;
+    }
+
+    /**
+     * Get the indexable model.
+     *
+     * @param string $index
+     * @return Model
+     */
+    protected function getIndexableModel($index)
+    {
+        $indexable = $this->config['indexable'][$index];
+
+        if (is_array($indexable) && ! empty($indexable['with'])) {
+            $this->with[$index] = $indexable['with'];
+        }
+
+        return is_array($indexable) ? new $indexable['model'] : new $indexable;
+    }
+
+    /**
+     * Get the relations to bring for the index.
+     *
+     * @param string $index
+     * @return array
+     */
+    protected function with($index)
+    {
+        return isset($this->with[$index]) ? $this->with[$index] : [];
     }
 
     /**

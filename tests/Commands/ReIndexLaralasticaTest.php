@@ -85,4 +85,27 @@ class ReIndexLaralasticaTest extends TestCase
              ->expectsOutput("\n\nRe-indexing another_test\n")
              ->expectsOutput("\n\nThe re-indexing has been completed successfully\n");
     }
+
+    /**
+     * @test
+     */
+    public function it_brings_relations_to_index()
+    {
+        // Set the indexable model
+        config()->set('laralastica.indexable', [
+            'test' => [
+                'model' => TestModel::class,
+                'with' => [
+                    'parent'
+                ]
+            ]
+        ]);
+
+        // Create some models
+        factory(TestModel::class, 3)->create();
+
+        $this->artisan('laralastica:index --chunk=2')
+             ->expectsOutput("\n\nRe-indexing test\n")
+             ->expectsOutput("\n\nThe re-indexing has been completed successfully\n");
+    }
 }

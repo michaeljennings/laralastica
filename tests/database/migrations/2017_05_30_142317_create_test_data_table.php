@@ -15,6 +15,7 @@ class CreateTestDataTable extends Migration
     {
         Schema::create('test_data', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('parent_id')->nullable();
             $table->unsignedInteger('sort_order');
             $table->string('name');
             $table->decimal('price', 10, 2);
