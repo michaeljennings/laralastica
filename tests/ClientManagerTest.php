@@ -43,4 +43,15 @@ class ClientManagerTest extends TestCase
 
         $this->assertInstanceOf(NullDriver::class, $manager->driver());
     }
+
+    /** @test */
+    public function it_creates_a_new_driver_instance_if_the_driver_is_called_multiple_times()
+    {
+        $manager = new ClientManager(['driver' => 'null']);
+
+        $driver1 = $manager->driver();
+        $driver2 = $manager->driver();
+
+        $this->assertNotEquals(spl_object_id($driver1), spl_object_id($driver2));
+    }
 }

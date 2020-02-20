@@ -25,6 +25,23 @@ class ClientManager extends Manager
     }
 
     /**
+     * @inheritDoc
+     */
+    public function driver($driver = null)
+    {
+        $driver = $driver ?: $this->getDefaultDriver();
+
+        // By default illuminate manager's will create one version of the driver
+        // and share that in the application. We want to create a new driver
+        // instance each time it is called so here we override that functionality
+        if (isset($this->drivers[$driver])) {
+            return $this->createDriver($driver);
+        }
+
+        return parent::driver($driver);
+    }
+
+    /**
      * Create the elastica driver.
      *
      * @return Client
