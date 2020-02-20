@@ -429,6 +429,18 @@ A list of the available queries can be found below.
 
 Each of the queries can optionally be passed a callback as the final parameter which will allow you to access the raw elastica query.
 
+### Bool Query
+
+```php
+$laralastica->search('foo', function($query) {
+
+    $query->bool(function($query) {
+        $query->match('foo', 'bar');
+    });
+
+});
+```
+
 ### Common Query
 
 ```php
