@@ -2,6 +2,7 @@
 
 namespace Michaeljennings\Laralastica\Tests;
 
+use Elastica\Query\BoolQuery;
 use Elastica\Query\Common;
 use Elastica\Query\Exists;
 use Elastica\Query\Fuzzy;
@@ -27,6 +28,16 @@ use Michaeljennings\Laralastica\ResultCollection;
 
 class ElasticaDriverTest extends TestCase
 {
+    /** @test */
+    public function it_returns_a_bool_query()
+    {
+        $driver = $this->makeDriver();
+
+        $query = $driver->bool([new Query(new MatchAll())]);
+
+        $this->assertInstanceOf(BoolQuery::class, $query);
+    }
+
     /** @test */
     public function it_returns_a_common_query()
     {

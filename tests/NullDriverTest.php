@@ -39,6 +39,14 @@ class NullDriverTest extends TestCase
     }
 
     /** @test */
+    public function it_returns_null_when_creating_a_bool_query()
+    {
+        $driver = $this->makeDriver();
+
+        $this->assertNull($driver->bool([]));
+    }
+
+    /** @test */
     public function it_returns_null_when_creating_a_common_query()
     {
         $driver = $this->makeDriver();

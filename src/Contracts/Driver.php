@@ -29,6 +29,14 @@ interface Driver
     public function paginate($indices, array $queries, $page, $perPage, $offset);
 
     /**
+     * Create a bool query.
+     *
+     * @param array $queries
+     * @return mixed
+     */
+    public function bool(array $queries = []);
+
+    /**
      * Create a common query.
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-common-terms-query.html
