@@ -7,6 +7,7 @@ use Elastica\Query\Match;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Builder;
 use Michaeljennings\Laralastica\ClientManager;
+use Michaeljennings\Laralastica\Contracts\Query;
 use Michaeljennings\Laralastica\Contracts\Result;
 use Michaeljennings\Laralastica\Exceptions\DriverMethodDoesNotExistException;
 use Michaeljennings\Laralastica\ResultCollection;
@@ -28,7 +29,7 @@ class BuilderTest extends TestCase
 
         $query = $builder->match('foo', 'bar');
 
-        $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Query::class, $query);
+        $this->assertInstanceOf(Query::class, $query);
     }
 
     /** @test */
@@ -39,7 +40,21 @@ class BuilderTest extends TestCase
 
         $query = $builder->query($query);
 
-        $this->assertInstanceOf(\Michaeljennings\Laralastica\Contracts\Query::class, $query);
+        $this->assertInstanceOf(Query::class, $query);
+    }
+
+    /**
+     * @test
+     */
+    public function it_adds_a_boolean_query()
+    {
+        $builder = $this->makeBuilder();
+
+        $query = $builder->bool(function($builder) {
+            $builder->matchAll();
+        });
+
+        $this->assertInstanceOf(Query::class, $query);
     }
 
     /** @test */

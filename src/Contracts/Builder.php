@@ -30,9 +30,17 @@ interface Builder
      * Add a new query.
      *
      * @param mixed $query
-     * @return \Michaeljennings\Laralastica\Contracts\Query
+     * @return Query
      */
     public function query($query);
+
+    /**
+     * Add a bool query.
+     *
+     * @param callable $callback
+     * @return Query
+     */
+    public function bool(callable $callback);
 
     /**
      * Add a new filter.
@@ -78,4 +86,11 @@ interface Builder
      * @return array
      */
     public function getQueries();
+
+    /**
+     * Get the current driver.
+     *
+     * @return Driver
+     */
+    public function getDriver();
 }

@@ -71,6 +71,25 @@ class Builder implements BuilderContract
     }
 
     /**
+     * Add a bool query.
+     *
+     * @param callable $callback
+     * @return \Michaeljennings\Laralastica\Contracts\Query
+     */
+    public function bool(callable $callback)
+    {
+        $builder = $this->newBuilder();
+
+        $callback($builder);
+
+        return $this->queries[] = $this->newQuery(
+            $builder->getDriver()->bool(
+                $builder->getQueries()
+            )
+        );
+    }
+
+    /**
      * Add a new filter.
      *
      * @param mixed $filter
@@ -164,6 +183,26 @@ class Builder implements BuilderContract
     public function getQueries()
     {
         return $this->queries;
+    }
+
+    /**
+     * Get the current driver.
+     *
+     * @return Driver
+     */
+    public function getDriver()
+    {
+        return $this->driver;
+    }
+
+    /**
+     * Create a new builder instance.
+     *
+     * @return BuilderContract
+     */
+    protected function newBuilder()
+    {
+        return new self($this->manager);
     }
 
     /**
