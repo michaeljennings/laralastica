@@ -9,7 +9,7 @@ services:
   - elasticsearch
 
 before_script:
-  - composer install
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install --prefer-dist --no-interaction
 
 script:
   - mkdir -p build/logs
