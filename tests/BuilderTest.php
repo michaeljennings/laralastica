@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Builder;
 use Michaeljennings\Laralastica\ClientManager;
 use Michaeljennings\Laralastica\Contracts\Result;
+use Michaeljennings\Laralastica\Exceptions\DriverMethodDoesNotExistException;
 use Michaeljennings\Laralastica\ResultCollection;
 
 class BuilderTest extends TestCase
@@ -149,6 +150,18 @@ class BuilderTest extends TestCase
         $this->assertInstanceOf(LengthAwarePaginator::class, $results);
         $this->assertInstanceOf(Result::class, $results->first());
         $this->assertEquals(1, $results->count());
+    }
+
+    /**
+     * @test
+     */
+    public function it_throws_an_exception_if_the_driver_method_does_not_exist()
+    {
+        $this->expectException(DriverMethodDoesNotExistException::class);
+
+        $builder = $this->makeBuilder();
+
+        $builder->doesNotExist();
     }
 
     protected function makeBuilder()

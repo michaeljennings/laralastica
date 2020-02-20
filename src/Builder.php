@@ -5,6 +5,7 @@ namespace Michaeljennings\Laralastica;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Contracts\Builder as BuilderContract;
 use Michaeljennings\Laralastica\Contracts\Driver;
+use Michaeljennings\Laralastica\Exceptions\DriverMethodDoesNotExistException;
 
 class Builder implements BuilderContract
 {
@@ -172,9 +173,14 @@ class Builder implements BuilderContract
      * @param string $method
      * @param array  $args
      * @return $this|Driver
+     * @throws DriverMethodDoesNotExistException
      */
     public function __call($method, array $args)
     {
+        if (! method_exists($this->driver, $method)) {
+            throw new DriverMethodDoesNotExistException("The {$method} method does not exist on the current driver");
+        }
+
         $query = call_user_func_array([$this->driver, $method], $args);
 
         if (! $query || $query instanceof Driver) {
