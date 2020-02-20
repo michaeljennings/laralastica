@@ -263,6 +263,27 @@ class ElasticaDriver implements Driver
     }
 
     /**
+     * Create a bool query.
+     *
+     * @param array $queries
+     * @return BoolQuery
+     */
+    public function bool(array $queries = [])
+    {
+        $boolQuery = $this->addQueries(new BoolQuery(), $queries);
+
+        if (isset($this->minimumShouldMatch)) {
+            $boolQuery->setMinimumShouldMatch($this->minimumShouldMatch);
+        }
+
+        if (isset($this->boost)) {
+            $boolQuery->setBoost($this->boost);
+        }
+
+        return $boolQuery;
+    }
+
+    /**
      * Create a common query.
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-common-terms-query.html
@@ -763,17 +784,9 @@ class ElasticaDriver implements Driver
     protected function newQuery(array $queries)
     {
         if ( ! empty($queries)) {
-            $container = $this->addQueries(new BoolQuery(), $queries);
-
-            if (isset($this->minimumShouldMatch)) {
-                $container->setMinimumShouldMatch($this->minimumShouldMatch);
-            }
-
-            if (isset($this->boost)) {
-                $container->setBoost($this->boost);
-            }
-
-            $query = new ElasticaQuery($container);
+            $query = new ElasticaQuery(
+                $this->bool($queries)
+            );
         } else {
             $query = new ElasticaQuery();
         }

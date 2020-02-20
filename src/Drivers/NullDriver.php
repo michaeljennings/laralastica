@@ -42,6 +42,17 @@ class NullDriver implements Driver
     }
 
     /**
+     * Create a bool query.
+     *
+     * @param array $queries
+     * @return mixed
+     */
+    public function bool(array $queries = [])
+    {
+        //
+    }
+
+    /**
      * Create a common query.
      *
      * @link https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-common-terms-query.html
@@ -86,6 +97,7 @@ class NullDriver implements Driver
         //
     }
 
+
     /**
      * Create a new match query.
      *
@@ -100,7 +112,6 @@ class NullDriver implements Driver
     {
         //
     }
-
 
     /**
      * Create a new match phrase query.
