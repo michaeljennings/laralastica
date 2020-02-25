@@ -89,10 +89,16 @@ class ReIndexLaralastica extends Command
     {
         $this->info("\n\nRe-indexing " . $key . "\n");
 
-        $total = $model->count();
+        if (in_array(SearchSoftDeletes::class, class_uses($model))) {
+            $query = $model->withTrashed();
+        } else {
+            $query = $model->newQuery();
+        }
+
+        $total = $query->count();
         $bar = $this->output->createProgressBar($total);
 
-        $model->with($this->with($key))->chunk($chunks, function($models) use ($model, $bar) {
+        $query->with($this->with($key))->chunk($chunks, function($models) use ($model, $bar) {
             $this->dispatcher->dispatch(new IndexModels($models, $model->getIndex()));
 
             $bar->advance($models->count());
