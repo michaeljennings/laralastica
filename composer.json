@@ -14,8 +14,8 @@
     }
   ],
   "require": {
-    "php": "^7.0",
-    "ruflin/elastica": "^6.0",
+    "php": "^7.0 || ^8.0",
+    "ruflin/elastica": "^7.2.0",
     "illuminate/database": ">=5.0",
     "illuminate/events": ">=5.0",
     "illuminate/http": ">=5.0",
@@ -25,10 +25,12 @@
     "illuminate/bus": ">=5.0"
   },
   "require-dev": {
+    "phpunit/phpunit": "^9.0",
     "mockery/mockery": "^1.0",
-    "orchestra/testbench": "^3.0",
+    "orchestra/testbench": ">=3.0",
     "php-coveralls/php-coveralls": "^2.1",
-    "orchestra/database": "^3.0"
+    "orchestra/database": ">=3.0",
+    "laravel/legacy-factories": "^1.3"
   },
   "autoload": {
     "psr-4": {
@@ -57,5 +59,10 @@
         }
     }
   },
-  "minimum-stability": "stable"
+  "minimum-stability": "stable",
+  "config": {
+    "allow-plugins": {
+      "kylekatarnls/update-helper": false
+    }
+  }
 }

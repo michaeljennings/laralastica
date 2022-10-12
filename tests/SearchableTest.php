@@ -113,7 +113,7 @@ class SearchableTest extends TestCase
         factory(TestModel::class)->create(['name' => 'Test']);
 
         $results = TestModel::search(function($builder) {
-            $builder->match('name', 'Test', function($query) {
+            $builder->matchQuery('name', 'Test', function($query) {
                 $query->setFieldFuzziness('name', 2);
             });
         })->get();
@@ -136,7 +136,7 @@ class SearchableTest extends TestCase
         factory(TestModel::class)->create(['name' => 'Test']);
 
         $results = TestModel::search(function($builder) {
-            $builder->match('name', 'Test', function($query) {
+            $builder->matchQuery('name', 'Test', function($query) {
                 $query->setFieldFuzziness('name', 2);
             });
         })->paginate(1);

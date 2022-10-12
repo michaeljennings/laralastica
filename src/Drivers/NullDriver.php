@@ -108,7 +108,7 @@ class NullDriver implements Driver
      * @param callable|null $callback
      * @return mixed
      */
-    public function match(string $field = null, string $value = null, callable $callback = null)
+    public function matchQuery(string $field = null, string $value = null, callable $callback = null)
     {
         //
     }

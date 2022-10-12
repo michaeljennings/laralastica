@@ -2,6 +2,8 @@
 
 namespace Michaeljennings\Laralastica;
 
+use Illuminate\Support\Str;
+
 class IndexPrefixer
 {
     /**
@@ -12,7 +14,7 @@ class IndexPrefixer
      */
     public function prefix(string $index)
     {
-        if ( ! starts_with($index, config('laralastica.index_prefix'))) {
+        if ( ! Str::startsWith($index, config('laralastica.index_prefix'))) {
             return config('laralastica.index_prefix') . $index;
         }
 

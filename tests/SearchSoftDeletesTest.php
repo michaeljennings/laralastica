@@ -114,7 +114,7 @@ class SearchSoftDeletesTest extends TestCase
         $shouldNotMatch = factory(TestSoftDeleteModel::class)->create(['name' => 'Test', 'deleted_at' => (string) new Carbon()]);
 
         $results = TestSoftDeleteModel::search(function($builder) {
-            $builder->match('name', 'Test', function($query) {
+            $builder->matchQuery('name', 'Test', function($query) {
                 $query->setFieldFuzziness('name', 2);
             });
         })->get();
@@ -135,7 +135,7 @@ class SearchSoftDeletesTest extends TestCase
         $shouldNotMatch = factory(TestSoftDeleteModel::class)->create(['name' => 'Test']);
 
         $results = TestSoftDeleteModel::searchOnlyTrashed(function($builder) {
-            $builder->match('name', 'Test', function($query) {
+            $builder->matchQuery('name', 'Test', function($query) {
                 $query->setFieldFuzziness('name', 2);
             });
         })->get();
@@ -156,7 +156,7 @@ class SearchSoftDeletesTest extends TestCase
         $notTrashed = factory(TestSoftDeleteModel::class)->create(['name' => 'Test']);
 
         $results = TestSoftDeleteModel::searchWithTrashed(function($builder) {
-            $builder->match('name', 'Test', function($query) {
+            $builder->matchQuery('name', 'Test', function($query) {
                 $query->setFieldFuzziness('name', 2);
             });
         })->get();

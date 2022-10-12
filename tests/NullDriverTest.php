@@ -75,7 +75,7 @@ class NullDriverTest extends TestCase
     {
         $driver = $this->makeDriver();
 
-        $this->assertNull($driver->match());
+        $this->assertNull($driver->matchQuery());
     }
 
     /** @test */
