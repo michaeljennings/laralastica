@@ -6,10 +6,10 @@ use Elastica\Query\BoolQuery;
 use Elastica\Query\Common;
 use Elastica\Query\Exists;
 use Elastica\Query\Fuzzy;
-use Elastica\Query\Match;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MatchPhrase;
 use Elastica\Query\MatchPhrasePrefix;
+use Elastica\Query\MatchQuery;
 use Elastica\Query\MultiMatch;
 use Elastica\Query\QueryString;
 use Elastica\Query\Range;
@@ -105,20 +105,20 @@ class ElasticaDriverTest extends TestCase
     public function it_returns_a_match_query()
     {
         $driver = $this->makeDriver();
-        $query = $driver->match('foo', 'bar');
+        $query = $driver->matchQuery('foo', 'bar');
 
-        $this->assertInstanceOf(Match::class, $query);
+        $this->assertInstanceOf(MatchQuery::class, $query);
     }
 
     /** @test */
     public function it_returns_a_match_query_and_runs_a_callback_on_it()
     {
         $driver = $this->makeDriver();
-        $query = $driver->match(null, null, function($query) {
+        $query = $driver->matchQuery(null, null, function($query) {
             $query->setFieldBoost('foo');
         });
 
-        $this->assertInstanceOf(Match::class, $query);
+        $this->assertInstanceOf(MatchQuery::class, $query);
         $this->assertEquals(1, $query->toArray()['match']['foo']['boost']);
     }
 
@@ -281,11 +281,11 @@ class ElasticaDriverTest extends TestCase
     {
         $driver = $this->makeDriver();
         $query = $driver->terms('foo', ['bar', 'baz'], function($query) {
-            $query->setMinimumMatch(5);
+            $query->setBoost(2.0);
         });
 
         $this->assertInstanceOf(Terms::class, $query);
-        $this->assertEquals(5, $query->toArray()['terms']['minimum_match']);
+        $this->assertEquals(2.0, $query->toArray()['terms']['boost']);
     }
 
     /** @test */
@@ -689,7 +689,7 @@ class ElasticaDriverTest extends TestCase
             ],
         ]);
 
-        $query = $driver->match('foo', 'bar');
+        $query = $driver->matchQuery('foo', 'bar');
         $query = new Query($query);
 
         $this->assertInstanceOf(Query::class, $query->must());
@@ -716,7 +716,7 @@ class ElasticaDriverTest extends TestCase
             ],
         ]);
 
-        $query = $driver->match('foo', 'bar');
+        $query = $driver->matchQuery('foo', 'bar');
         $query = new Query($query);
 
         $this->assertInstanceOf(Query::class, $query->should());
@@ -743,7 +743,7 @@ class ElasticaDriverTest extends TestCase
             ],
         ]);
 
-        $query = $driver->match('foo', 'bar');
+        $query = $driver->matchQuery('foo', 'bar');
         $query = new Query($query);
 
         $this->assertInstanceOf(Query::class, $query->mustNot());

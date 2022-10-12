@@ -3,7 +3,7 @@
 namespace Michaeljennings\Laralastica\Tests;
 
 use Elastica\Query\Exists;
-use Elastica\Query\Match;
+use Elastica\Query\MatchQuery;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Michaeljennings\Laralastica\Builder;
 use Michaeljennings\Laralastica\ClientManager;
@@ -27,7 +27,7 @@ class BuilderTest extends TestCase
     {
         $builder = $this->makeBuilder();
 
-        $query = $builder->match('foo', 'bar');
+        $query = $builder->matchQuery('foo', 'bar');
 
         $this->assertInstanceOf(Query::class, $query);
     }
@@ -36,7 +36,7 @@ class BuilderTest extends TestCase
     public function it_adds_a_raw_query()
     {
         $builder = $this->makeBuilder();
-        $query = new Match();
+        $query = new MatchQuery();
 
         $query = $builder->query($query);
 

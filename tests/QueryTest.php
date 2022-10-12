@@ -3,6 +3,7 @@
 namespace Michaeljennings\Laralastica\Tests;
 
 use Elastica\Query\Match;
+use Elastica\Query\MatchQuery;
 use Michaeljennings\Laralastica\Query;
 
 class QueryTest extends TestCase
@@ -47,11 +48,11 @@ class QueryTest extends TestCase
     {
         $query = $this->makeQuery();
 
-        $this->assertInstanceOf(Match::class, $query->getQuery());
+        $this->assertInstanceOf(MatchQuery::class, $query->getQuery());
     }
 
     protected function makeQuery()
     {
-        return new Query(new Match());
+        return new Query(new MatchQuery());
     }
 }

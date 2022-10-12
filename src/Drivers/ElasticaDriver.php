@@ -11,7 +11,7 @@ use Elastica\Query\BoolQuery;
 use Elastica\Query\Common;
 use Elastica\Query\Exists;
 use Elastica\Query\Fuzzy;
-use Elastica\Query\Match;
+use Elastica\Query\MatchQuery;
 use Elastica\Query\MatchAll;
 use Elastica\Query\MatchPhrase;
 use Elastica\Query\MatchPhrasePrefix;
@@ -233,7 +233,7 @@ class ElasticaDriver implements Driver
         //
         // See: https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
         foreach ($documents as $document) {
-            $document->setType($index);
+            $document->setIndex($index);
         }
 
         $index = $this->getIndex($this->getIndexName($index));
@@ -344,11 +344,13 @@ class ElasticaDriver implements Driver
      * @param callable|null $callback
      * @return AbstractQuery
      */
-    public function match(string $field = null, string $value = null, callable $callback = null)
+    public function matchQuery(string $field = null, string $value = null, callable $callback = null)
     {
-        $query = new Match();
+        $query = new MatchQuery();
 
-        $query->setFieldQuery($field, $value);
+        if (!is_null($field) && !is_null($value)) {
+            $query->setFieldQuery($field, $value);
+        }
 
         return $this->returnQuery($query, $callback);
     }
@@ -367,7 +369,9 @@ class ElasticaDriver implements Driver
     {
         $query = new MatchPhrase();
 
-        $query->setFieldQuery($field, $value);
+        if (!is_null($field) && !is_null($value)) {
+            $query->setFieldQuery($field, $value);
+        }
 
         return $this->returnQuery($query, $callback);
     }
@@ -386,7 +390,9 @@ class ElasticaDriver implements Driver
     {
         $query = new MatchPhrasePrefix();
 
-        $query->setFieldQuery($field, $value);
+        if (!is_null($field) && !is_null($value)) {
+            $query->setFieldQuery($field, $value);
+        }
 
         return $this->returnQuery($query, $callback);
     }

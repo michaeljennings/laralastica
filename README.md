@@ -1,6 +1,6 @@
 # Laralastica [![Build Status](https://travis-ci.org/michaeljennings/laralastica.svg?branch=master)](https://travis-ci.org/michaeljennings/laralastica) [![Latest Stable Version](https://poser.pugx.org/michaeljennings/laralastica/v/stable)](https://packagist.org/packages/michaeljennings/laralastica) [![Coverage Status](https://coveralls.io/repos/github/michaeljennings/laralastica/badge.svg?branch=master)](https://coveralls.io/github/michaeljennings/laralastica?branch=master) [![License](https://poser.pugx.org/michaeljennings/laralastica/license)](https://packagist.org/packages/michaeljennings/laralastica)
 
-A laravel 5 package that adds the ability to search eloquent models using elasticsearch results, it also handles
+A laravel package that adds the ability to search eloquent models using elasticsearch results, it also handles
 indexing and removing documents when you save or delete models.
 
 - [Installation](#installation)
@@ -18,7 +18,7 @@ indexing and removing documents when you save or delete models.
 - [Paginate Results](#paginate-results)
 - [The Result Collection](#the-result-collection)
 
-## Upgrading from 3.0 to 3.1+
+## Upgrading from 3.0 to 4.0
 
 When hitting the `search` method on a model the query builder will return an instance of `Michaeljennings\Laralastica\Eloquent\ResultCollection` instead of `Illuminate\Database\Eloquent\Collection`.
 
@@ -52,6 +52,7 @@ Check the table below to see which version you will need.
 
 |Laralastica|Laravel|Elasticsearch|PHP
 |---|---|---|---|
+|4.x|^8.x|7.x|^8.0
 |3.x|^5.1|6.x|^7.0
 |2.x|^5.1|2.x-5.x|^5.5.9|
 
@@ -59,7 +60,7 @@ To install through composer either run `composer require michaeljennings/laralas
 composer.json.
 
 ```php
-"michaeljennings/laralastica": "^3.1"
+"michaeljennings/laralastica": "^4.0"
 ```
 
 For Laravel 5.5 and upwards, the service provider and facade will be loaded automatically. 
@@ -293,7 +294,7 @@ You can also set whether the query must, should or must not match the value you 
 ```php
 Foo::search(function(Builder $query) {
 
-	$query->match('foo', 'bar')->must();
+	$query->matchQuery('foo', 'bar')->must();
 	$query->terms('bar', ['baz'])->should();
 	$query->wildcard('baz', 'qux*', 1.0)->mustNot();
 
@@ -305,7 +306,7 @@ You may also chain any Laravel query builder methods before or after searching.
 ```php
 Foo::where('foo', 'bar')->search(function(Builder $query) {
 
-	$query->match('foo', 'bar');
+	$query->matchQuery('foo', 'bar');
 
 })->orderBy('baz')->get();
 ```
@@ -435,7 +436,7 @@ Each of the queries can optionally be passed a callback as the final parameter w
 $laralastica->search('foo', function($query) {
 
     $query->bool(function($query) {
-        $query->match('foo', 'bar');
+        $query->matchQuery('foo', 'bar');
     });
 
 });
@@ -482,9 +483,9 @@ $laralastica->search('foo', function($query) {
 ```php
 $laralastica->search('foo', function($query) {
 
-    $query->match('baz', 'qux');
-    $query->match('baz', 'qux', function($matchQuery) {
-        $matchQuery->setFieldBoost('foo');
+    $query->matchQuery('baz', 'qux');
+    $query->matchQuery('baz', 'qux', function($query) {
+        $query->setFieldBoost('foo');
     });
 
 });
